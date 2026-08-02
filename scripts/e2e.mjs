@@ -2,7 +2,7 @@ import { chromium } from 'playwright-core'
 import { copyFile, mkdir, readFile } from 'node:fs/promises'
 import path from 'node:path'
 
-const baseUrl = 'http://127.0.0.1:4173'
+const baseUrl = process.env.E2E_BASE_URL ?? 'http://127.0.0.1:4173'
 const chromePath = 'C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe'
 const artifactDir = path.resolve('artifacts')
 
@@ -104,7 +104,23 @@ try {
   await desktopPage.screenshot({ path: path.join(artifactDir, 'home-desktop.png'), fullPage: false })
   await desktop.close()
 
-  console.log('E2E_OK: responsive, BSS/BTĐ 11 lessons, C1 10 lessons, summary, conclusion and PNG export verified')
+  const iphone = await browser.newContext({
+    viewport: { width: 390, height: 844 },
+    deviceScaleFactor: 1,
+    userAgent: 'Mozilla/5.0 (iPhone; CPU iPhone OS 18_0 like Mac OS X) AppleWebKit/605.1.15 Version/18.0 Mobile/15E148 Safari/604.1',
+  })
+  const iphonePage = await iphone.newPage()
+  await iphonePage.goto(baseUrl)
+  await chooseVehicle(iphonePage, 'HẠNG XE B SỐ SÀN')
+  await enterStudent(iphonePage, 'Học viên iPhone')
+  await iphonePage.getByRole('button', { name: 'Đánh dấu bài còn lại là Tốt' }).click()
+  await iphonePage.getByTestId('status-emergency-GOOD').click()
+  await iphonePage.getByRole('button', { name: 'Xem phiếu đánh giá' }).click()
+  assert(await iphonePage.getByRole('button', { name: 'Lưu vào Ảnh' }).count() === 1, 'Safari iPhone phải hiển thị nút Lưu vào Ảnh')
+  assert(await iphonePage.getByText('Lưu trên iPhone:', { exact: true }).count() === 1, 'Safari iPhone phải hiển thị hướng dẫn lưu hình ảnh')
+  await iphone.close()
+
+  console.log('E2E_OK: responsive, vehicle variants, PNG export and iPhone Photos flow verified')
 } finally {
   await browser.close()
 }

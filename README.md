@@ -35,6 +35,7 @@ Dự án đã có sẵn Blueprint tại `render.yaml` cho Render Static Site:
 
 - Build command: `npm ci && npm run build`
 - Publish directory: `dist`
+- Rewrite: `/*` → `/index.html` để URL gốc và các đường dẫn của ứng dụng luôn hoạt động.
 
 Đẩy mã nguồn lên GitHub/GitLab/Bitbucket, sau đó tạo Blueprint trong Render từ repository đó. Render sẽ tự đọc cấu hình và triển khai site lên CDN.
 # phieu_danh_gia

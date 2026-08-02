@@ -299,6 +299,8 @@ button:focus-visible, input:focus-visible, textarea:focus-visible {
 .report-preview-canvas { --report-scale: 1; width: 100%; position: relative; overflow: hidden; border-radius: 9px; box-shadow: 0 25px 70px rgba(21,43,68,.2); background: #f5f7fa; }
 .report-preview-canvas .report-page { position: absolute; top: 0; left: 50%; margin-left: -540px; transform: scale(var(--report-scale)); transform-origin: top center; }
 .export-action-bar { display: flex; align-items: center; justify-content: center; gap: 10px; margin-top: 23px; padding: 15px; border: 1px solid #d6dee8; border-radius: 15px; background: #fff; box-shadow: 0 12px 30px rgba(22,46,74,.08); }
+.ios-save-guide { display: flex; align-items: center; justify-content: center; gap: 9px; margin-top: 17px; padding: 12px 15px; color: #244967; border: 1px solid #cbddea; border-radius: 11px; background: #f3f9fd; font-size: 10px; line-height: 1.5; }
+.ios-save-guide svg { flex-shrink: 0; color: #1675b2; }
 .export-message { max-width: 680px; margin: 13px auto 0; display: flex; align-items: center; justify-content: center; gap: 8px; padding: 11px 15px; color: #16653b; border: 1px solid #c9e3d3; border-radius: 10px; background: #f1faf4; font-size: 10px; }
 .spin { animation: spin 1s linear infinite; }
 @keyframes spin { to { transform: rotate(360deg); } }

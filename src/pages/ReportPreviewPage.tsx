@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'react'
 import { toBlob, toPng } from 'html-to-image'
-import { ArrowLeft, CheckCircle2, Download, FilePenLine, LoaderCircle, RefreshCcw, Share2 } from 'lucide-react'
+import { ArrowLeft, CheckCircle2, Download, FilePenLine, Images, LoaderCircle, RefreshCcw, Share2 } from 'lucide-react'
 import { AppHeader } from '../components/AppHeader'
 import { EvaluationReport } from '../components/EvaluationReport'
 import type { EvaluationState, FinalConclusion } from '../types/evaluation'
@@ -16,8 +16,10 @@ interface ReportPreviewPageProps {
 export function ReportPreviewPage({ state, onChange, onEdit, onNew }: ReportPreviewPageProps) {
   const reportRef = useRef<HTMLDivElement>(null)
   const stageRef = useRef<HTMLDivElement>(null)
-  const [busy, setBusy] = useState<'download' | 'share' | null>(null)
+  const [busy, setBusy] = useState<'download' | 'share' | 'save' | null>(null)
   const [message, setMessage] = useState('')
+  const isAppleMobile = /iPad|iPhone|iPod/.test(navigator.userAgent)
+    || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1)
 
   useEffect(() => {
     const stage = stageRef.current
@@ -80,8 +82,8 @@ export function ReportPreviewPage({ state, onChange, onEdit, onNew }: ReportPrev
     }
   }
 
-  const shareImage = async () => {
-    setBusy('share')
+  const shareImage = async (intent: 'share' | 'photos' = 'share') => {
+    setBusy(intent === 'photos' ? 'save' : 'share')
     setMessage('')
     try {
       const { node, restore } = await prepareNode()
@@ -94,8 +96,19 @@ export function ReportPreviewPage({ state, onChange, onEdit, onNew }: ReportPrev
       if (!blob) throw new Error('Không thể tạo tệp ảnh')
       const file = new File([blob], generateFileName(state), { type: 'image/png' })
       if (navigator.share && navigator.canShare?.({ files: [file] })) {
-        await navigator.share({ title: 'Phiếu đánh giá sa hình', text: `Phiếu đánh giá của ${state.studentName}`, files: [file] })
-        setMessage('Đã mở bảng chia sẻ. Bạn có thể chọn Zalo hoặc ứng dụng mong muốn.')
+        if (intent === 'photos') {
+          setMessage('Trong bảng chia sẻ iPhone, chạm “Lưu hình ảnh” để đưa ảnh vào ứng dụng Ảnh.')
+          window.setTimeout(() => setBusy(null), 2500)
+        }
+
+        // Safari iOS xử lý ảnh ổn định nhất khi chỉ chia sẻ tệp, không kèm text.
+        const shareData = isAppleMobile
+          ? { files: [file] }
+          : { title: 'Phiếu đánh giá sa hình', text: `Phiếu đánh giá của ${state.studentName}`, files: [file] }
+        await navigator.share(shareData)
+        setMessage(intent === 'photos'
+          ? 'Nếu bạn đã chọn “Lưu hình ảnh”, phiếu hiện đã nằm trong ứng dụng Ảnh.'
+          : 'Đã mở bảng chia sẻ. Bạn có thể chọn Zalo hoặc ứng dụng mong muốn.')
       } else {
         const url = URL.createObjectURL(file)
         const link = document.createElement('a')
@@ -142,13 +155,28 @@ export function ReportPreviewPage({ state, onChange, onEdit, onNew }: ReportPrev
           <EvaluationReport state={state} reportRef={reportRef} />
         </div>
 
+        {isAppleMobile && (
+          <div className="ios-save-guide">
+            <Images size={19} />
+            <span><strong>Lưu trên iPhone:</strong> chạm “Lưu vào Ảnh”, sau đó chọn “Lưu hình ảnh” trong bảng chia sẻ của iOS.</span>
+          </div>
+        )}
+
         <div className="export-action-bar">
           <button className="button button--ghost" type="button" onClick={onEdit}><ArrowLeft size={18} /> Sửa đánh giá</button>
-          <button className="button button--outline" type="button" onClick={shareImage} disabled={busy !== null}>
+          <button className="button button--outline" type="button" onClick={() => shareImage('share')} disabled={busy !== null}>
             {busy === 'share' ? <LoaderCircle className="spin" size={19} /> : <Share2 size={19} />} Chia sẻ
           </button>
-          <button className="button button--primary button--large" type="button" onClick={downloadImage} disabled={busy !== null}>
-            {busy === 'download' ? <LoaderCircle className="spin" size={19} /> : <Download size={19} />} Tải ảnh PNG
+          <button
+            className="button button--primary button--large"
+            type="button"
+            onClick={() => isAppleMobile ? shareImage('photos') : downloadImage()}
+            disabled={busy !== null}
+          >
+            {busy === 'download' || busy === 'save'
+              ? <LoaderCircle className="spin" size={19} />
+              : isAppleMobile ? <Images size={19} /> : <Download size={19} />}
+            {isAppleMobile ? 'Lưu vào Ảnh' : 'Tải ảnh PNG'}
           </button>
           <button className="button button--danger-ghost" type="button" onClick={onNew}><RefreshCcw size={18} /> Tạo phiếu mới</button>
         </div>
