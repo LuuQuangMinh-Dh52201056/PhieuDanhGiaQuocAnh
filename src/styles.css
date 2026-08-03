@@ -410,6 +410,12 @@ button.training-option:hover { transform: translateY(-5px); box-shadow: 0 22px 4
 .export-action-bar { display: flex; align-items: center; justify-content: center; gap: 10px; margin-top: 23px; padding: 15px; border: 1px solid #d6dee8; border-radius: 15px; background: #fff; box-shadow: 0 12px 30px rgba(22,46,74,.08); }
 .ios-save-guide { display: flex; align-items: center; justify-content: center; gap: 9px; margin-top: 17px; padding: 12px 15px; color: #244967; border: 1px solid #cbddea; border-radius: 11px; background: #f3f9fd; font-size: 10px; line-height: 1.5; }
 .ios-save-guide svg { flex-shrink: 0; color: #1675b2; }
+.export-quality-banner { display: grid; grid-template-columns: auto 1fr auto; align-items: center; gap: 11px; margin-top: 17px; padding: 13px 16px; color: #285d43; border: 1px solid #bcdcc9; border-radius: 12px; background: linear-gradient(90deg, #f4fbf6, #ebf8f0); box-shadow: 0 8px 20px rgba(8,76,42,.06); }
+.export-quality-banner > svg { color: #078144; }
+.export-quality-banner > span { font-size: 10px; line-height: 1.5; }
+.export-quality-banner > span strong { display: block; color: #075c32; font-size: 11px; }
+.export-quality-banner > b { padding: 6px 9px; color: #08713b; border: 1px solid #9ed0b1; border-radius: 99px; background: #fff; font-size: 8px; letter-spacing: .7px; white-space: nowrap; }
+.export-quality-banner + .export-action-bar { margin-top: 10px; }
 .export-message { max-width: 680px; margin: 13px auto 0; display: flex; align-items: center; justify-content: center; gap: 8px; padding: 11px 15px; color: #16653b; border: 1px solid #c9e3d3; border-radius: 10px; background: #f1faf4; font-size: 10px; }
 .spin { animation: spin 1s linear infinite; }
 @keyframes spin { to { transform: rotate(360deg); } }
@@ -745,6 +751,8 @@ button.training-option:hover { transform: translateY(-5px); box-shadow: 0 22px 4
   .report-preview-heading > button { padding: 0 10px; white-space: nowrap; }
   .conclusion-options { display: grid; grid-template-columns: 1fr; }
   .conclusion-options button { justify-content: flex-start; }
+  .export-quality-banner { grid-template-columns: auto 1fr; align-items: start; padding: 12px; }
+  .export-quality-banner > b { grid-column: 2; justify-self: start; }
   .export-action-bar { display: grid; grid-template-columns: 1fr 1fr; padding: 10px; }
   .export-action-bar .button { padding: 0 10px; font-size: 10px; }
   .export-action-bar .button--primary { grid-column: 1 / -1; grid-row: 1; }
@@ -1361,7 +1369,7 @@ textarea:focus-visible { outline-color: rgba(10, 138, 72, .28); }
 }
 
 @media print {
-  .app-header, .report-preview-heading, .conclusion-control, .export-action-bar, .export-message { display: none !important; }
+  .app-header, .report-preview-heading, .conclusion-control, .export-quality-banner, .export-action-bar, .export-message { display: none !important; }
   .report-preview-content { width: 1080px; padding: 0; }
   .report-preview-canvas { height: auto !important; box-shadow: none; overflow: visible; }
   .report-preview-canvas .report-page { position: static; margin: 0; transform: none; }

@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'react'
 import { toCanvas } from 'html-to-image'
-import { ArrowLeft, CheckCircle2, Download, FilePenLine, Images, LoaderCircle, RefreshCcw, Share2 } from 'lucide-react'
+import { ArrowLeft, CheckCircle2, Download, FilePenLine, Images, LoaderCircle, RefreshCcw, ScanLine, Share2 } from 'lucide-react'
 import { AppHeader } from '../components/AppHeader'
 import { AppFooter } from '../components/AppFooter'
 import { ChecklistReport } from '../components/ChecklistReport'
@@ -23,6 +23,28 @@ interface ExportLogoRect {
   height: number
 }
 
+const DESKTOP_EXPORT_SCALE = 2.5
+const MOBILE_EXPORT_SCALE = 2
+const DESKTOP_MAX_CANVAS_PIXELS = 16_000_000
+const MOBILE_MAX_CANVAS_PIXELS = 10_000_000
+const DESKTOP_MAX_CANVAS_SIDE = 8192
+const MOBILE_MAX_CANVAS_SIDE = 4096
+
+function getUltraSharpPixelRatio(width: number, height: number, compactDevice: boolean) {
+  const targetScale = compactDevice ? MOBILE_EXPORT_SCALE : DESKTOP_EXPORT_SCALE
+  const maxPixels = compactDevice ? MOBILE_MAX_CANVAS_PIXELS : DESKTOP_MAX_CANVAS_PIXELS
+  const maxSide = compactDevice ? MOBILE_MAX_CANVAS_SIDE : DESKTOP_MAX_CANVAS_SIDE
+  return Math.max(1, Math.min(
+    targetScale,
+    maxSide / Math.max(width, height),
+    Math.sqrt(maxPixels / (width * height)),
+  ))
+}
+
+function canvasToPngBlob(canvas: HTMLCanvasElement) {
+  return new Promise<Blob | null>((resolve) => canvas.toBlob(resolve, 'image/png'))
+}
+
 export function ReportPreviewPage({ state, onChange, onEdit, onNew }: ReportPreviewPageProps) {
   const reportRef = useRef<HTMLDivElement>(null)
   const stageRef = useRef<HTMLDivElement>(null)
@@ -30,6 +52,7 @@ export function ReportPreviewPage({ state, onChange, onEdit, onNew }: ReportPrev
   const [message, setMessage] = useState('')
   const isAppleMobile = /iPad|iPhone|iPod/.test(navigator.userAgent)
     || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1)
+  const isCompactDevice = isAppleMobile || window.matchMedia('(max-width: 768px)').matches
   const isChecklist = state.trainingType === 'BASIC' || state.trainingType === 'ROAD'
 
   useEffect(() => {
@@ -90,6 +113,7 @@ export function ReportPreviewPage({ state, onChange, onEdit, onNew }: ReportPrev
     let logoRects: ExportLogoRect[] = []
     try {
       const reportRect = node.getBoundingClientRect()
+      const pixelRatio = getUltraSharpPixelRatio(node.offsetWidth, node.offsetHeight, isCompactDevice)
       logoRects = Array.from(node.querySelectorAll<HTMLElement>('[data-export-logo-slot]')).map((slot) => {
         const rect = slot.getBoundingClientRect()
         return {
@@ -99,12 +123,19 @@ export function ReportPreviewPage({ state, onChange, onEdit, onNew }: ReportPrev
           height: rect.height,
         }
       })
-      canvas = await toCanvas(node, {
-        pixelRatio: 1,
+      const renderOptions = {
         cacheBust: true,
         backgroundColor: '#f5f7fa',
         imagePlaceholder: PHU_GIAO_LOGO_DATA_URL,
-      })
+        skipAutoScale: true,
+      }
+      try {
+        canvas = await toCanvas(node, { ...renderOptions, pixelRatio })
+      } catch (error) {
+        if (pixelRatio <= 1.5) throw error
+        // Thử lại một lần ở mức tương thích nếu thiết bị thiếu bộ nhớ đồ họa.
+        canvas = await toCanvas(node, { ...renderOptions, pixelRatio: 1.5 })
+      }
     } finally {
       restore()
     }
@@ -120,6 +151,8 @@ export function ReportPreviewPage({ state, onChange, onEdit, onNew }: ReportPrev
     })
     const context = canvas.getContext('2d')
     if (!context) throw new Error('Không thể hoàn thiện logo trên ảnh')
+    context.imageSmoothingEnabled = true
+    context.imageSmoothingQuality = 'high'
     const scaleX = canvas.width / node.offsetWidth
     const scaleY = canvas.height / node.offsetHeight
     logoRects.forEach((rect) => {
@@ -145,12 +178,25 @@ export function ReportPreviewPage({ state, onChange, onEdit, onNew }: ReportPrev
     setMessage('')
     try {
       const canvas = await renderReportCanvas()
-      const dataUrl = canvas.toDataURL('image/png')
-      const link = document.createElement('a')
-      link.download = generateFileName(state)
-      link.href = dataUrl
-      link.click()
-      setMessage('Đã tạo ảnh PNG sắc nét và bắt đầu tải xuống.')
+      const width = canvas.width
+      const height = canvas.height
+      try {
+        const blob = await canvasToPngBlob(canvas)
+        if (!blob) throw new Error('Không thể tạo tệp ảnh')
+        const url = URL.createObjectURL(blob)
+        const link = document.createElement('a')
+        link.download = generateFileName(state)
+        link.href = url
+        document.body.appendChild(link)
+        link.click()
+        link.remove()
+        window.setTimeout(() => URL.revokeObjectURL(url), 1000)
+      } finally {
+        // Giải phóng bộ nhớ canvas lớn ngay sau khi đã tạo xong tệp PNG.
+        canvas.width = 1
+        canvas.height = 1
+      }
+      setMessage(`Đã tạo ảnh PNG siêu nét ${width} × ${height}px và bắt đầu tải xuống.`)
     } catch {
       setMessage('Chưa thể tạo ảnh. Vui lòng thử lại sau ít giây.')
     } finally {
@@ -163,12 +209,18 @@ export function ReportPreviewPage({ state, onChange, onEdit, onNew }: ReportPrev
     setMessage('')
     try {
       const canvas = await renderReportCanvas()
-      const blob = await new Promise<Blob | null>((resolve) => canvas.toBlob(resolve, 'image/png'))
+      let blob: Blob | null
+      try {
+        blob = await canvasToPngBlob(canvas)
+      } finally {
+        canvas.width = 1
+        canvas.height = 1
+      }
       if (!blob) throw new Error('Không thể tạo tệp ảnh')
       const file = new File([blob], generateFileName(state), { type: 'image/png' })
       if (navigator.share && navigator.canShare?.({ files: [file] })) {
         if (intent === 'photos') {
-          setMessage('Trong bảng chia sẻ iPhone, chạm “Lưu hình ảnh” để đưa ảnh vào ứng dụng Ảnh.')
+          setMessage('Ảnh siêu nét đã sẵn sàng. Trong bảng chia sẻ iPhone, chạm “Lưu hình ảnh” để đưa ảnh vào ứng dụng Ảnh.')
           window.setTimeout(() => setBusy(null), 2500)
         }
 
@@ -191,13 +243,15 @@ export function ReportPreviewPage({ state, onChange, onEdit, onNew }: ReportPrev
         const link = document.createElement('a')
         link.href = url
         link.download = file.name
+        document.body.appendChild(link)
         link.click()
-        URL.revokeObjectURL(url)
+        link.remove()
+        window.setTimeout(() => URL.revokeObjectURL(url), 1000)
         setMessage('Thiết bị chưa hỗ trợ chia sẻ trực tiếp; ảnh đã được tải xuống để bạn gửi qua Zalo.')
       }
     } catch (error) {
       if (error instanceof Error && error.name === 'AbortError') setMessage('Đã đóng bảng chia sẻ.')
-      else setMessage('Chưa thể chia sẻ ảnh trên thiết bị này. Bạn có thể dùng nút Tải ảnh PNG.')
+      else setMessage('Chưa thể chia sẻ ảnh trên thiết bị này. Bạn có thể dùng nút Tải PNG siêu nét.')
     } finally {
       setBusy(null)
     }
@@ -239,9 +293,15 @@ export function ReportPreviewPage({ state, onChange, onEdit, onNew }: ReportPrev
         {isAppleMobile && (
           <div className="ios-save-guide">
             <Images size={19} />
-            <span><strong>Lưu trên iPhone:</strong> chạm “Lưu vào Ảnh”, sau đó chọn “Lưu hình ảnh” trong bảng chia sẻ của iOS.</span>
+            <span><strong>Lưu trên iPhone:</strong> chạm “Lưu ảnh siêu nét”, sau đó chọn “Lưu hình ảnh” trong bảng chia sẻ của iOS.</span>
           </div>
         )}
+
+        <div className="export-quality-banner">
+          <ScanLine size={22} />
+          <span><strong>Xuất phiếu chất lượng cao</strong> Ảnh PNG rõ chữ, rõ logo và đường viền khi phóng to.</span>
+          <b>{isCompactDevice ? 'TỐI ƯU CHO ĐIỆN THOẠI' : 'RỘNG ĐẾN 2700 PX'}</b>
+        </div>
 
         <div className="export-action-bar">
           <button className="button button--ghost" type="button" onClick={onEdit}><ArrowLeft size={18} /> Sửa đánh giá</button>
@@ -257,7 +317,7 @@ export function ReportPreviewPage({ state, onChange, onEdit, onNew }: ReportPrev
             {busy === 'download' || busy === 'save'
               ? <LoaderCircle className="spin" size={19} />
               : isAppleMobile ? <Images size={19} /> : <Download size={19} />}
-            {isAppleMobile ? 'Lưu vào Ảnh' : 'Tải ảnh PNG'}
+            {isAppleMobile ? 'Lưu ảnh siêu nét' : 'Tải PNG siêu nét'}
           </button>
           <button className="button button--danger-ghost" type="button" onClick={onNew}><RefreshCcw size={18} /> Tạo phiếu mới</button>
         </div>
