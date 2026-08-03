@@ -2,7 +2,6 @@ import { useMemo, useState } from 'react'
 import { ArrowLeft, ArrowRight, CheckCheck, ClipboardCheck, MessageSquareText, Sparkles } from 'lucide-react'
 import { AppHeader } from '../components/AppHeader'
 import { LessonEvaluationCard } from '../components/LessonEvaluationCard'
-import { getBasicQuickComments } from '../data/basicDrivingConfigs'
 import { VEHICLE_LABELS } from '../data/lessonConfigs'
 import type { EvaluationState, LessonEvaluation } from '../types/evaluation'
 
@@ -24,9 +23,8 @@ const courseQuickComments = [
 
 export function EvaluationPage({ state, onChange, onBack, onPreview }: EvaluationPageProps) {
   const [validationMessage, setValidationMessage] = useState('')
-  const isBasic = state.trainingType === 'BASIC'
-  const itemLabel = isBasic ? 'kỹ năng' : 'bài'
-  const quickComments = isBasic ? getBasicQuickComments(state.vehicleCategory) : courseQuickComments
+  const itemLabel = 'bài'
+  const quickComments = courseQuickComments
   const completed = useMemo(() => state.lessons.filter((lesson) => lesson.status).length, [state.lessons])
 
   const updateLesson = (updated: LessonEvaluation) => {
@@ -54,11 +52,11 @@ export function EvaluationPage({ state, onChange, onBack, onPreview }: Evaluatio
   const validateAndPreview = () => {
     const missing = state.lessons.find((lesson) => !lesson.status)
     if (missing) {
-      setValidationMessage(`Vui lòng chọn mức đánh giá cho ${isBasic ? 'Kỹ năng' : 'Bài'} ${missing.order}: ${missing.name}.`)
+      setValidationMessage(`Vui lòng chọn mức đánh giá cho Bài ${missing.order}: ${missing.name}.`)
       document.getElementById(`lesson-${missing.id}`)?.scrollIntoView({ behavior: 'smooth', block: 'center' })
       return
     }
-    if (!isBasic && !state.emergencyEvaluation?.status) {
+    if (!state.emergencyEvaluation?.status) {
       setValidationMessage('Vui lòng đánh giá phần xử lý tình huống khẩn cấp.')
       document.getElementById('lesson-emergency')?.scrollIntoView({ behavior: 'smooth', block: 'center' })
       return
@@ -67,15 +65,15 @@ export function EvaluationPage({ state, onChange, onBack, onPreview }: Evaluatio
   }
 
   return (
-    <div className={`app-shell evaluation-shell ${isBasic ? 'evaluation-shell--basic' : ''}`}>
-      <AppHeader activeStep={4} centerBrand={isBasic} />
+    <div className="app-shell evaluation-shell">
+      <AppHeader activeStep={4} />
       <main className="content-page evaluation-page">
         <section className="evaluation-intro">
           <div className="page-heading page-heading--light">
             <div className="page-heading__number">04</div>
             <div>
               <span>HẠNG XE {state.vehicleCategory ? VEHICLE_LABELS[state.vehicleCategory] : ''}</span>
-              <h1>{isBasic ? 'Đánh giá kỹ năng cơ bản' : 'Đánh giá từng bài thi'}</h1>
+              <h1>Đánh giá từng bài thi</h1>
               <p>Chọn một mức đánh giá, ghi nhận lỗi và thêm nhận xét nếu cần.</p>
             </div>
           </div>

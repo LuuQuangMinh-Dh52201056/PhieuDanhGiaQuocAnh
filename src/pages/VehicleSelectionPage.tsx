@@ -1,5 +1,5 @@
 import { ArrowRight, CheckCircle2, ShieldCheck, Sparkles } from 'lucide-react'
-import { BrandMark } from '../components/Brand'
+import { TrainingCenterBrand } from '../components/TrainingCenterBrand'
 import { VEHICLE_CATEGORIES } from '../data/lessonConfigs'
 import type { VehicleCategory } from '../types/evaluation'
 
@@ -14,7 +14,7 @@ export function VehicleSelectionPage({ onSelect }: VehicleSelectionPageProps) {
       <div className="vehicle-page__glow vehicle-page__glow--two" />
       <section className="vehicle-hero">
         <nav className="vehicle-nav">
-          <BrandMark />
+          <TrainingCenterBrand light />
           <div className="privacy-pill"><ShieldCheck size={16} /> Dữ liệu chỉ tồn tại tạm thời</div>
         </nav>
 

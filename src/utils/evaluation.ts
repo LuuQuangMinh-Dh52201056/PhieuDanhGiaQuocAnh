@@ -1,4 +1,4 @@
-import type { BasicConclusion, EvaluationConclusion, EvaluationState, EvaluationStatus, FinalConclusion, LessonEvaluation } from '../types/evaluation'
+import type { EvaluationState, EvaluationStatus, FinalConclusion, LessonEvaluation } from '../types/evaluation'
 
 export const STATUS_META: Record<EvaluationStatus, { label: string; shortLabel: string; className: string }> = {
   GOOD: { label: 'Tốt', shortLabel: 'TỐT', className: 'good' },
@@ -6,7 +6,7 @@ export const STATUS_META: Record<EvaluationStatus, { label: string; shortLabel: 
   NEEDS_PRACTICE: { label: 'Cần luyện thêm', shortLabel: 'LUYỆN THÊM', className: 'practice' },
 }
 
-export const CONCLUSION_META: Record<EvaluationConclusion, { label: string; description: string; className: string }> = {
+export const CONCLUSION_META: Record<FinalConclusion, { label: string; description: string; className: string }> = {
   READY_FOR_MOCK_TEST: {
     label: 'SẴN SÀNG THI THỬ',
     description: 'Học viên thực hiện ổn định, có thể bước vào buổi thi thử.',
@@ -22,20 +22,9 @@ export const CONCLUSION_META: Record<EvaluationConclusion, { label: string; desc
     description: 'Học viên cần thêm thời gian luyện tập trước khi thi thử.',
     className: 'continue',
   },
-  BASIC_SKILLS_ACQUIRED: {
-    label: 'ĐÃ NẮM KỸ NĂNG CƠ BẢN',
-    description: 'Học viên đã thực hiện ổn định các kỹ năng nền tảng và có thể chuyển sang tập sa hình.',
-    className: 'ready',
-  },
-  CONTINUE_BASIC_TRAINING: {
-    label: 'CẦN TIẾP TỤC TẬP CƠ BẢN',
-    description: 'Học viên cần thêm thời gian củng cố các thao tác nền tảng trước khi chuyển sang sa hình.',
-    className: 'continue',
-  },
 }
 
 export const COURSE_CONCLUSIONS: FinalConclusion[] = ['READY_FOR_MOCK_TEST', 'NEEDS_IMPROVEMENT', 'CONTINUE_PRACTICE']
-export const BASIC_CONCLUSIONS: BasicConclusion[] = ['BASIC_SKILLS_ACQUIRED', 'NEEDS_IMPROVEMENT', 'CONTINUE_BASIC_TRAINING']
 
 export function getTodayInputValue(): string {
   const date = new Date()
@@ -59,7 +48,9 @@ export function slugifyVietnamese(value: string): string {
 }
 
 export function generateFileName(state: EvaluationState): string {
-  const prefix = state.trainingType === 'BASIC' ? 'DanhGiaTapXeCoBan' : 'DanhGiaSaHinh'
+  const prefix = state.trainingType === 'BASIC'
+    ? 'DanhGiaTapXeCoBan'
+    : state.trainingType === 'ROAD' ? 'DanhGiaDuongTruong' : 'DanhGiaSaHinh'
   return `${prefix}_${slugifyVietnamese(state.studentName)}_${formatDate(state.evaluationDate).replace(/\//g, '-')}.png`
 }
 
@@ -83,11 +74,4 @@ export function calculateConclusion(lessons: LessonEvaluation[]): FinalConclusio
   if (totals.NEEDS_PRACTICE > 0 || totals.NOTICE >= 4) return 'NEEDS_IMPROVEMENT'
   if (totals.GOOD > lessons.length / 2) return 'READY_FOR_MOCK_TEST'
   return 'NEEDS_IMPROVEMENT'
-}
-
-export function calculateBasicConclusion(lessons: LessonEvaluation[]): BasicConclusion {
-  const totals = summarize(lessons)
-  if (totals.NEEDS_PRACTICE >= 3) return 'CONTINUE_BASIC_TRAINING'
-  if (totals.NEEDS_PRACTICE > 0 || totals.NOTICE >= 3) return 'NEEDS_IMPROVEMENT'
-  return 'BASIC_SKILLS_ACQUIRED'
 }

@@ -1,4 +1,4 @@
-import { ArrowLeft, ArrowRight, CalendarDays, CarFront, GraduationCap, Hash, UserRound } from 'lucide-react'
+import { ArrowLeft, ArrowRight, BookOpenText, CalendarDays, CarFront, GraduationCap, Hash, UserRound } from 'lucide-react'
 import { AppHeader } from '../components/AppHeader'
 import { VEHICLE_LABELS } from '../data/lessonConfigs'
 import type { EvaluationState } from '../types/evaluation'
@@ -11,7 +11,7 @@ interface StudentInformationPageProps {
 }
 
 export function StudentInformationPage({ state, onChange, onBack, onContinue }: StudentInformationPageProps) {
-  const trainingLabel = state.trainingType === 'BASIC' ? 'TẬP CƠ BẢN' : 'SA HÌNH'
+  const trainingLabel = state.trainingType === 'BASIC' ? 'TẬP CƠ BẢN' : state.trainingType === 'ROAD' ? 'ĐƯỜNG TRƯỜNG' : 'SA HÌNH'
   const submit = (event: React.FormEvent) => {
     event.preventDefault()
     onContinue()
@@ -19,7 +19,7 @@ export function StudentInformationPage({ state, onChange, onBack, onContinue }: 
 
   return (
     <div className="app-shell">
-      <AppHeader activeStep={3} centerBrand={state.trainingType === 'BASIC'} />
+      <AppHeader activeStep={3} />
       <main className="content-page content-page--narrow">
         <div className="page-heading">
           <div className="page-heading__number">03</div>
@@ -68,6 +68,11 @@ export function StudentInformationPage({ state, onChange, onBack, onContinue }: 
             <label className="field">
               <span><Hash size={17} /> Lần tập thứ</span>
               <input type="number" min="1" max="999" inputMode="numeric" value={state.practiceAttempt} onChange={(event) => onChange({ practiceAttempt: event.target.value })} placeholder="Ví dụ: 07" aria-label="Lần tập thứ" />
+            </label>
+
+            <label className="field">
+              <span><BookOpenText size={17} /> Khóa đào tạo</span>
+              <input value={state.trainingCourse} onChange={(event) => onChange({ trainingCourse: event.target.value })} placeholder="Ví dụ: C1-K24" aria-label="Khóa đào tạo" />
             </label>
           </div>
 

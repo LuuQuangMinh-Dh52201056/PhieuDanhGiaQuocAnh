@@ -1,6 +1,6 @@
 services:
   - type: web
-    name: phieu-danh-gia-sa-hinh-quoc-anh
+    name: phieu-danh-gia-lai-xe-phu-giao
     runtime: static
     buildCommand: npm ci && npm run build
     staticPublishPath: ./dist

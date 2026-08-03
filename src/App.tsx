@@ -1,13 +1,14 @@
 import { useState } from 'react'
-import { createBasicSkillEvaluations } from './data/basicDrivingConfigs'
+import { createChecklistItems } from './data/checklistConfigs'
 import { createEmergencyEvaluation, createLessonEvaluations } from './data/lessonConfigs'
+import { ChecklistEvaluationPage } from './pages/ChecklistEvaluationPage'
 import { EvaluationPage } from './pages/EvaluationPage'
 import { ReportPreviewPage } from './pages/ReportPreviewPage'
 import { StudentInformationPage } from './pages/StudentInformationPage'
 import { TrainingSelectionPage } from './pages/TrainingSelectionPage'
 import { VehicleSelectionPage } from './pages/VehicleSelectionPage'
 import type { EvaluationState, TrainingType, VehicleCategory } from './types/evaluation'
-import { calculateBasicConclusion, calculateConclusion, getTodayInputValue } from './utils/evaluation'
+import { calculateConclusion, getTodayInputValue } from './utils/evaluation'
 
 type AppStep = 'vehicle' | 'training' | 'information' | 'evaluation' | 'report'
 
@@ -20,8 +21,11 @@ function emptyState(): EvaluationState {
     instructorName: '',
     vehicleNumber: '',
     practiceAttempt: '',
+    trainingCourse: '',
     lessons: [],
     emergencyEvaluation: null,
+    checklistItems: [],
+    checklistOverall: null,
     teacherComment: '',
     finalConclusion: null,
   }
@@ -45,14 +49,14 @@ export default function App() {
   }
 
   const selectTraining = (trainingType: TrainingType) => {
-    if (!state.vehicleCategory || trainingType === 'ROAD') return
+    if (!state.vehicleCategory) return
     setState((current) => ({
       ...current,
       trainingType,
-      lessons: trainingType === 'BASIC'
-        ? createBasicSkillEvaluations(current.vehicleCategory!)
-        : createLessonEvaluations(current.vehicleCategory!),
+      lessons: trainingType === 'COURSE' ? createLessonEvaluations(current.vehicleCategory!) : [],
       emergencyEvaluation: trainingType === 'COURSE' ? createEmergencyEvaluation() : null,
+      checklistItems: trainingType === 'COURSE' ? [] : createChecklistItems(trainingType, current.vehicleCategory!),
+      checklistOverall: null,
       teacherComment: '',
       finalConclusion: null,
     }))
@@ -63,11 +67,9 @@ export default function App() {
   const openReport = () => {
     setState((current) => ({
       ...current,
-      finalConclusion: current.finalConclusion ?? (
-        current.trainingType === 'BASIC'
-          ? calculateBasicConclusion(current.lessons)
-          : calculateConclusion(current.lessons)
-      ),
+      finalConclusion: current.trainingType === 'COURSE'
+        ? current.finalConclusion ?? calculateConclusion(current.lessons)
+        : null,
     }))
     setStep('report')
     window.scrollTo({ top: 0 })
@@ -108,6 +110,16 @@ export default function App() {
   }
 
   if (step === 'evaluation') {
+    if (state.trainingType === 'BASIC' || state.trainingType === 'ROAD') {
+      return (
+        <ChecklistEvaluationPage
+          state={state}
+          onChange={updateState}
+          onBack={() => { setStep('information'); window.scrollTo({ top: 0 }) }}
+          onPreview={openReport}
+        />
+      )
+    }
     return (
       <EvaluationPage
         state={state}

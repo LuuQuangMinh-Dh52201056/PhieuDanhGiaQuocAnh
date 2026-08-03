@@ -12,14 +12,16 @@ function assert(condition, message) {
 
 async function chooseVehicle(page, name, training = 'SA HÌNH') {
   await page.getByRole('button', { name }).click()
-  await page.getByRole('button', { name: training }).click()
+  const trainingTestId = training === 'TẬP CƠ BẢN' ? 'training-basic' : training === 'ĐƯỜNG TRƯỜNG' ? 'training-road' : 'training-course'
+  await page.getByTestId(trainingTestId).click()
 }
 
 async function enterStudent(page, name) {
   await page.getByLabel('Họ và tên học viên').fill(name)
-  await page.getByLabel('Giáo viên hướng dẫn').fill('Trần Quốc Anh')
+  await page.getByLabel('Giáo viên hướng dẫn').fill('Trần Trọng Thức')
   await page.getByLabel('Số xe').fill('51H-123.45')
   await page.getByLabel('Lần tập thứ').fill('7')
+  await page.getByLabel('Khóa đào tạo').fill('K24-2026')
   const evaluationDate = await page.getByLabel('Ngày đánh giá').inputValue()
   await page.getByRole('button', { name: 'Bắt đầu đánh giá' }).click()
   return evaluationDate
@@ -42,25 +44,30 @@ try {
     card: document.querySelector('.vehicle-card')?.getBoundingClientRect().toJSON(),
   }))
   assert(dimensions.scrollWidth <= dimensions.viewport, `Trang chọn hạng bị tràn ngang: ${JSON.stringify(dimensions)}`)
+  assert(await page.getByText('QUỐC ANH', { exact: true }).count() === 0, 'Không được còn thương hiệu Quốc Anh')
 
   await page.getByRole('button', { name: 'HẠNG XE B SỐ SÀN' }).click()
   await page.screenshot({ path: path.join(artifactDir, 'training-selection-mobile.png'), fullPage: true })
   assert(await page.getByText('Tập cơ bản', { exact: true }).count() === 1, 'Phải có lựa chọn Tập cơ bản')
   assert(await page.getByText('Sa hình', { exact: true }).count() === 1, 'Phải có lựa chọn Sa hình')
   assert(await page.getByText('Đường trường', { exact: true }).count() === 1, 'Phải có lựa chọn Đường trường')
-  assert(await page.getByText('SẮP PHÁT TRIỂN', { exact: true }).count() === 1, 'Đường trường phải hiển thị sắp phát triển')
+  assert(await page.getByText('11 NỘI DUNG', { exact: true }).count() === 1, 'Đường trường phải có 11 nội dung')
   await page.getByRole('button', { name: 'TẬP CƠ BẢN' }).click()
   const basicDate = await enterStudent(page, 'Học viên Cơ Bản')
-  assert(await page.locator('.lesson-card').count() === 8, 'Tập cơ bản BSS phải có đúng 8 kỹ năng')
-  assert(await page.locator('.lesson-card--emergency').count() === 0, 'Tập cơ bản không có mục tình huống khẩn cấp sa hình')
-  assert(await page.getByText('Tìm và giữ điểm côn', { exact: true }).count() === 1, 'BSS cơ bản phải có kỹ năng điểm côn')
-  assert(await page.getByRole('button', { name: 'Cần luyện thêm điểm côn' }).count() === 1, 'BSS cơ bản phải có nhận xét nhanh điểm côn')
-  await page.getByRole('button', { name: 'Đánh dấu kỹ năng còn lại là Tốt' }).click()
+  assert(await page.locator('.checklist-item-card').count() === 13, 'Tập cơ bản phải có đúng 13 nội dung')
+  assert(await page.getByText('Mở cửa xe và lên xe an toàn', { exact: true }).count() === 1, 'Phiếu cơ bản phải đúng nội dung mẫu')
+  assert(await page.getByTestId('check-basic-pedals-UNDERSTOOD').count() === 1, 'Mỗi nội dung cơ bản phải có ô Đã hiểu')
+  assert(await page.getByTestId('check-basic-pedals-NEEDS_WORK').count() === 1, 'Mỗi nội dung cơ bản phải có ô Còn yếu')
+  assert(await page.getByTestId('check-basic-pedals-UNCLEAR').count() === 1, 'Mỗi nội dung cơ bản phải có ô Chưa rõ')
+  await page.getByRole('button', { name: 'Đánh dấu tất cả là Đã hiểu' }).click()
+  await page.getByTestId('overall-BASIC_UNDERSTOOD').click()
+  await page.screenshot({ path: path.join(artifactDir, 'basic-checklist-mobile.png'), fullPage: false })
   await page.getByRole('button', { name: 'Xem phiếu đánh giá' }).click()
   const basicReportText = await page.getByTestId('evaluation-report').innerText()
-  assert(basicReportText.includes('KỸ NĂNG LÁI XE CƠ BẢN'), 'Phiếu cơ bản phải có đúng tiêu đề')
-  assert(basicReportText.includes('ĐÃ NẮM KỸ NĂNG CƠ BẢN'), '8 kỹ năng Tốt phải có kết luận đã nắm kỹ năng cơ bản')
-  assert(basicReportText.includes('8 kỹ năng'), 'Phiếu cơ bản phải tổng kết đủ 8 kỹ năng')
+  assert(basicReportText.includes('PHIẾU ĐÁNH GIÁ BUỔI HỌC'), 'Phiếu cơ bản phải có đúng tiêu đề mẫu')
+  assert(basicReportText.includes('LÀM QUEN XE & SA HÌNH CƠ BẢN'), 'Phiếu cơ bản phải có đúng nội dung buổi học')
+  assert(basicReportText.includes('Đã hiểu cơ bản – tiếp tục chương trình'), 'Phiếu cơ bản phải hiển thị đánh giá chung đã tích')
+  assert(!basicReportText.includes('QUỐC ANH'), 'Phiếu cơ bản không được còn thương hiệu Quốc Anh')
   const basicDownloadPromise = page.waitForEvent('download')
   await page.getByRole('button', { name: 'Tải ảnh PNG' }).click()
   const basicDownload = await basicDownloadPromise
@@ -69,6 +76,31 @@ try {
   const basicDownloadPath = await basicDownload.path()
   assert(basicDownloadPath, 'Không nhận được tệp PNG tập cơ bản')
   await copyFile(basicDownloadPath, path.join(artifactDir, 'basic-exported-report.png'))
+
+  await page.goto(baseUrl)
+  await chooseVehicle(page, 'HẠNG XE B SỐ SÀN', 'ĐƯỜNG TRƯỜNG')
+  const roadDate = await enterStudent(page, 'Học viên Đường Trường')
+  assert(await page.locator('.checklist-item-card').count() === 11, 'Đường trường phải có đúng 11 nội dung')
+  assert(await page.getByText('Quan sát phán đoán – nhận diện tình huống', { exact: true }).count() === 1, 'Phiếu đường trường phải đúng nội dung mẫu')
+  assert(await page.getByTestId('check-road-speed-GOOD').count() === 1, 'Đường trường phải có ô Tốt')
+  assert(await page.getByTestId('check-road-speed-FAIR').count() === 1, 'Đường trường phải có ô Khá')
+  assert(await page.getByTestId('check-road-speed-AVERAGE').count() === 1, 'Đường trường phải có ô Trung bình')
+  assert(await page.getByTestId('check-road-speed-WEAK').count() === 1, 'Đường trường phải có ô Yếu')
+  await page.getByRole('button', { name: 'Đánh dấu tất cả là Tốt' }).click()
+  await page.getByTestId('overall-ROAD_PASSED').click()
+  await page.screenshot({ path: path.join(artifactDir, 'road-checklist-mobile.png'), fullPage: false })
+  await page.getByRole('button', { name: 'Xem phiếu đánh giá' }).click()
+  const roadReportText = await page.getByTestId('evaluation-report').innerText()
+  assert(roadReportText.includes('PHIẾU ĐÁNH GIÁ ĐÀO TẠO HỌC VIÊN'), 'Phiếu đường trường phải có đúng tiêu đề mẫu')
+  assert(roadReportText.includes('Đạt yêu cầu'), 'Phiếu đường trường phải hiển thị đánh giá chung')
+  const roadDownloadPromise = page.waitForEvent('download')
+  await page.getByRole('button', { name: 'Tải ảnh PNG' }).click()
+  const roadDownload = await roadDownloadPromise
+  const [roadYear, roadMonth, roadDay] = roadDate.split('-')
+  assert(roadDownload.suggestedFilename() === `DanhGiaDuongTruong_HocvienDuongTruong_${roadDay}-${roadMonth}-${roadYear}.png`, `Tên ảnh đường trường không đúng: ${roadDownload.suggestedFilename()}`)
+  const roadDownloadPath = await roadDownload.path()
+  assert(roadDownloadPath, 'Không nhận được tệp PNG đường trường')
+  await copyFile(roadDownloadPath, path.join(artifactDir, 'road-exported-report.png'))
 
   await page.goto(baseUrl)
 
@@ -130,16 +162,15 @@ try {
   await page.goto(baseUrl)
   await chooseVehicle(page, 'HẠNG XE HẠNG C1', 'TẬP CƠ BẢN')
   await enterStudent(page, 'Học viên C1 Cơ Bản')
-  assert(await page.locator('.lesson-card').count() === 8, 'Tập cơ bản C1 phải có đúng 8 kỹ năng')
-  assert(await page.getByText('Lùi và canh đuôi xe', { exact: true }).count() === 1, 'C1 cơ bản phải có kỹ năng canh đuôi xe')
-  assert(await page.getByRole('button', { name: 'Cần luyện canh thân xe' }).count() === 1, 'C1 cơ bản phải có nhận xét nhanh canh thân xe')
+  assert(await page.locator('.checklist-item-card').count() === 13, 'Tập cơ bản C1 phải có đúng 13 nội dung')
+  assert(await page.getByText('Phân biệt được các bàn đạp Côn – Phanh – Ga', { exact: true }).count() === 1, 'C1 cơ bản phải có nội dung bàn đạp xe số sàn')
 
   await page.goto(baseUrl)
   await chooseVehicle(page, 'HẠNG XE B SỐ TỰ ĐỘNG', 'TẬP CƠ BẢN')
   await enterStudent(page, 'Học viên BTĐ Cơ Bản')
-  assert(await page.locator('.lesson-card').count() === 8, 'Tập cơ bản BTĐ phải có đúng 8 kỹ năng')
-  assert(await page.getByText('Sử dụng chân phanh và chân ga', { exact: true }).count() === 1, 'BTĐ cơ bản phải có kỹ năng phanh và ga riêng')
-  assert(await page.getByText('Tìm và giữ điểm côn', { exact: true }).count() === 0, 'BTĐ cơ bản không được có kỹ năng điểm côn')
+  assert(await page.locator('.checklist-item-card').count() === 13, 'Tập cơ bản BTĐ phải có đúng 13 nội dung')
+  assert(await page.getByText('Phân biệt và sử dụng đúng bàn đạp Phanh – Ga', { exact: true }).count() === 1, 'BTĐ cơ bản phải có nội dung bàn đạp riêng')
+  assert(await page.getByText('Phân biệt được các bàn đạp Côn – Phanh – Ga', { exact: true }).count() === 0, 'BTĐ cơ bản không được có nội dung bàn đạp côn')
   await mobile.close()
 
   const desktop = await browser.newContext({ viewport: { width: 1440, height: 1000 }, deviceScaleFactor: 1 })
@@ -164,7 +195,7 @@ try {
   assert(await iphonePage.getByText('Lưu trên iPhone:', { exact: true }).count() === 1, 'Safari iPhone phải hiển thị hướng dẫn lưu hình ảnh')
   await iphone.close()
 
-  console.log('E2E_OK: responsive, vehicle variants, PNG export and iPhone Photos flow verified')
+  console.log('E2E_OK: Phu Giao branding, tick forms, vehicle variants, PNG export and iPhone Photos flow verified')
 } finally {
   await browser.close()
 }

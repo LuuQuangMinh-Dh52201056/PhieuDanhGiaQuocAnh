@@ -7,7 +7,7 @@ interface BrandProps {
 
 export function BrandMark({ compact = false, dark = false }: BrandProps) {
   return (
-    <div className={`brand ${compact ? 'brand--compact' : ''} ${dark ? 'brand--dark' : ''}`} aria-label="Quốc Anh - Đào tạo lái xe">
+    <div className={`brand ${compact ? 'brand--compact' : ''} ${dark ? 'brand--dark' : ''}`} aria-label="Trung tâm Giáo dục Nghề nghiệp Phú Giáo">
       <div className="brand__mark" aria-hidden="true">
         <svg viewBox="0 0 72 72" role="img">
           <circle cx="36" cy="29" r="22" fill="none" stroke="currentColor" strokeWidth="6" />
@@ -17,8 +17,8 @@ export function BrandMark({ compact = false, dark = false }: BrandProps) {
         </svg>
       </div>
       <div className="brand__copy">
-        <strong>QUỐC ANH</strong>
-        {!compact && <span><CarFront size={14} /> ĐÀO TẠO LÁI XE</span>}
+        <strong>PHÚ GIÁO</strong>
+        {!compact && <span><CarFront size={14} /> GIÁO DỤC NGHỀ NGHIỆP</span>}
       </div>
     </div>
   )
