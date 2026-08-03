@@ -27,7 +27,7 @@ export function EvaluationReport({ state, reportRef }: EvaluationReportProps) {
         <div className="report-title">
           <small>PHIẾU ĐÁNH GIÁ</small>
           <h1>KẾT QUẢ BÀI THI<br />SÁT HẠCH SA HÌNH</h1>
-          <div><i /> <span>AN TOÀN — TỰ TIN — VỮNG TAY LÁI</span> <i /></div>
+          <div><i /> <span>AN TOÀN — TRÁCH NHIỆM — VỮNG TAY LÁI</span> <i /></div>
         </div>
         <VehicleBadge category={state.vehicleCategory} className="report-vehicle-badge" />
       </header>
@@ -109,7 +109,7 @@ export function EvaluationReport({ state, reportRef }: EvaluationReportProps) {
 
       <footer className="report-footer">
         <TrainingCenterBrand compact light />
-        <span>TRUNG TÂM GIÁO DỤC NGHỀ NGHIỆP PHÚ GIÁO</span>
+        <strong className="report-footer__tagline">AN TOÀN — TRÁCH NHIỆM — VỮNG TAY LÁI</strong>
         <i>✦</i>
       </footer>
     </div>

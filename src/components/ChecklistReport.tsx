@@ -85,7 +85,7 @@ export function ChecklistReport({ state, reportRef }: ChecklistReportProps) {
 
       <footer className="checklist-report-footer">
         <TrainingCenterBrand compact light />
-        <strong>AN TOÀN — TRÁCH NHIỆM — VỮNG TAY LÁI</strong>
+        <strong className="report-footer__tagline">AN TOÀN — TRÁCH NHIỆM — VỮNG TAY LÁI</strong>
         <span>✦</span>
       </footer>
     </div>

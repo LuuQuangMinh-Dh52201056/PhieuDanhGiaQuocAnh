@@ -425,7 +425,7 @@ button.training-option:hover { transform: translateY(-5px); box-shadow: 0 22px 4
     #f7f8f6;
   font-family: 'Be Vietnam Pro', sans-serif;
 }
-.report-header { height: 270px; display: grid; grid-template-columns: 230px 1fr 222px; align-items: center; gap: 15px; position: relative; overflow: hidden; padding: 23px 39px 42px; color: #fff; background: linear-gradient(125deg, #06172e, #0a315b 68%, #071a34); border-bottom: 7px solid #eeb936; }
+.report-header { height: 270px; display: grid; grid-template-columns: 300px 1fr 300px; align-items: center; gap: 15px; position: relative; overflow: hidden; padding: 23px 39px 42px; color: #fff; background: linear-gradient(125deg, #06172e, #0a315b 68%, #071a34); border-bottom: 7px solid #eeb936; }
 .report-header::after { content: ''; position: absolute; left: -5%; right: -5%; bottom: -31px; height: 59px; border-radius: 50% 50% 0 0; background: #f7f8f6; border-top: 5px solid rgba(242,187,61,.7); }
 .report-header__flare { position: absolute; border-radius: 50%; pointer-events: none; }
 .report-header__flare--one { width: 410px; height: 410px; right: 40px; top: -280px; border: 1px solid rgba(255,255,255,.08); box-shadow: 0 0 0 55px rgba(255,255,255,.018), 0 0 0 110px rgba(255,255,255,.012); }
@@ -513,14 +513,14 @@ button.training-option:hover { transform: translateY(-5px); box-shadow: 0 22px 4
 .report-teacher-comment p { margin: 6px 0 0; color: #4d5967; font-size: 10px; line-height: 1.55; white-space: pre-line; }
 .report-signature { padding: 20px 25px; text-align: center; }
 .signature-line { margin-top: 37px; padding-bottom: 5px; color: #17345b; border-bottom: 1px solid #788798; font-family: 'Montserrat', sans-serif; font-size: 13px; font-style: italic; }
-.report-footer { height: 66px; display: grid; grid-template-columns: 230px 1fr 30px; align-items: center; padding: 0 36px; color: var(--gold); border-top: 4px solid var(--gold); background: linear-gradient(90deg, #06172d, #0b3158, #06172d); }
+.report-footer { height: 66px; display: grid; grid-template-columns: 300px 1fr 300px; align-items: center; padding: 0 36px; color: var(--gold); border-top: 4px solid var(--gold); background: linear-gradient(90deg, #06172d, #0b3158, #06172d); }
 .report-footer > div { display: flex; align-items: center; gap: 10px; }
 .report-footer strong { font-family: 'Montserrat', sans-serif; font-size: 16px; }
 .report-footer .training-brand__mark { width: 44px; height: 44px; }
-.report-footer .training-brand__copy small { display: none; }
-.report-footer .training-brand__copy strong { color: #fff; font-size: 15px; }
-.report-footer > span { text-align: center; font-size: 11px; font-weight: 700; letter-spacing: .6px; }
-.report-footer > i { font-style: normal; }
+.report-footer .training-brand__copy small { display: block; max-width: none; color: rgba(255,255,255,.78); font-size: 6px; letter-spacing: .45px; white-space: nowrap; }
+.report-footer .training-brand__copy strong { color: #fff; font-size: 14px; }
+.report-footer > .report-footer__tagline { text-align: center; font-size: 10px; font-weight: 800; letter-spacing: .75px; white-space: nowrap; }
+.report-footer > i { justify-self: end; font-style: normal; }
 
 /* Green exported report for basic driving practice */
 .report-page--basic { min-height: 0; color: #163228; background: radial-gradient(circle at 100% 13%, rgba(8,122,62,.07), transparent 360px), #f5faf6; }
@@ -554,16 +554,16 @@ button.training-option:hover { transform: translateY(-5px); box-shadow: 0 22px 4
 
 /* Exported tick-only reports based on the Phú Giáo paper forms */
 .checklist-report { min-height: 0; color: #173629; background: #f8fbf9; }
-.checklist-report-header { min-height: 225px; display: grid; grid-template-columns: 265px 1fr 155px; align-items: center; gap: 18px; position: relative; overflow: hidden; padding: 24px 34px 31px; border-top: 13px solid #075b31; border-bottom: 5px solid #58b67a; background: linear-gradient(135deg, #f8fff9, #e7f6ec); }
+.checklist-report-header { min-height: 225px; display: grid; grid-template-columns: 310px 1fr 310px; align-items: center; gap: 18px; position: relative; overflow: hidden; padding: 24px 34px 31px; border-top: 13px solid #075b31; border-bottom: 5px solid #58b67a; background: linear-gradient(135deg, #f8fff9, #e7f6ec); }
 .checklist-report-header::after { content: ''; position: absolute; width: 380px; height: 380px; right: 80px; top: -300px; border: 1px solid rgba(8,122,62,.1); border-radius: 50%; box-shadow: 0 0 0 55px rgba(8,122,62,.025), 0 0 0 105px rgba(8,122,62,.018); }
 .checklist-report-header__brand { position: relative; z-index: 1; }
 .checklist-report-header__brand .training-brand { gap: 10px; }
 .checklist-report-header__brand .training-brand__mark { width: 95px; height: 95px; }
-.checklist-report-header__brand .training-brand__copy small { max-width: 125px; font-size: 8px; letter-spacing: .4px; }
+.checklist-report-header__brand .training-brand__copy small { max-width: none; font-size: 8px; letter-spacing: .4px; white-space: nowrap; }
 .checklist-report-header__brand .training-brand__copy strong { font-size: 22px; }
 .checklist-report-header__title { position: relative; z-index: 1; text-align: center; }
 .checklist-report-header__title small { color: #087a3e; font-size: 9px; font-weight: 800; letter-spacing: 1.3px; }
-.checklist-report-header__title h1 { margin: 9px 0 7px; color: #07552f; font-family: 'Montserrat', sans-serif; font-size: 27px; line-height: 1.22; }
+.checklist-report-header__title h1 { margin: 9px 0 7px; color: #07552f; font-family: 'Montserrat', sans-serif; font-size: 24px; line-height: 1.22; }
 .checklist-report-header__title p { margin: 0; color: #45735a; font-size: 10px; font-weight: 800; letter-spacing: 1.1px; }
 .checklist-report-header__vehicle { width: 135px; height: 148px; justify-self: end; position: relative; z-index: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; color: #fff; border: 3px solid #6fc48c; border-radius: 18px 18px 46px 46px; background: linear-gradient(145deg, #0a8547, #07552f); box-shadow: inset 0 0 0 3px rgba(255,255,255,.14), 0 10px 20px rgba(5,82,44,.18); }
 .checklist-report-header__vehicle small { margin-top: 5px; font-size: 8px; font-weight: 700; }
@@ -603,12 +603,12 @@ button.training-option:hover { transform: translateY(-5px); box-shadow: 0 22px 4
 .checklist-report-comment > div { height: 80px; display: flex; flex-direction: column; align-items: center; justify-content: space-between; padding-left: 20px; border-left: 1px dashed #b8cabc; }
 .checklist-report-comment > div small { color: #087a3e; font-size: 9px; font-weight: 800; }
 .checklist-report-comment > div strong { width: 100%; padding-bottom: 5px; color: #173629; border-bottom: 1px solid #729080; text-align: center; font-size: 11px; font-style: italic; }
-.checklist-report-footer { height: 68px; display: grid; grid-template-columns: 290px 1fr 30px; align-items: center; padding: 0 34px; color: #fff; border-top: 5px solid #62bd80; background: linear-gradient(90deg, #064a29, #087a3e, #064a29); }
+.checklist-report-footer { height: 68px; display: grid; grid-template-columns: 290px 1fr 290px; align-items: center; padding: 0 34px; color: #fff; border-top: 5px solid #62bd80; background: linear-gradient(90deg, #064a29, #087a3e, #064a29); }
 .checklist-report-footer .training-brand__mark { width: 42px; height: 42px; }
-.checklist-report-footer .training-brand__copy small { display: none; }
-.checklist-report-footer .training-brand__copy strong { color: #fff; font-size: 15px; }
-.checklist-report-footer > strong { text-align: center; font-size: 10px; letter-spacing: 1px; }
-.checklist-report-footer > span { text-align: right; }
+.checklist-report-footer .training-brand__copy small { display: block; max-width: none; color: rgba(255,255,255,.78); font-size: 6px; letter-spacing: .45px; white-space: nowrap; }
+.checklist-report-footer .training-brand__copy strong { color: #fff; font-size: 14px; }
+.checklist-report-footer > .report-footer__tagline { text-align: center; font-size: 10px; letter-spacing: .75px; white-space: nowrap; }
+.checklist-report-footer > span { justify-self: end; text-align: right; }
 
 @media (max-width: 900px) {
   .vehicle-card-grid { grid-template-columns: 1fr; }
@@ -663,7 +663,7 @@ button.training-option:hover { transform: translateY(-5px); box-shadow: 0 22px 4
   .brand--compact .brand__copy strong { font-size: 13px; }
   .app-header .training-brand { gap: 7px; }
   .app-header .training-brand--compact .training-brand__mark { width: 35px; height: 35px; }
-  .app-header .training-brand--compact .training-brand__copy small { display: none; }
+  .app-header .training-brand--compact .training-brand__copy small { display: block; max-width: none; white-space: nowrap; }
   .app-header .training-brand--compact .training-brand__copy strong { font-size: 12px; white-space: nowrap; }
   .stepper__item:not(:last-child) { margin-right: 18px; }
   .stepper__item:not(:last-child)::after { left: calc(100% + 4px); width: 10px; }
@@ -1256,6 +1256,7 @@ textarea:focus-visible { outline-color: rgba(10, 138, 72, .28); }
 }
 .report-header::after { background: #f8fbf9; border-top-color: rgba(88,182,122,.65); }
 .report-header .training-brand--light .training-brand__copy small { color: #2b704b; }
+.report-header .training-brand__copy small { max-width: none; white-space: nowrap; }
 .report-header .training-brand--light .training-brand__copy strong { color: var(--green-800); }
 .report-title > small { color: var(--green-800); }
 .report-title h1 { color: var(--green-950); }
@@ -1314,9 +1315,9 @@ textarea:focus-visible { outline-color: rgba(10, 138, 72, .28); }
   .app-header__inner { width: calc(100% - 20px); }
   .app-header__top { height: 55px; }
   .app-header .training-brand { gap: 7px; }
-  .app-header .training-brand--compact .training-brand__mark { width: 38px; height: 38px; }
-  .app-header .training-brand--compact .training-brand__copy small { display: none; }
-  .app-header .training-brand--compact .training-brand__copy strong { color: var(--green-800); font-size: 12px; }
+  .app-header .training-brand--compact .training-brand__mark { width: 42px; height: 42px; }
+  .app-header .training-brand--compact .training-brand__copy small { display: block; max-width: none; color: #1d6942; font-size: 6px; line-height: 1.25; letter-spacing: .4px; white-space: nowrap; }
+  .app-header .training-brand--compact .training-brand__copy strong { color: var(--green-800); font-size: 14px; line-height: 1.15; white-space: nowrap; }
   .app-privacy { width: 35px; height: 35px; justify-content: center; padding: 0; font-size: 0; }
   .stepper { height: 48px; padding: 6px 0 0; }
   .stepper__label { display: none; }

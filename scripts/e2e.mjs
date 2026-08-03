@@ -73,6 +73,41 @@ async function assertExportedLogos(page, png, reportName) {
   )
 }
 
+async function assertReportFooterBrand(page, reportName) {
+  const report = page.getByTestId('evaluation-report')
+  const headerBrand = report.locator('.report-header, .checklist-report-header').locator('.training-brand').first()
+  assert(
+    await headerBrand.locator('small').innerText() === 'TRUNG TÂM GIÁO DỤC NGHỀ NGHIỆP',
+    `${reportName} phải ghi đầy đủ tên Trung tâm ở đầu phiếu`,
+  )
+  assert(await headerBrand.locator('strong').innerText() === 'PHÚ GIÁO', `${reportName} phải ghi PHÚ GIÁO ở đầu phiếu`)
+  assert(
+    await headerBrand.locator('small').evaluate((element) => getComputedStyle(element).whiteSpace) === 'nowrap',
+    `${reportName} phải giữ tên Trung tâm trên một dòng ở đầu phiếu`,
+  )
+  const footer = report.locator('.report-footer, .checklist-report-footer')
+  assert(await footer.count() === 1, `${reportName} phải có chân phiếu`)
+  assert(
+    await footer.locator('.training-brand__copy small').innerText() === 'TRUNG TÂM GIÁO DỤC NGHỀ NGHIỆP',
+    `${reportName} phải ghi đầy đủ tên Trung tâm ở chân phiếu`,
+  )
+  assert(
+    await footer.locator('.training-brand__copy strong').innerText() === 'PHÚ GIÁO',
+    `${reportName} phải ghi PHÚ GIÁO ở chân phiếu`,
+  )
+  assert(
+    await footer.locator('.report-footer__tagline').innerText() === 'AN TOÀN — TRÁCH NHIỆM — VỮNG TAY LÁI',
+    `${reportName} phải có đúng phương châm ở chân phiếu`,
+  )
+  const centerDelta = await footer.evaluate((element) => {
+    const footerRect = element.getBoundingClientRect()
+    const taglineRect = element.querySelector('.report-footer__tagline')?.getBoundingClientRect()
+    if (!taglineRect) return Number.POSITIVE_INFINITY
+    return Math.abs((taglineRect.left + taglineRect.width / 2) - (footerRect.left + footerRect.width / 2))
+  })
+  assert(centerDelta <= 1, `${reportName} có phương châm lệch tâm ${centerDelta}px`)
+}
+
 async function chooseVehicle(page, name, training = 'SA HÌNH') {
   await page.getByRole('button', { name }).click()
   const trainingTestId = training === 'TẬP CƠ BẢN' ? 'training-basic' : training === 'ĐƯỜNG TRƯỜNG' ? 'training-road' : 'training-course'
@@ -108,6 +143,10 @@ try {
   }))
   assert(dimensions.scrollWidth <= dimensions.viewport, `Trang chọn hạng bị tràn ngang: ${JSON.stringify(dimensions)}`)
   assert(await page.getByText('QUỐC ANH', { exact: true }).count() === 0, 'Không được còn thương hiệu Quốc Anh')
+  const mobileHeaderBrand = page.locator('.app-header .training-brand').first()
+  assert(await mobileHeaderBrand.locator('small').isVisible(), 'Điện thoại phải hiện dòng TRUNG TÂM GIÁO DỤC NGHỀ NGHIỆP')
+  assert(await mobileHeaderBrand.locator('small').innerText() === 'TRUNG TÂM GIÁO DỤC NGHỀ NGHIỆP', 'Tên Trung tâm trên điện thoại phải đầy đủ')
+  assert(await mobileHeaderBrand.locator('strong').innerText() === 'PHÚ GIÁO', 'Điện thoại phải hiện đầy đủ PHÚ GIÁO')
   const logoSource = await page.locator('.training-brand__mark img').first().getAttribute('src')
   assert(logoSource?.startsWith('data:image/png;base64,'), 'Logo Phú Giáo phải là PNG nhúng trực tiếp để không mất khi Safari xuất ảnh')
 
@@ -141,6 +180,7 @@ try {
   assert(basicReportText.includes('Tốt – nắm vững kiến thức, thao tác tốt'), 'Phiếu cơ bản phải hiển thị đánh giá chung đã tích')
   assert(basicReportText.includes('SỐ SÀN'), 'Huy hiệu phiếu cơ bản phải ghi rõ loại xe SỐ SÀN')
   assert(!basicReportText.includes('QUỐC ANH'), 'Phiếu cơ bản không được còn thương hiệu Quốc Anh')
+  await assertReportFooterBrand(page, 'Phiếu tập cơ bản')
   const basicDownloadPromise = page.waitForEvent('download')
   await page.getByRole('button', { name: 'Tải ảnh PNG' }).click()
   const basicDownload = await basicDownloadPromise
@@ -167,6 +207,7 @@ try {
   const roadReportText = await page.getByTestId('evaluation-report').innerText()
   assert(roadReportText.includes('PHIẾU ĐÁNH GIÁ ĐÀO TẠO HỌC VIÊN'), 'Phiếu đường trường phải có đúng tiêu đề mẫu')
   assert(roadReportText.includes('Đạt yêu cầu'), 'Phiếu đường trường phải hiển thị đánh giá chung')
+  await assertReportFooterBrand(page, 'Phiếu đường trường')
   const roadDownloadPromise = page.waitForEvent('download')
   await page.getByRole('button', { name: 'Tải ảnh PNG' }).click()
   const roadDownload = await roadDownloadPromise
@@ -201,6 +242,8 @@ try {
   assert(reportText.includes('CẦN TIẾP TỤC LUYỆN TẬP'), 'Lỗi tuột dốc phải tạo kết luận cần tiếp tục luyện tập')
   assert(reportText.includes('Tuột dốc'), 'Phiếu phải hiển thị lỗi đã chọn')
   assert(reportText.includes('SỐ SÀN'), 'Huy hiệu phiếu sa hình phải ghi rõ loại xe SỐ SÀN')
+  assert(reportText.includes('AN TOÀN — TRÁCH NHIỆM — VỮNG TAY LÁI'), 'Phiếu sa hình phải dùng đúng phương châm Phú Giáo')
+  await assertReportFooterBrand(page, 'Phiếu sa hình')
   const reportTail = [
     'Ghép xe dọc vào nơi đỗ',
     'Ghép xe ngang vào nơi đỗ',
@@ -271,6 +314,10 @@ try {
   const desktop = await browser.newContext({ viewport: { width: 1440, height: 1000 }, deviceScaleFactor: 1 })
   const desktopPage = await desktop.newPage()
   await desktopPage.goto(baseUrl)
+  const desktopHeaderBrand = desktopPage.locator('.app-header .training-brand').first()
+  assert(await desktopHeaderBrand.locator('small').isVisible(), 'Máy tính phải hiện dòng TRUNG TÂM GIÁO DỤC NGHỀ NGHIỆP')
+  assert(await desktopHeaderBrand.locator('small').innerText() === 'TRUNG TÂM GIÁO DỤC NGHỀ NGHIỆP', 'Tên Trung tâm trên máy tính phải đầy đủ')
+  assert(await desktopHeaderBrand.locator('strong').innerText() === 'PHÚ GIÁO', 'Máy tính phải hiện đầy đủ PHÚ GIÁO')
   await desktopPage.screenshot({ path: path.join(artifactDir, 'home-desktop.png'), fullPage: false })
   await desktop.close()
 
