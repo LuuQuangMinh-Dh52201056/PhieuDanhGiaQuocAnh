@@ -1,5 +1,6 @@
 import { ArrowLeft, ArrowRight, BookOpenText, CalendarDays, CarFront, GraduationCap, Hash, UserRound } from 'lucide-react'
 import { AppHeader } from '../components/AppHeader'
+import { AppFooter } from '../components/AppFooter'
 import { VEHICLE_LABELS } from '../data/lessonConfigs'
 import type { EvaluationState } from '../types/evaluation'
 
@@ -87,6 +88,7 @@ export function StudentInformationPage({ state, onChange, onBack, onContinue }: 
           </div>
         </form>
       </main>
+      <AppFooter />
     </div>
   )
 }

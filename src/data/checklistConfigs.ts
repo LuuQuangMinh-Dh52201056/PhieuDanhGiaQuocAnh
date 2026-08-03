@@ -13,7 +13,7 @@ export interface ChecklistOption<T extends string> {
 
 export const BASIC_RATING_OPTIONS: ChecklistOption<ChecklistRating>[] = [
   { id: 'UNDERSTOOD', label: 'Đã hiểu' },
-  { id: 'NEEDS_WORK', label: 'Còn yếu' },
+  { id: 'NEEDS_WORK', label: 'Cần lưu ý' },
   { id: 'UNCLEAR', label: 'Chưa rõ' },
 ]
 
@@ -25,8 +25,9 @@ export const ROAD_RATING_OPTIONS: ChecklistOption<ChecklistRating>[] = [
 ]
 
 export const BASIC_OVERALL_OPTIONS: ChecklistOption<ChecklistOverall>[] = [
-  { id: 'BASIC_UNDERSTOOD', label: 'Đã hiểu cơ bản – tiếp tục chương trình' },
-  { id: 'BASIC_NEEDS_WORK', label: 'Còn yếu – cần luyện tập thêm' },
+  { id: 'BASIC_UNDERSTOOD', label: 'Tốt – nắm vững kiến thức, thao tác tốt' },
+  { id: 'BASIC_NEEDS_WORK', label: 'Cần lưu ý – cần chú ý và luyện tập thêm' },
+  { id: 'BASIC_PRACTICE', label: 'Cần luyện thêm – cần luyện tập và theo dõi thêm' },
 ]
 
 export const ROAD_OVERALL_OPTIONS: ChecklistOption<ChecklistOverall>[] = [
@@ -99,4 +100,10 @@ export function getChecklistRatingOptions(type: TrainingType) {
 
 export function getChecklistOverallOptions(type: TrainingType) {
   return type === 'ROAD' ? ROAD_OVERALL_OPTIONS : BASIC_OVERALL_OPTIONS
+}
+
+export function getChecklistTone(value: ChecklistRating | ChecklistOverall): 'green' | 'orange' | 'red' {
+  if (['UNDERSTOOD', 'GOOD', 'FAIR', 'BASIC_UNDERSTOOD', 'ROAD_PASSED'].includes(value)) return 'green'
+  if (['NEEDS_WORK', 'AVERAGE', 'BASIC_NEEDS_WORK'].includes(value)) return 'orange'
+  return 'red'
 }

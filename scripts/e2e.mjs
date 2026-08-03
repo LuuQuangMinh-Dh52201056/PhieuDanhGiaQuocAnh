@@ -45,6 +45,8 @@ try {
   }))
   assert(dimensions.scrollWidth <= dimensions.viewport, `Trang chọn hạng bị tràn ngang: ${JSON.stringify(dimensions)}`)
   assert(await page.getByText('QUỐC ANH', { exact: true }).count() === 0, 'Không được còn thương hiệu Quốc Anh')
+  const logoSource = await page.locator('.training-brand__mark img').first().getAttribute('src')
+  assert(logoSource?.includes('logoPHUGIAO'), `Phải sử dụng ảnh logo Phú Giáo thật, nhận được: ${logoSource}`)
 
   await page.getByRole('button', { name: 'HẠNG XE B SỐ SÀN' }).click()
   await page.screenshot({ path: path.join(artifactDir, 'training-selection-mobile.png'), fullPage: true })
@@ -66,7 +68,8 @@ try {
   const basicReportText = await page.getByTestId('evaluation-report').innerText()
   assert(basicReportText.includes('PHIẾU ĐÁNH GIÁ BUỔI HỌC'), 'Phiếu cơ bản phải có đúng tiêu đề mẫu')
   assert(basicReportText.includes('LÀM QUEN XE & SA HÌNH CƠ BẢN'), 'Phiếu cơ bản phải có đúng nội dung buổi học')
-  assert(basicReportText.includes('Đã hiểu cơ bản – tiếp tục chương trình'), 'Phiếu cơ bản phải hiển thị đánh giá chung đã tích')
+  assert(basicReportText.includes('Tốt – nắm vững kiến thức, thao tác tốt'), 'Phiếu cơ bản phải hiển thị đánh giá chung đã tích')
+  assert(basicReportText.includes('SỐ SÀN'), 'Huy hiệu phiếu cơ bản phải ghi rõ loại xe SỐ SÀN')
   assert(!basicReportText.includes('QUỐC ANH'), 'Phiếu cơ bản không được còn thương hiệu Quốc Anh')
   const basicDownloadPromise = page.waitForEvent('download')
   await page.getByRole('button', { name: 'Tải ảnh PNG' }).click()
@@ -123,6 +126,7 @@ try {
   assert(reportText.includes('1 bài'), 'Phiếu phải hiển thị các tổng kết một bài')
   assert(reportText.includes('CẦN TIẾP TỤC LUYỆN TẬP'), 'Lỗi tuột dốc phải tạo kết luận cần tiếp tục luyện tập')
   assert(reportText.includes('Tuột dốc'), 'Phiếu phải hiển thị lỗi đã chọn')
+  assert(reportText.includes('SỐ SÀN'), 'Huy hiệu phiếu sa hình phải ghi rõ loại xe SỐ SÀN')
   await page.screenshot({ path: path.join(artifactDir, 'report-mobile.png'), fullPage: false })
 
   const downloadPromise = page.waitForEvent('download')
@@ -158,6 +162,7 @@ try {
   const c1ReportText = await page.getByTestId('evaluation-report').innerText()
   assert(!c1ReportText.includes('Ghép xe ngang vào nơi đỗ'), 'Phiếu xuất C1 không được có bài ghép xe ngang')
   assert(c1ReportText.includes('10 bài'), 'Phiếu C1 phải tổng kết đủ 10 bài Tốt')
+  assert(c1ReportText.includes('XE TẢI'), 'Huy hiệu C1 phải ghi rõ loại xe XE TẢI')
 
   await page.goto(baseUrl)
   await chooseVehicle(page, 'HẠNG XE HẠNG C1', 'TẬP CƠ BẢN')

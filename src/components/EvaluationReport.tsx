@@ -1,5 +1,7 @@
-import { Award, CarFront, Check, ClipboardPenLine, MessageSquareText, ShieldCheck, TriangleAlert } from 'lucide-react'
+import { Award, Check, ClipboardPenLine, MessageSquareText, ShieldCheck, TriangleAlert } from 'lucide-react'
 import { TrainingCenterBrand } from './TrainingCenterBrand'
+import { VehicleBadge } from './VehicleBadge'
+import { LessonIcon } from './LessonEvaluationCard'
 import { VEHICLE_LABELS } from '../data/lessonConfigs'
 import type { EvaluationState } from '../types/evaluation'
 import { CONCLUSION_META, formatDate, STATUS_META, summarize } from '../utils/evaluation'
@@ -27,12 +29,7 @@ export function EvaluationReport({ state, reportRef }: EvaluationReportProps) {
           <h1>KẾT QUẢ BÀI THI<br />SÁT HẠCH SA HÌNH</h1>
           <div><i /> <span>AN TOÀN — TỰ TIN — VỮNG TAY LÁI</span> <i /></div>
         </div>
-        <div className="report-vehicle-badge">
-          <div><CarFront size={31} /></div>
-          <small>HẠNG XE</small>
-          <strong>{state.vehicleCategory === 'C1' ? 'C1' : 'B'}</strong>
-          <span>{state.vehicleCategory === 'B_AUTOMATIC' ? 'SỐ TỰ ĐỘNG' : state.vehicleCategory === 'B_MANUAL' ? 'SỐ SÀN' : 'XE TẢI'}</span>
-        </div>
+        <VehicleBadge category={state.vehicleCategory} className="report-vehicle-badge" />
       </header>
 
       <div className="report-body">
@@ -58,7 +55,7 @@ export function EvaluationReport({ state, reportRef }: EvaluationReportProps) {
             return (
               <div className={`report-table__row ${status ? `row--${status.className}` : ''}`} key={lesson.id}>
                 <span className="report-order">{String(lesson.order).padStart(2, '0')}</span>
-                <span className="report-lesson-name"><i>{lesson.symbol}</i><strong>{lesson.name}</strong></span>
+                <span className="report-lesson-name"><i><LessonIcon id={lesson.id} size={17} /></i><strong>{lesson.name}</strong></span>
                 <span>{status && <b className={`report-status report-status--${status.className}`}>{status.shortLabel}</b>}</span>
                 <span className={`report-details ${details.length === 0 ? 'report-details--clear' : ''}`}>
                   {details.length > 0 ? details.join(' • ') : <><Check size={18} /> Không ghi nhận lỗi</>}

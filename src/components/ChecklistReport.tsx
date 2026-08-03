@@ -1,6 +1,7 @@
-import { CarFront, Check, MessageSquareText } from 'lucide-react'
+import { Check, MessageSquareText } from 'lucide-react'
 import { TrainingCenterBrand } from './TrainingCenterBrand'
-import { getChecklistOverallOptions, getChecklistRatingOptions } from '../data/checklistConfigs'
+import { VehicleBadge } from './VehicleBadge'
+import { getChecklistOverallOptions, getChecklistRatingOptions, getChecklistTone } from '../data/checklistConfigs'
 import { VEHICLE_LABELS } from '../data/lessonConfigs'
 import type { EvaluationState } from '../types/evaluation'
 import { formatDate } from '../utils/evaluation'
@@ -25,11 +26,7 @@ export function ChecklistReport({ state, reportRef }: ChecklistReportProps) {
           <h1>{isRoad ? 'PHIẾU ĐÁNH GIÁ ĐÀO TẠO HỌC VIÊN' : 'PHIẾU ĐÁNH GIÁ BUỔI HỌC'}</h1>
           <p>{isRoad ? 'ĐÁNH GIÁ THỰC HÀNH ĐƯỜNG TRƯỜNG' : 'LÀM QUEN XE & SA HÌNH CƠ BẢN'}</p>
         </div>
-        <div className="checklist-report-header__vehicle">
-          <CarFront size={28} />
-          <small>HẠNG XE</small>
-          <strong>{state.vehicleCategory === 'C1' ? 'C1' : state.vehicleCategory === 'B_AUTOMATIC' ? 'BTĐ' : 'BSS'}</strong>
-        </div>
+        <VehicleBadge category={state.vehicleCategory} className="checklist-report-header__vehicle" />
       </header>
 
       <main className="checklist-report-body">
@@ -57,7 +54,7 @@ export function ChecklistReport({ state, reportRef }: ChecklistReportProps) {
                 {item.description && <small>({item.description})</small>}
               </span>
               {ratingOptions.map((option) => (
-                <span className="checklist-report-check" key={option.id}>
+                <span className={`checklist-report-check tone-${getChecklistTone(option.id)} ${item.rating === option.id ? 'is-selected' : ''}`} key={option.id}>
                   <i>{item.rating === option.id && <Check size={22} strokeWidth={3} />}</i>
                 </span>
               ))}
@@ -68,7 +65,7 @@ export function ChecklistReport({ state, reportRef }: ChecklistReportProps) {
         <ReportHeading number="II" title="ĐÁNH GIÁ CHUNG" />
         <section className="checklist-report-overall">
           {overallOptions.map((option) => (
-            <div key={option.id} className={state.checklistOverall === option.id ? 'is-selected' : ''}>
+            <div key={option.id} className={`tone-${getChecklistTone(option.id)} ${state.checklistOverall === option.id ? 'is-selected' : ''}`}>
               <i>{state.checklistOverall === option.id && <Check size={22} strokeWidth={3} />}</i>
               <strong>{option.label}</strong>
             </div>

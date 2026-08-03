@@ -14,6 +14,7 @@ export type ChecklistRating =
 export type ChecklistOverall =
   | 'BASIC_UNDERSTOOD'
   | 'BASIC_NEEDS_WORK'
+  | 'BASIC_PRACTICE'
   | 'ROAD_PASSED'
   | 'ROAD_NOT_PASSED'
 

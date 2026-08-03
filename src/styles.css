@@ -754,6 +754,577 @@ button.training-option:hover { transform: translateY(-5px); box-shadow: 0 22px 4
   .app-header .training-brand--compact .training-brand__copy strong { font-size: 10px; }
 }
 
+/* 2026 Phú Giáo white & green redesign */
+:root {
+  --green-950: #033b22;
+  --green-900: #05532d;
+  --green-800: #08713b;
+  --green-700: #0a8a48;
+  --green-600: #14a157;
+  --green-100: #e8f7ed;
+  --green-50: #f5fbf7;
+  --orange: #ef8a14;
+  --red: #e2383e;
+  --ink: #16362a;
+  --muted: #64776d;
+  --line: #d8e7dd;
+}
+
+body {
+  color: var(--ink);
+  background:
+    radial-gradient(circle at 0 18%, rgba(20, 161, 87, .075), transparent 28rem),
+    radial-gradient(circle at 100% 65%, rgba(20, 161, 87, .055), transparent 32rem),
+    #fbfdfb;
+}
+
+button:focus-visible,
+input:focus-visible,
+textarea:focus-visible { outline-color: rgba(10, 138, 72, .28); }
+
+.button--primary,
+.button--green {
+  color: #fff;
+  background: linear-gradient(135deg, #12a158, #067039);
+  box-shadow: 0 10px 24px rgba(6, 112, 57, .22), inset 0 1px rgba(255, 255, 255, .2);
+}
+.button--primary:hover,
+.button--green:hover { box-shadow: 0 14px 30px rgba(6, 112, 57, .27); }
+.button--outline { color: var(--green-800); border-color: #8ec8a6; background: #fff; }
+.button--ghost { color: #315d48; border-color: #cfe1d6; }
+
+/* Actual Phú Giáo logo */
+.training-brand { gap: 12px; color: var(--green-800); }
+.training-brand__mark {
+  display: grid;
+  place-items: center;
+  overflow: hidden;
+  border-radius: 50%;
+  background: #fff;
+  box-shadow: 0 0 0 1px rgba(5, 83, 45, .09), 0 5px 15px rgba(5, 83, 45, .1);
+}
+.training-brand__mark img { display: block; width: 100%; height: 100%; object-fit: contain; }
+.training-brand__copy small { color: #1d6942; }
+.training-brand__copy strong { color: var(--green-800); }
+.training-brand--light .training-brand__copy small { color: rgba(255,255,255,.8); }
+.training-brand--light .training-brand__copy strong { color: #fff; }
+
+/* Shared two-row header and footer */
+.app-shell {
+  color: var(--ink);
+  background:
+    radial-gradient(circle at -5% 22%, rgba(17, 151, 80, .07), transparent 25rem),
+    radial-gradient(circle at 104% 24%, rgba(17, 151, 80, .065), transparent 27rem),
+    #fbfdfb;
+}
+.app-header {
+  position: sticky;
+  top: 0;
+  z-index: 30;
+  height: 132px;
+  color: var(--green-900);
+  border: 0;
+  border-bottom: 1px solid #dce9e1;
+  background: rgba(255,255,255,.96);
+  box-shadow: 0 7px 24px rgba(7, 76, 42, .07);
+  backdrop-filter: blur(14px);
+}
+.app-header__inner {
+  width: min(1220px, calc(100% - 40px));
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  justify-content: flex-start;
+}
+.app-header__top {
+  height: 70px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.app-header .training-brand--compact .training-brand__mark { width: 48px; height: 48px; }
+.app-header .training-brand--compact .training-brand__copy small { display: block; max-width: none; color: #1d6942; font-size: 7px; letter-spacing: .75px; }
+.app-header .training-brand--compact .training-brand__copy strong { color: var(--green-800); font-size: 18px; }
+.app-privacy {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 15px;
+  color: #28714a;
+  border-radius: 99px;
+  background: #eff8f2;
+  font-size: 10px;
+  font-weight: 700;
+}
+.stepper {
+  width: 100%;
+  height: 62px;
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  padding: 9px 4% 0;
+  border-top: 1px solid #edf3ef;
+}
+.stepper__item {
+  flex: 1;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 5px;
+  color: #71837a;
+  font-size: 9px;
+  font-weight: 600;
+}
+.stepper__item:not(:last-child) { margin-right: 0; }
+.stepper__item:not(:last-child)::after {
+  left: calc(50% + 21px);
+  right: calc(-50% + 21px);
+  width: auto;
+  top: 15px;
+  height: 1px;
+  background: repeating-linear-gradient(90deg, #bad3c4 0 6px, transparent 6px 10px);
+}
+.stepper__number {
+  z-index: 1;
+  width: 31px;
+  height: 31px;
+  color: #527061;
+  border-color: #c9dbd0;
+  background: #fff;
+  font-size: 10px;
+  box-shadow: 0 2px 8px rgba(6, 85, 45, .06);
+}
+.stepper__item.is-active { color: var(--green-800); font-weight: 800; }
+.stepper__item.is-active .stepper__number {
+  color: #fff;
+  border-color: var(--green-700);
+  background: linear-gradient(145deg, #13a257, #08713b);
+  box-shadow: 0 0 0 4px #e6f5eb, 0 5px 12px rgba(8,113,59,.2);
+}
+.stepper__item.is-done { color: #347552; }
+.stepper__item.is-done .stepper__number { border-color: #13a257; background: #0b914c; }
+
+.site-footer {
+  min-height: 112px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 30px;
+  padding: 18px max(28px, calc((100% - 1220px) / 2));
+  border-top: 2px solid #25a35e;
+  background:
+    radial-gradient(ellipse at 0 100%, rgba(35,163,94,.12), transparent 32%),
+    radial-gradient(ellipse at 100% 100%, rgba(35,163,94,.1), transparent 32%),
+    #fff;
+}
+.site-footer .training-brand__mark { width: 66px; height: 66px; }
+.site-footer__values { min-width: 55%; display: grid; grid-template-columns: repeat(3, 1fr); }
+.site-footer__values span { min-height: 58px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 7px; color: var(--green-700); border-left: 1px solid #d6e5dc; }
+.site-footer__values strong { font-size: 10px; letter-spacing: .45px; }
+
+/* Vehicle selection */
+.vehicle-page { overflow: visible; color: var(--ink); background: #fbfdfb; }
+.vehicle-page::before {
+  background:
+    radial-gradient(ellipse at -5% 25%, rgba(20,161,87,.12), transparent 30%),
+    radial-gradient(ellipse at 105% 32%, rgba(20,161,87,.08), transparent 28%);
+  mask-image: none;
+}
+.vehicle-hero {
+  width: min(1160px, calc(100% - 40px));
+  min-height: auto;
+  padding: 28px 0 48px;
+  color: var(--ink);
+}
+.vehicle-hero__copy { max-width: 1000px; margin: 4px auto 26px; }
+.vehicle-hero__copy h1 {
+  color: var(--green-800);
+  font-size: clamp(30px, 4vw, 48px);
+  line-height: 1.12;
+  text-shadow: none;
+}
+.vehicle-hero__copy > p { margin: 13px auto 14px; color: #4d6257; font-size: 14px; }
+.hero-points { gap: 12px 25px; }
+.hero-points span { color: #40705a; font-size: 10px; }
+.hero-points svg { color: var(--green-600); }
+.vehicle-selector-panel {
+  max-width: 1110px;
+  padding: 23px;
+  border: 1px solid #d8e7dd;
+  border-radius: 23px;
+  background: rgba(255,255,255,.92);
+  box-shadow: 0 20px 54px rgba(7, 83, 45, .09);
+  backdrop-filter: none;
+}
+.panel-heading { margin-bottom: 20px; }
+.panel-heading__number { color: #fff; border-color: #5dbb7d; background: var(--green-800); box-shadow: 0 0 0 5px #e6f5eb; }
+.panel-heading small { color: var(--green-700); }
+.panel-heading h2 { color: var(--green-950); }
+.vehicle-card-grid { gap: 19px; }
+.vehicle-card {
+  min-height: 282px;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 11px;
+  padding: 24px 22px 62px;
+  color: var(--green-950);
+  text-align: center;
+  border-color: #d5e5db;
+  border-radius: 20px;
+  background:
+    radial-gradient(circle at 100% 28%, rgba(27,166,88,.08), transparent 32%),
+    #fff;
+  box-shadow: 0 13px 31px rgba(12,79,46,.08);
+}
+.vehicle-card::after { border-color: rgba(13,145,76,.11); box-shadow: 0 0 0 22px rgba(13,145,76,.025); }
+.vehicle-card:hover { border-color: #39a867; box-shadow: 0 20px 38px rgba(6,112,57,.14); }
+.vehicle-card__badge {
+  width: 82px;
+  height: 82px;
+  color: var(--green-700);
+  border-color: #c9e3d3;
+  border-radius: 50%;
+  background: linear-gradient(145deg, #f7fcf8, #e8f6ed);
+  box-shadow: 0 0 0 9px rgba(232,247,237,.78), 0 9px 20px rgba(5,83,45,.11);
+}
+.vehicle-card__content small { color: var(--green-700); letter-spacing: 1.6px; }
+.vehicle-card__content h3 { margin: 6px 0 8px; color: var(--green-900); font-size: 21px; }
+.vehicle-card__content p { max-width: 270px; color: #597066; font-size: 10px; }
+.vehicle-card__content span {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  min-height: 52px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0;
+  padding-right: 45px;
+  color: var(--green-800);
+  border-top: 1px solid #dcebe2;
+  background: #eff8f2;
+  font-size: 11px;
+}
+.vehicle-card__arrow { right: 18px; bottom: 9px; width: 36px; height: 36px; z-index: 1; color: #fff; background: linear-gradient(145deg,#13a257,#08713b); box-shadow: 0 6px 12px rgba(8,113,59,.24); }
+.vehicle-card__popular { position: absolute; left: 18px; top: 16px; z-index: 2; padding: 6px 10px; color: #fff; border-radius: 6px 12px 12px 6px; background: var(--green-700); font-size: 8px; font-weight: 800; }
+
+/* Content selection */
+.training-selection-shell { background: #fbfdfb; }
+.training-selection-page { max-width: 1160px; }
+.training-selection-hero { margin-bottom: 22px; padding: 0; border: 0; background: transparent; box-shadow: none; }
+.training-selection-hero .page-heading__number,
+.page-heading__number { color: var(--green-800); border-color: #b6d9c3; background: #fff; box-shadow: 0 0 0 6px #ecf7f0; }
+.page-heading span { color: var(--green-700); }
+.page-heading h1 { color: var(--green-950); }
+.page-heading p { color: #687a70; }
+.training-option-grid { gap: 22px; }
+.training-option,
+.training-option--basic,
+.training-option--course,
+.training-option--road {
+  min-height: 340px;
+  color: var(--green-950);
+  border-color: #d5e5db;
+  background:
+    radial-gradient(circle at 102% 15%, rgba(20,161,87,.09), transparent 37%),
+    #fff;
+  box-shadow: 0 16px 38px rgba(8,95,51,.09);
+}
+.training-option--course { border: 2px solid var(--green-700); }
+.training-option__icon,
+.training-option--basic .training-option__icon,
+.training-option--course .training-option__icon,
+.training-option--road .training-option__icon { color: var(--green-700); background: #eaf7ee; box-shadow: 0 0 0 9px #f3faf5; }
+.training-option__tag,
+.training-option--basic .training-option__tag,
+.training-option--course .training-option__tag,
+.training-option--road .training-option__tag { color: #dd7807; border: 1px solid #f3b159; background: #fff8ed; }
+.training-option > strong { color: var(--green-900); }
+.training-option > small,
+.training-option--basic > small,
+.training-option--course > small,
+.training-option--road > small { color: #607269; }
+.training-option__action,
+.training-option--basic .training-option__action,
+.training-option--course .training-option__action,
+.training-option--road .training-option__action {
+  min-height: 55px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  align-self: stretch;
+  margin: auto -24px -23px;
+  padding: 0 22px;
+  color: var(--green-800);
+  border-top: 1px solid #dbe9e0;
+  background: #eff8f2;
+}
+
+/* Information */
+.content-page { padding-top: 38px; }
+.content-page--narrow { max-width: 1050px; }
+.info-card { border-color: #d5e4db; box-shadow: 0 18px 46px rgba(8,83,45,.08); }
+.vehicle-summary { color: var(--green-950); border-bottom: 1px solid #cde2d5; background: linear-gradient(110deg, #f3faf5, #fff); }
+.vehicle-summary__icon { color: var(--green-700); border-color: #b9ddc6; background: #e8f7ed; }
+.vehicle-summary small { color: #42805f; }
+.vehicle-summary strong { color: var(--green-900); }
+.vehicle-summary button { color: var(--green-800); border-color: #b9d9c5; background: #fff; }
+.field > span { color: #2b6548; }
+.field > span svg { color: var(--green-700); }
+.field input { border-color: #d3e2d8; background: #fcfefd; }
+.field input:focus { border-color: var(--green-700); box-shadow: 0 0 0 4px rgba(10,138,72,.09); }
+.form-note { color: #34684d; border-color: #cfe5d7; background: #f1f9f4; }
+.form-note svg { color: var(--green-700); }
+
+/* Course and tick evaluations */
+.evaluation-shell,
+.evaluation-shell--basic,
+.checklist-shell { background: #f7fbf8; }
+.evaluation-intro,
+.checklist-intro { color: var(--ink); }
+.page-heading--light span { color: var(--green-700); }
+.page-heading--light h1 { color: var(--green-950); }
+.page-heading--light p { color: #687a70; }
+.page-heading--light .page-heading__number { box-shadow: 0 0 0 6px #eaf6ee; }
+.evaluation-progress-card,
+.checklist-progress {
+  color: var(--ink);
+  border-color: #d3e4d9;
+  background: #fff;
+  box-shadow: 0 12px 31px rgba(8,83,45,.08);
+  backdrop-filter: none;
+}
+.progress-ring,
+.evaluation-shell--basic .progress-ring { background: conic-gradient(#0e9b50 var(--progress), #e3efe7 0); }
+.progress-ring::before,
+.evaluation-shell--basic .progress-ring::before { background: #fff; }
+.progress-ring strong { color: var(--green-800); }
+.progress-ring span { color: #708279; }
+.progress-copy small,
+.evaluation-shell--basic .progress-copy small { color: var(--green-700); }
+.progress-copy strong { color: var(--green-950); }
+.progress-bar { background: #e5eee8; }
+.progress-bar span,
+.evaluation-shell--basic .progress-bar span,
+.checklist-progress .progress-bar span { background: linear-gradient(90deg,#0d934c,#61c788); }
+.evaluation-progress-card > button,
+.evaluation-shell--basic .evaluation-progress-card > button,
+.checklist-progress > button { color: var(--green-800); border-color: #a9d3b9; background: #eff8f2; }
+.checklist-progress > div:first-child strong { color: var(--green-800); }
+.checklist-progress > div:first-child span { color: #62766b; }
+
+.lesson-card { border-color: #d6e5dc; box-shadow: 0 8px 24px rgba(7,83,45,.065); }
+.lesson-card__header,
+.evaluation-shell--basic .lesson-card__header,
+.lesson-card--emergency .lesson-card__header {
+  min-height: 74px;
+  color: var(--green-950);
+  border-bottom: 1px solid #d9e9df;
+  background: linear-gradient(105deg,#f4fbf6,#fff 72%);
+}
+.lesson-card__header::after,
+.evaluation-shell--basic .lesson-card__header::after { background: linear-gradient(90deg,#21a65d,rgba(33,166,93,0)); }
+.lesson-index,
+.evaluation-shell--basic .lesson-index,
+.lesson-card--emergency .lesson-index { color: #fff; border-color: #65c48a; background: var(--green-700); box-shadow: 0 0 0 4px #e3f4e9; }
+.lesson-title span { color: #408260; }
+.lesson-title h3 { color: var(--green-950); }
+.lesson-symbol,
+.evaluation-shell--basic .lesson-symbol { color: var(--green-700); border: 1px solid #c8e3d2; background: #eaf7ee; }
+.focus-line { color: #5b7065; border-color: #d9e7de; background: #f7fbf8; }
+.focus-line svg { color: #e09019; }
+.focus-line strong,
+.section-mini-title { color: #2e684b; }
+.section-mini-title svg,
+.lesson-note > svg:first-child { color: var(--green-700); }
+.lesson-note { color: #3e6c54; }
+.lesson-note input { border-color: #d4e3d9; background: #fbfdfb; }
+.comment-icon,
+.checklist-comment-card .comment-icon { color: #fff; background: var(--green-800); }
+.teacher-comment-card { border-color: #d2e3d8; box-shadow: 0 9px 25px rgba(8,82,44,.06); }
+.teacher-comment-card__heading small,
+.checklist-comment-card .teacher-comment-card__heading small { color: var(--green-700); }
+.teacher-comment-card__heading h2 { color: var(--green-950); }
+.teacher-comment-card textarea:focus { border-color: #6dba8a; box-shadow: 0 0 0 4px rgba(10,138,72,.08); }
+.quick-comments button span { color: var(--green-700); }
+.evaluation-actions { border-color: #cfe1d6; box-shadow: 0 13px 36px rgba(7,77,41,.12); }
+.evaluation-actions__note strong { color: var(--green-800); }
+.section-divider span { color: #bd6b08; }
+
+.checklist-column-guide { color: #fff; background: linear-gradient(90deg,#06713a,#0ca155); }
+.checklist-item-card { border-color: #d3e4d9; }
+.checklist-rating-grid button.tone-green:hover { color: var(--green-700); background: #eff9f2; }
+.checklist-rating-grid button.tone-orange:hover { color: #d87306; background: #fff8ed; }
+.checklist-rating-grid button.tone-red:hover { color: #cf3036; background: #fff2f3; }
+.checklist-rating-grid button.tone-green.is-selected { color: #08713b; background: #e7f7ec; box-shadow: inset 0 -3px #139451; }
+.checklist-rating-grid button.tone-orange.is-selected { color: #ca6903; background: #fff3e1; box-shadow: inset 0 -3px #ef8a14; }
+.checklist-rating-grid button.tone-red.is-selected { color: #c42b32; background: #ffedef; box-shadow: inset 0 -3px #e2383e; }
+.checklist-rating-grid button.tone-green.is-selected > span,
+.checklist-overall-options button.tone-green.is-selected > span { border-color: #0c8b49; background: #0c8b49; }
+.checklist-rating-grid button.tone-orange.is-selected > span,
+.checklist-overall-options button.tone-orange.is-selected > span { border-color: #ef8a14; background: #ef8a14; box-shadow: 0 4px 10px rgba(239,138,20,.22); }
+.checklist-rating-grid button.tone-red.is-selected > span,
+.checklist-overall-options button.tone-red.is-selected > span { border-color: #e2383e; background: #e2383e; box-shadow: 0 4px 10px rgba(226,56,62,.2); }
+.checklist-overall-options { grid-template-columns: repeat(auto-fit, minmax(210px, 1fr)); }
+.checklist-overall-options button.tone-green.is-selected { color: #076338; border-color: #76bd8e; background: #edf8f1; }
+.checklist-overall-options button.tone-orange.is-selected { color: #bd6205; border-color: #f1b769; background: #fff7eb; }
+.checklist-overall-options button.tone-red.is-selected { color: #bd2930; border-color: #ec9297; background: #fff1f2; }
+
+/* Preview */
+.report-preview-page { background: #f7fbf8; }
+.report-preview-heading span { color: var(--green-700); }
+.report-preview-heading h1 { color: var(--green-950); }
+.report-preview-heading > button { color: #2f674b; border-color: #c8ddd1; }
+.conclusion-control { border-color: #d3e4d9; }
+.conclusion-control > strong { color: var(--green-950); }
+.conclusion-options button.is-selected { color: var(--green-900); border-color: #7fc59a; background: #edf8f1; }
+.report-preview-canvas { border: 1px solid #cfe1d6; box-shadow: 0 25px 64px rgba(8,76,42,.16); background: #f7fbf8; }
+.export-action-bar { border-color: #d1e2d7; box-shadow: 0 12px 30px rgba(7,74,40,.08); }
+.ios-save-guide { color: #2d6649; border-color: #c9e2d3; background: #f1faf4; }
+.ios-save-guide svg { color: var(--green-700); }
+
+/* Vehicle class shield used on every PNG */
+.vehicle-category-badge {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  color: #fff;
+  border: 3px solid #72ca93;
+  border-radius: 20px 20px 56px 56px;
+  background: linear-gradient(150deg,#0c9550,#044d2a);
+  box-shadow: inset 0 0 0 4px rgba(255,255,255,.13), 0 11px 24px rgba(4,77,42,.2);
+}
+.vehicle-category-badge::before { content: ''; position: absolute; inset: 6px; border: 1px solid rgba(222,250,232,.55); border-radius: 13px 13px 47px 47px; }
+.vehicle-category-badge > * { position: relative; z-index: 1; }
+.vehicle-category-badge > div { display: grid; place-items: center; border: 2px solid #a5e0b9; border-radius: 50%; }
+.vehicle-category-badge small { font-weight: 700; letter-spacing: 1px; }
+.vehicle-category-badge strong { font-family: 'Montserrat', sans-serif; }
+.vehicle-category-badge span { font-weight: 800; letter-spacing: .3px; }
+
+/* Course PNG converted to the same white/green identity */
+.report-page { color: #173629; background: radial-gradient(circle at 100% 12%, rgba(8,122,62,.06), transparent 360px), #f8fbf9; }
+.report-page:not(.checklist-report) { display: flex; flex-direction: column; }
+.report-page:not(.checklist-report) .report-body { flex: 1; }
+.report-page:not(.checklist-report) .report-comment-signature { min-height: 260px; }
+.report-page:not(.checklist-report) .report-signature { display: flex; flex-direction: column; }
+.report-page:not(.checklist-report) .signature-line { margin-top: auto; margin-bottom: 18px; }
+.report-header {
+  color: var(--green-900);
+  border-top: 13px solid #075b31;
+  border-bottom: 5px solid #58b67a;
+  background: linear-gradient(135deg,#fbfffc,#e9f7ee);
+}
+.report-header::after { background: #f8fbf9; border-top-color: rgba(88,182,122,.65); }
+.report-header .training-brand--light .training-brand__copy small { color: #2b704b; }
+.report-header .training-brand--light .training-brand__copy strong { color: var(--green-800); }
+.report-title > small { color: var(--green-800); }
+.report-title h1 { color: var(--green-950); }
+.report-title > div { color: #39805a; }
+.report-title > div i { background: linear-gradient(90deg,transparent,#62b980); }
+.report-title > div i:last-child { background: linear-gradient(90deg,#62b980,transparent); }
+.report-vehicle-badge { color: #fff; border-color: #76cb96; background: linear-gradient(150deg,#0c9550,#044d2a); box-shadow: inset 0 0 0 4px rgba(255,255,255,.13), 0 12px 22px rgba(4,77,42,.22); }
+.report-vehicle-badge::before { border-color: rgba(220,248,229,.65); }
+.report-vehicle-badge > div { border-color: #a6dfb9; }
+.report-section-title { background: linear-gradient(90deg,#075a31,#0a8446); }
+.report-section-title > span { border-color: #72c691; background: #064a29; box-shadow: 0 0 0 3px #f8fbf9; }
+.report-info-grid { border-color: #cddfd3; box-shadow: 0 7px 15px rgba(8,84,45,.07); }
+.report-info-item b.is-strong { color: var(--green-800); }
+.report-table { border-color: #8caf98; box-shadow: 0 8px 16px rgba(8,84,45,.07); }
+.report-table__header { background: linear-gradient(90deg,#07552f,#0a7c42); }
+.report-lesson-name i { color: var(--green-700); border-color: #b9d8c4; background: #f0f8f3; }
+.report-conclusion { border-color: #79cc96; background: linear-gradient(135deg,#054e2b,#0a8044 72%,#043e23); }
+.report-conclusion__medal { color: #075b31; border-color: #62b980; background: linear-gradient(#e8f8ed,#9edbb3); }
+.report-conclusion__content > strong { color: #dcf7e5; }
+.report-teacher-comment > svg,
+.report-teacher-comment strong,
+.report-signature > strong { color: var(--green-800); }
+.report-footer { color: #fff; border-top-color: #79cc96; background: linear-gradient(90deg,#034526,#087a3e,#034526); }
+
+/* Checklist PNG tone hierarchy */
+.checklist-report-header__vehicle > div { width: 39px; height: 39px; }
+.checklist-report-header__vehicle span { font-size: 9px; }
+.checklist-report-check.is-selected.tone-green { background: #eaf7ef; }
+.checklist-report-check.is-selected.tone-orange { background: #fff3e1; }
+.checklist-report-check.is-selected.tone-red { background: #ffedef; }
+.checklist-report-check.is-selected.tone-green i { color: #fff; border-color: #087a3e; background: #087a3e; }
+.checklist-report-check.is-selected.tone-orange i { color: #fff; border-color: #ef8a14; background: #ef8a14; }
+.checklist-report-check.is-selected.tone-red i { color: #fff; border-color: #e2383e; background: #e2383e; }
+.checklist-report-overall { grid-template-columns: repeat(auto-fit,minmax(0,1fr)); }
+.checklist-report-overall > div.is-selected.tone-green { color: #075b31; border-color: #5fb27b; background: #eaf7ef; }
+.checklist-report-overall > div.is-selected.tone-orange { color: #bd6205; border-color: #efae56; background: #fff3e1; }
+.checklist-report-overall > div.is-selected.tone-red { color: #bd2930; border-color: #ec858b; background: #ffedef; }
+.checklist-report-overall > div.is-selected.tone-green i { border-color: #087a3e; background: #087a3e; }
+.checklist-report-overall > div.is-selected.tone-orange i { border-color: #ef8a14; background: #ef8a14; }
+.checklist-report-overall > div.is-selected.tone-red i { border-color: #e2383e; background: #e2383e; }
+
+@media (max-width: 900px) {
+  .app-header { height: 116px; }
+  .app-header__top { height: 62px; }
+  .stepper { height: 54px; padding-top: 8px; }
+  .vehicle-card-grid,
+  .training-option-grid { grid-template-columns: 1fr; }
+  .vehicle-card { min-height: 245px; }
+  .training-option { min-height: 260px; }
+  .site-footer { align-items: flex-start; flex-direction: column; }
+  .site-footer__values { width: 100%; }
+}
+
+@media (max-width: 680px) {
+  .app-header { height: 103px; }
+  .app-header__inner { width: calc(100% - 20px); }
+  .app-header__top { height: 55px; }
+  .app-header .training-brand { gap: 7px; }
+  .app-header .training-brand--compact .training-brand__mark { width: 38px; height: 38px; }
+  .app-header .training-brand--compact .training-brand__copy small { display: none; }
+  .app-header .training-brand--compact .training-brand__copy strong { color: var(--green-800); font-size: 12px; }
+  .app-privacy { width: 35px; height: 35px; justify-content: center; padding: 0; font-size: 0; }
+  .stepper { height: 48px; padding: 6px 0 0; }
+  .stepper__label { display: none; }
+  .stepper__item:not(:last-child) { margin-right: 0; }
+  .stepper__item:not(:last-child)::after { left: calc(50% + 17px); right: calc(-50% + 17px); width: auto; top: 13px; }
+  .stepper__number { width: 27px; height: 27px; }
+
+  .content-page { width: calc(100% - 22px); padding-top: 27px; }
+  .vehicle-hero { width: calc(100% - 20px); padding: 23px 0 34px; }
+  .vehicle-hero__copy { margin: 0 auto 20px; }
+  .vehicle-hero__copy h1 { font-size: 27px; overflow-wrap: normal; }
+  .vehicle-hero__copy > p { font-size: 12px; line-height: 1.55; }
+  .hero-points { gap: 7px 10px; }
+  .hero-points span { font-size: 8px; }
+  .vehicle-selector-panel { padding: 17px 12px; }
+  .panel-heading { justify-content: flex-start; }
+  .panel-heading__number { width: 43px; height: 43px; }
+  .panel-heading h2 { font-size: 20px; }
+  .vehicle-card { min-height: 242px; padding-top: 22px; }
+  .vehicle-card__badge { width: 70px; height: 70px; }
+
+  .training-selection-hero { padding: 0; }
+  .training-option { min-height: 255px; }
+  .training-option__action { margin-left: -19px; margin-right: -19px; margin-bottom: -18px; }
+  .site-footer { min-height: 0; padding: 18px 14px; gap: 15px; }
+  .site-footer .training-brand { margin: 0 auto; }
+  .site-footer .training-brand__mark { width: 50px; height: 50px; }
+  .site-footer .training-brand__copy small { font-size: 6px; }
+  .site-footer .training-brand__copy strong { font-size: 16px; }
+  .site-footer__values { min-width: 0; }
+  .site-footer__values span { min-height: 48px; gap: 4px; }
+  .site-footer__values svg { width: 19px; height: 19px; }
+  .site-footer__values strong { font-size: 7px; }
+
+  .evaluation-shell,
+  .evaluation-shell--basic,
+  .checklist-shell { background: #f7fbf8; }
+  .evaluation-progress-card,
+  .checklist-progress { color: var(--ink); }
+  .checklist-overall-options { grid-template-columns: 1fr; }
+}
+
 @media print {
   .app-header, .report-preview-heading, .conclusion-control, .export-action-bar, .export-message { display: none !important; }
   .report-preview-content { width: 1080px; padding: 0; }

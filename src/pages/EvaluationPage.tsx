@@ -1,6 +1,7 @@
 import { useMemo, useState } from 'react'
 import { ArrowLeft, ArrowRight, CheckCheck, ClipboardCheck, MessageSquareText, Sparkles } from 'lucide-react'
 import { AppHeader } from '../components/AppHeader'
+import { AppFooter } from '../components/AppFooter'
 import { LessonEvaluationCard } from '../components/LessonEvaluationCard'
 import { VEHICLE_LABELS } from '../data/lessonConfigs'
 import type { EvaluationState, LessonEvaluation } from '../types/evaluation'
@@ -139,6 +140,7 @@ export function EvaluationPage({ state, onChange, onBack, onPreview }: Evaluatio
           <button className="button button--primary button--large" type="button" onClick={validateAndPreview}>Xem phiếu đánh giá <ArrowRight size={19} /></button>
         </div>
       </main>
+      <AppFooter />
     </div>
   )
 }

@@ -1,4 +1,19 @@
-import { ChevronRight, CircleCheck, Target, MessageSquareText } from 'lucide-react'
+import {
+  ChevronRight,
+  CircleCheck,
+  CircleParking,
+  Flag,
+  Gauge,
+  MapPinned,
+  MessageSquareText,
+  Mountain,
+  PersonStanding,
+  Route,
+  TrafficCone,
+  TrainFront,
+  TriangleAlert,
+  Target,
+} from 'lucide-react'
 import type { EvaluationStatus, LessonEvaluation } from '../types/evaluation'
 import { StatusSelector } from './StatusSelector'
 
@@ -43,7 +58,7 @@ export function LessonEvaluationCard({ lesson, onChange, isEmergency = false }: 
           <span>{isEmergency ? 'ĐÁNH GIÁ RIÊNG' : `${isBasicSkill ? 'KỸ NĂNG' : 'BÀI'} ${lesson.order}`}</span>
           <h3>{lesson.name}</h3>
         </div>
-        <div className="lesson-symbol" aria-hidden="true">{lesson.symbol}</div>
+        <div className="lesson-symbol" aria-hidden="true"><LessonIcon id={lesson.id} /></div>
       </header>
 
       <div className="lesson-card__body">
@@ -101,6 +116,25 @@ export function LessonEvaluationCard({ lesson, onChange, isEmergency = false }: 
       </div>
     </article>
   )
+}
+
+export function LessonIcon({ id, size = 25 }: { id: string; size?: number }) {
+  const props = { size, strokeWidth: 1.9 }
+  switch (id) {
+    case 'start':
+    case 'finish': return <Flag {...props} />
+    case 'pedestrian': return <PersonStanding {...props} />
+    case 'hill': return <Mountain {...props} />
+    case 'right-angle': return <MapPinned {...props} />
+    case 'traffic-light': return <TrafficCone {...props} />
+    case 'winding-road': return <Route {...props} />
+    case 'vertical-parking':
+    case 'parallel-parking': return <CircleParking {...props} />
+    case 'railway': return <TrainFront {...props} />
+    case 'gear-change': return <Gauge {...props} />
+    case 'emergency': return <TriangleAlert {...props} />
+    default: return <CircleCheck {...props} />
+  }
 }
 
 function CheckIcon() {

@@ -1,8 +1,9 @@
 import { useMemo, useState } from 'react'
 import { ArrowLeft, ArrowRight, Check, CheckCheck, ClipboardCheck, MessageSquareText } from 'lucide-react'
 import { AppHeader } from '../components/AppHeader'
+import { AppFooter } from '../components/AppFooter'
 import { VEHICLE_LABELS } from '../data/lessonConfigs'
-import { getChecklistOverallOptions, getChecklistRatingOptions } from '../data/checklistConfigs'
+import { getChecklistOverallOptions, getChecklistRatingOptions, getChecklistTone } from '../data/checklistConfigs'
 import type { ChecklistItemEvaluation, ChecklistRating, EvaluationState } from '../types/evaluation'
 
 interface ChecklistEvaluationPageProps {
@@ -113,7 +114,7 @@ export function ChecklistEvaluationPage({ state, onChange, onBack, onPreview }: 
                     type="button"
                     key={option.id}
                     data-testid={`check-${item.id}-${option.id}`}
-                    className={item.rating === option.id ? 'is-selected' : ''}
+                    className={`tone-${getChecklistTone(option.id)} ${item.rating === option.id ? 'is-selected' : ''}`}
                     onClick={() => updateItem(item, option.id)}
                     role="radio"
                     aria-checked={item.rating === option.id}
@@ -136,7 +137,7 @@ export function ChecklistEvaluationPage({ state, onChange, onBack, onPreview }: 
                 type="button"
                 key={option.id}
                 data-testid={`overall-${option.id}`}
-                className={state.checklistOverall === option.id ? 'is-selected' : ''}
+                className={`tone-${getChecklistTone(option.id)} ${state.checklistOverall === option.id ? 'is-selected' : ''}`}
                 onClick={() => { onChange({ checklistOverall: option.id }); setValidationMessage('') }}
               >
                 <span>{state.checklistOverall === option.id && <Check size={19} strokeWidth={3} />}</span>
@@ -178,6 +179,7 @@ export function ChecklistEvaluationPage({ state, onChange, onBack, onPreview }: 
           <button className="button button--green button--large" type="button" onClick={validate}>Xem phiếu đánh giá <ArrowRight size={19} /></button>
         </div>
       </main>
+      <AppFooter />
     </div>
   )
 }

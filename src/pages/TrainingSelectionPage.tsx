@@ -1,6 +1,6 @@
 import { ArrowLeft, ArrowRight, BookOpenCheck, Map, Route } from 'lucide-react'
+import { AppFooter } from '../components/AppFooter'
 import { AppHeader } from '../components/AppHeader'
-import { TrainingCenterBrand } from '../components/TrainingCenterBrand'
 import { VEHICLE_LABELS } from '../data/lessonConfigs'
 import type { TrainingType, VehicleCategory } from '../types/evaluation'
 
@@ -16,7 +16,6 @@ export function TrainingSelectionPage({ vehicleCategory, onSelect, onBack }: Tra
       <AppHeader activeStep={2} />
       <main className="content-page training-selection-page">
         <section className="training-selection-hero">
-          <div className="training-selection-hero__brand"><TrainingCenterBrand /></div>
           <div className="page-heading">
             <div className="page-heading__number">02</div>
             <div>
@@ -58,6 +57,7 @@ export function TrainingSelectionPage({ vehicleCategory, onSelect, onBack }: Tra
           <p><strong>{VEHICLE_LABELS[vehicleCategory]}</strong> đã được chọn. Bạn có thể quay lại để đổi hạng xe.</p>
         </div>
       </main>
+      <AppFooter />
     </div>
   )
 }

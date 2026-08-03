@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from 'react'
 import { toBlob, toPng } from 'html-to-image'
 import { ArrowLeft, CheckCircle2, Download, FilePenLine, Images, LoaderCircle, RefreshCcw, Share2 } from 'lucide-react'
 import { AppHeader } from '../components/AppHeader'
+import { AppFooter } from '../components/AppFooter'
 import { ChecklistReport } from '../components/ChecklistReport'
 import { EvaluationReport } from '../components/EvaluationReport'
 import type { EvaluationState } from '../types/evaluation'
@@ -194,6 +195,7 @@ export function ReportPreviewPage({ state, onChange, onEdit, onNew }: ReportPrev
         </div>
         {message && <div className="export-message" role="status"><CheckCircle2 size={19} /> {message}</div>}
       </main>
+      <AppFooter />
     </div>
   )
 }
