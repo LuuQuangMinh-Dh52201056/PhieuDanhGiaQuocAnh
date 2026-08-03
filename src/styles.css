@@ -516,6 +516,9 @@ button.training-option:hover { transform: translateY(-5px); box-shadow: 0 22px 4
 .report-footer { height: 66px; display: grid; grid-template-columns: 230px 1fr 30px; align-items: center; padding: 0 36px; color: var(--gold); border-top: 4px solid var(--gold); background: linear-gradient(90deg, #06172d, #0b3158, #06172d); }
 .report-footer > div { display: flex; align-items: center; gap: 10px; }
 .report-footer strong { font-family: 'Montserrat', sans-serif; font-size: 16px; }
+.report-footer .training-brand__mark { width: 44px; height: 44px; }
+.report-footer .training-brand__copy small { display: none; }
+.report-footer .training-brand__copy strong { color: #fff; font-size: 15px; }
 .report-footer > span { text-align: center; font-size: 11px; font-weight: 700; letter-spacing: .6px; }
 .report-footer > i { font-style: normal; }
 
@@ -800,7 +803,10 @@ textarea:focus-visible { outline-color: rgba(10, 138, 72, .28); }
   place-items: center;
   overflow: hidden;
   border-radius: 50%;
-  background: #fff;
+  background-color: #fff;
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: contain;
   box-shadow: 0 0 0 1px rgba(5, 83, 45, .09), 0 5px 15px rgba(5, 83, 45, .1);
 }
 .training-brand__mark img { display: block; width: 100%; height: 100%; object-fit: contain; }

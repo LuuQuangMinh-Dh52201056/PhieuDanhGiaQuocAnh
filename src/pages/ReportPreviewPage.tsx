@@ -1,10 +1,11 @@
 import { useEffect, useRef, useState } from 'react'
-import { toBlob, toPng } from 'html-to-image'
+import { toCanvas } from 'html-to-image'
 import { ArrowLeft, CheckCircle2, Download, FilePenLine, Images, LoaderCircle, RefreshCcw, Share2 } from 'lucide-react'
 import { AppHeader } from '../components/AppHeader'
 import { AppFooter } from '../components/AppFooter'
 import { ChecklistReport } from '../components/ChecklistReport'
 import { EvaluationReport } from '../components/EvaluationReport'
+import { PHU_GIAO_LOGO_DATA_URL } from '../components/TrainingCenterBrand'
 import type { EvaluationState } from '../types/evaluation'
 import { CONCLUSION_META, COURSE_CONCLUSIONS, generateFileName } from '../utils/evaluation'
 
@@ -13,6 +14,13 @@ interface ReportPreviewPageProps {
   onChange: (updates: Partial<EvaluationState>) => void
   onEdit: () => void
   onNew: () => void
+}
+
+interface ExportLogoRect {
+  x: number
+  y: number
+  width: number
+  height: number
 }
 
 export function ReportPreviewPage({ state, onChange, onEdit, onNew }: ReportPreviewPageProps) {
@@ -76,17 +84,68 @@ export function ReportPreviewPage({ state, onChange, onEdit, onNew }: ReportPrev
     }
   }
 
+  const renderReportCanvas = async () => {
+    const { node, restore } = await prepareNode()
+    let canvas: HTMLCanvasElement | null = null
+    let logoRects: ExportLogoRect[] = []
+    try {
+      const reportRect = node.getBoundingClientRect()
+      logoRects = Array.from(node.querySelectorAll<HTMLElement>('[data-export-logo-slot]')).map((slot) => {
+        const rect = slot.getBoundingClientRect()
+        return {
+          x: rect.left - reportRect.left,
+          y: rect.top - reportRect.top,
+          width: rect.width,
+          height: rect.height,
+        }
+      })
+      canvas = await toCanvas(node, {
+        pixelRatio: 1,
+        cacheBust: true,
+        backgroundColor: '#f5f7fa',
+        imagePlaceholder: PHU_GIAO_LOGO_DATA_URL,
+      })
+    } finally {
+      restore()
+    }
+    if (!canvas) throw new Error('Không thể dựng ảnh phiếu đánh giá')
+
+    // WebKit đôi khi bỏ ảnh nằm trong SVG foreignObject. Vẽ logo PNG thêm lần
+    // cuối trực tiếp lên canvas để đầu và chân phiếu luôn có logo.
+    const logo = new Image()
+    await new Promise<void>((resolve, reject) => {
+      logo.addEventListener('load', () => resolve(), { once: true })
+      logo.addEventListener('error', () => reject(new Error('Không thể nạp logo Phú Giáo')), { once: true })
+      logo.src = PHU_GIAO_LOGO_DATA_URL
+    })
+    const context = canvas.getContext('2d')
+    if (!context) throw new Error('Không thể hoàn thiện logo trên ảnh')
+    const scaleX = canvas.width / node.offsetWidth
+    const scaleY = canvas.height / node.offsetHeight
+    logoRects.forEach((rect) => {
+      const x = rect.x * scaleX
+      const y = rect.y * scaleY
+      const width = rect.width * scaleX
+      const height = rect.height * scaleY
+      const imageScale = Math.min(width / logo.naturalWidth, height / logo.naturalHeight)
+      const drawWidth = logo.naturalWidth * imageScale
+      const drawHeight = logo.naturalHeight * imageScale
+      context.save()
+      context.beginPath()
+      context.ellipse(x + width / 2, y + height / 2, width / 2, height / 2, 0, 0, Math.PI * 2)
+      context.clip()
+      context.drawImage(logo, x + (width - drawWidth) / 2, y + (height - drawHeight) / 2, drawWidth, drawHeight)
+      context.restore()
+    })
+    return canvas
+  }
+
   const downloadImage = async () => {
     setBusy('download')
     setMessage('')
     try {
-      const { node, restore } = await prepareNode()
-      let dataUrl: string
-      try {
-        dataUrl = await toPng(node, { pixelRatio: 1, cacheBust: true, backgroundColor: '#f5f7fa' })
-      } finally {
-        restore()
-      }
+      const canvas = await renderReportCanvas()
+      const dataUrl = canvas.toDataURL('image/png')
       const link = document.createElement('a')
       link.download = generateFileName(state)
       link.href = dataUrl
@@ -103,13 +162,8 @@ export function ReportPreviewPage({ state, onChange, onEdit, onNew }: ReportPrev
     setBusy(intent === 'photos' ? 'save' : 'share')
     setMessage('')
     try {
-      const { node, restore } = await prepareNode()
-      let blob: Blob | null
-      try {
-        blob = await toBlob(node, { pixelRatio: 1, cacheBust: true, backgroundColor: '#f5f7fa' })
-      } finally {
-        restore()
-      }
+      const canvas = await renderReportCanvas()
+      const blob = await new Promise<Blob | null>((resolve) => canvas.toBlob(resolve, 'image/png'))
       if (!blob) throw new Error('Không thể tạo tệp ảnh')
       const file = new File([blob], generateFileName(state), { type: 'image/png' })
       if (navigator.share && navigator.canShare?.({ files: [file] })) {

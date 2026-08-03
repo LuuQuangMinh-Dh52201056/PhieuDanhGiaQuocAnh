@@ -42,24 +42,24 @@ const commonLessons: LessonConfig[] = [
     errors: ['Dừng chưa tới vị trí', 'Dừng quá vạch', 'Đè vạch', 'Phanh quá gấp', 'Chết máy'],
   },
   {
-    id: 'hill', order: 3, symbol: '◢', name: 'Dừng và khởi hành ngang dốc', shortName: 'Khởi hành ngang dốc',
+    id: 'hill', order: 3, symbol: '◢', name: 'Dừng xe và khởi hành ngang dốc (lên dốc)', shortName: 'Khởi hành ngang dốc',
     focus: ['Dừng đúng vị trí', 'Giữ xe không bị trôi', 'Giữ đúng điểm côn', 'Phối hợp côn, ga và phanh', 'Khởi hành ổn định'],
     errors: ['Dừng sai vị trí', 'Tuột dốc', 'Chết máy', 'Không giữ được điểm côn', 'Ga quá lớn', 'Khởi hành quá chậm'],
     seriousErrors: ['Tuột dốc'],
   },
   {
-    id: 'right-angle', order: 4, symbol: '⌑', name: 'Qua vệt bánh xe và đường hẹp vuông góc', shortName: 'Vệt bánh xe & đường hẹp',
+    id: 'right-angle', order: 4, symbol: '⌑', name: 'Qua vệt bánh xe và đường vòng vuông góc', shortName: 'Vệt bánh xe & đường vuông góc',
     focus: ['Canh đúng bánh xe', 'Giữ tốc độ chậm', 'Đánh lái đúng điểm', 'Trả lái đúng lúc', 'Không đè vạch'],
     errors: ['Không vào đúng vệt bánh xe', 'Đè vạch', 'Đánh lái sớm', 'Đánh lái muộn', 'Trả lái chậm', 'Xe đi quá nhanh'],
   },
   {
-    id: 'traffic-light', order: 5, symbol: '●', name: 'Qua ngã tư có tín hiệu giao thông', shortName: 'Ngã tư có tín hiệu',
+    id: 'traffic-light', order: 5, symbol: '●', name: 'Qua ngã tư có đèn tín hiệu điều khiển giao thông', shortName: 'Ngã tư có đèn tín hiệu',
     focus: ['Quan sát đèn tín hiệu', 'Dừng đúng vạch', 'Đi đúng thời điểm', 'Xi nhan đúng hướng'],
     errors: ['Vượt đèn đỏ', 'Dừng quá vạch', 'Quên xi nhan', 'Đi sai hướng', 'Xuất phát chậm', 'Không quan sát tín hiệu'],
     seriousErrors: ['Vượt đèn đỏ'],
   },
   {
-    id: 'winding-road', order: 6, symbol: 'S', name: 'Qua đường vòng quanh co', shortName: 'Đường vòng quanh co',
+    id: 'winding-road', order: 6, symbol: 'S', name: 'Đường vòng quanh co (chữ S)', shortName: 'Đường vòng quanh co',
     focus: ['Kiểm soát tốc độ', 'Canh đầu xe', 'Canh bánh sau', 'Điều khiển vô lăng đều', 'Không chạm vạch'],
     errors: ['Đè vạch', 'Đánh lái sớm', 'Đánh lái muộn', 'Trả lái chậm', 'Không quan sát gương', 'Đi quá nhanh'],
   },
@@ -70,20 +70,20 @@ const commonLessons: LessonConfig[] = [
     seriousErrors: ['Không vào đủ vị trí'],
   },
   {
-    id: 'railway', order: 8, symbol: '╳', name: 'Dừng xe tại nơi giao nhau với đường sắt', shortName: 'Giao nhau với đường sắt',
+    id: 'parallel-parking', order: 8, symbol: '▣', name: 'Ghép xe ngang vào nơi đỗ', shortName: 'Ghép xe ngang',
+    focus: ['Đặt xe đúng vị trí', 'Quan sát gương', 'Đánh lái đúng điểm', 'Kiểm soát tốc độ lùi', 'Đưa xe vào đúng ô'],
+    errors: ['Đánh lái sớm', 'Đánh lái muộn', 'Không quan sát gương', 'Xe vào lệch', 'Đè hoặc chạm vạch', 'Không vào đủ vị trí', 'Quá thời gian'],
+    seriousErrors: ['Không vào đủ vị trí'],
+  },
+  {
+    id: 'railway', order: 9, symbol: '╳', name: 'Tạm dừng ở nơi có đường sắt chạy qua', shortName: 'Tạm dừng tại đường sắt',
     focus: ['Quan sát biển báo', 'Giảm tốc độ', 'Dừng đúng vị trí', 'Di chuyển đúng thời điểm'],
     errors: ['Không dừng xe', 'Dừng chưa tới vị trí', 'Dừng quá vạch', 'Không quan sát biển báo', 'Khởi hành chậm', 'Chết máy'],
   },
   {
-    id: 'gear-change', order: 9, symbol: 'H', name: 'Thay đổi số trên đường thẳng', shortName: 'Thay đổi số đường thẳng',
+    id: 'gear-change', order: 10, symbol: 'H', name: 'Thay đổi số trên đường bằng (tăng tốc, tăng số)', shortName: 'Thay đổi số trên đường bằng',
     focus: ['Tăng tốc đúng thời điểm', 'Chuyển số đúng', 'Điều khiển côn phù hợp', 'Giữ xe đi thẳng', 'Giảm số đúng vị trí'],
     errors: ['Chuyển sai số', 'Không đạt tốc độ yêu cầu', 'Quá tốc độ', 'Xe bị giật', 'Chết máy', 'Xe lệch hướng', 'Giảm số sai thời điểm'],
-  },
-  {
-    id: 'parallel-parking', order: 10, symbol: '▣', name: 'Ghép xe ngang vào nơi đỗ', shortName: 'Ghép xe ngang',
-    focus: ['Đặt xe đúng vị trí', 'Quan sát gương', 'Đánh lái đúng điểm', 'Kiểm soát tốc độ lùi', 'Đưa xe vào đúng ô'],
-    errors: ['Đánh lái sớm', 'Đánh lái muộn', 'Không quan sát gương', 'Xe vào lệch', 'Đè hoặc chạm vạch', 'Không vào đủ vị trí', 'Quá thời gian'],
-    seriousErrors: ['Không vào đủ vị trí'],
   },
   {
     id: 'finish', order: 11, symbol: '⚑', name: 'Kết thúc', shortName: 'Kết thúc',
@@ -108,8 +108,8 @@ function forAutomatic(lesson: LessonConfig): LessonConfig {
     updated.seriousErrors = ['Xe bị trôi']
   }
   if (lesson.id === 'gear-change') {
-    updated.name = 'Thay đổi tốc độ trên đường thẳng'
-    updated.shortName = 'Thay đổi tốc độ đường thẳng'
+    updated.name = 'Thay đổi tốc độ trên đường bằng (tăng tốc, kiểm soát tốc độ)'
+    updated.shortName = 'Thay đổi tốc độ trên đường bằng'
     updated.focus = ['Tăng tốc đúng thời điểm', 'Kiểm soát chân ga', 'Giữ xe đi thẳng', 'Giảm tốc đúng vị trí']
     updated.errors = ['Không đạt tốc độ yêu cầu', 'Quá tốc độ', 'Đạp ga quá mạnh', 'Phanh quá gấp', 'Xe lệch hướng', 'Giảm tốc sai vị trí']
   }

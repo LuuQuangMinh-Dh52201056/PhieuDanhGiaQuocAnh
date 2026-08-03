@@ -5,9 +5,72 @@ import path from 'node:path'
 const baseUrl = process.env.E2E_BASE_URL ?? 'http://127.0.0.1:4173'
 const chromePath = 'C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe'
 const artifactDir = path.resolve('artifacts')
+const bCourseOrder = [
+  'lesson-start',
+  'lesson-pedestrian',
+  'lesson-hill',
+  'lesson-right-angle',
+  'lesson-traffic-light',
+  'lesson-winding-road',
+  'lesson-vertical-parking',
+  'lesson-parallel-parking',
+  'lesson-railway',
+  'lesson-gear-change',
+  'lesson-finish',
+]
 
 function assert(condition, message) {
   if (!condition) throw new Error(message)
+}
+
+async function assertExportedLogos(page, png, reportName) {
+  const logoSlots = await page.getByTestId('evaluation-report').locator('[data-export-logo-slot]').evaluateAll((slots) => {
+    const report = slots[0]?.closest('[data-testid="evaluation-report"]')
+    if (!report) return []
+    const reportRect = report.getBoundingClientRect()
+    return slots.map((slot) => {
+      const rect = slot.getBoundingClientRect()
+      return {
+        x: (rect.left - reportRect.left) / reportRect.width,
+        y: (rect.top - reportRect.top) / reportRect.height,
+        width: rect.width / reportRect.width,
+        height: rect.height / reportRect.height,
+      }
+    })
+  })
+  assert(logoSlots.length === 2, `${reportName} phải có logo Phú Giáo ở đầu và chân phiếu`)
+
+  const greenRatios = await page.evaluate(async ({ base64, slots }) => {
+    const image = new Image()
+    image.src = `data:image/png;base64,${base64}`
+    await image.decode()
+    const canvas = document.createElement('canvas')
+    canvas.width = image.naturalWidth
+    canvas.height = image.naturalHeight
+    const context = canvas.getContext('2d', { willReadFrequently: true })
+    if (!context) return []
+    context.drawImage(image, 0, 0)
+    return slots.map((slot) => {
+      const x = Math.max(0, Math.floor(slot.x * canvas.width))
+      const y = Math.max(0, Math.floor(slot.y * canvas.height))
+      const width = Math.max(1, Math.min(canvas.width - x, Math.ceil(slot.width * canvas.width)))
+      const height = Math.max(1, Math.min(canvas.height - y, Math.ceil(slot.height * canvas.height)))
+      const pixels = context.getImageData(x, y, width, height).data
+      let greenPixels = 0
+      for (let index = 0; index < pixels.length; index += 4) {
+        const red = pixels[index]
+        const green = pixels[index + 1]
+        const blue = pixels[index + 2]
+        if (green > 65 && green > red + 14 && green > blue + 8) greenPixels += 1
+      }
+      return greenPixels / (pixels.length / 4)
+    })
+  }, { base64: png.toString('base64'), slots: logoSlots })
+
+  assert(
+    greenRatios.length === 2 && greenRatios.every((ratio) => ratio > 0.01),
+    `${reportName} bị thiếu hình logo trong ảnh PNG: ${greenRatios.join(', ')}`,
+  )
 }
 
 async function chooseVehicle(page, name, training = 'SA HÌNH') {
@@ -46,7 +109,7 @@ try {
   assert(dimensions.scrollWidth <= dimensions.viewport, `Trang chọn hạng bị tràn ngang: ${JSON.stringify(dimensions)}`)
   assert(await page.getByText('QUỐC ANH', { exact: true }).count() === 0, 'Không được còn thương hiệu Quốc Anh')
   const logoSource = await page.locator('.training-brand__mark img').first().getAttribute('src')
-  assert(logoSource?.startsWith('data:image/'), 'Logo Phú Giáo phải được nhúng trực tiếp để không mất khi Safari xuất PNG')
+  assert(logoSource?.startsWith('data:image/png;base64,'), 'Logo Phú Giáo phải là PNG nhúng trực tiếp để không mất khi Safari xuất ảnh')
 
   await page.getByRole('button', { name: 'HẠNG XE B SỐ SÀN' }).click()
   await page.screenshot({ path: path.join(artifactDir, 'training-selection-mobile.png'), fullPage: true })
@@ -86,6 +149,7 @@ try {
   const basicDownloadPath = await basicDownload.path()
   assert(basicDownloadPath, 'Không nhận được tệp PNG tập cơ bản')
   await copyFile(basicDownloadPath, path.join(artifactDir, 'basic-exported-report.png'))
+  await assertExportedLogos(page, await readFile(basicDownloadPath), 'Phiếu tập cơ bản')
 
   await page.goto(baseUrl)
   await chooseVehicle(page, 'HẠNG XE B SỐ SÀN', 'ĐƯỜNG TRƯỜNG')
@@ -111,12 +175,15 @@ try {
   const roadDownloadPath = await roadDownload.path()
   assert(roadDownloadPath, 'Không nhận được tệp PNG đường trường')
   await copyFile(roadDownloadPath, path.join(artifactDir, 'road-exported-report.png'))
+  await assertExportedLogos(page, await readFile(roadDownloadPath), 'Phiếu đường trường')
 
   await page.goto(baseUrl)
 
   await chooseVehicle(page, 'HẠNG XE B SỐ SÀN')
   const bssDate = await enterStudent(page, 'Nguyễn Văn An')
   assert(await page.locator('.lesson-card:not(.lesson-card--emergency)').count() === 11, 'BSS phải có đúng 11 bài thi')
+  const bssOrder = await page.locator('.lesson-card:not(.lesson-card--emergency)').evaluateAll((cards) => cards.map((card) => card.id))
+  assert(JSON.stringify(bssOrder) === JSON.stringify(bCourseOrder), `Thứ tự bài BSS không đúng: ${bssOrder.join(', ')}`)
 
   await page.getByRole('button', { name: 'Đánh dấu bài còn lại là Tốt' }).click()
   await page.getByTestId('status-hill-NEEDS_PRACTICE').click()
@@ -134,6 +201,17 @@ try {
   assert(reportText.includes('CẦN TIẾP TỤC LUYỆN TẬP'), 'Lỗi tuột dốc phải tạo kết luận cần tiếp tục luyện tập')
   assert(reportText.includes('Tuột dốc'), 'Phiếu phải hiển thị lỗi đã chọn')
   assert(reportText.includes('SỐ SÀN'), 'Huy hiệu phiếu sa hình phải ghi rõ loại xe SỐ SÀN')
+  const reportTail = [
+    'Ghép xe dọc vào nơi đỗ',
+    'Ghép xe ngang vào nơi đỗ',
+    'Tạm dừng ở nơi có đường sắt chạy qua',
+    'Thay đổi số trên đường bằng (tăng tốc, tăng số)',
+    'Kết thúc',
+    'ĐÁNH GIÁ TÌNH HUỐNG KHẨN CẤP',
+  ]
+  for (let index = 1; index < reportTail.length; index += 1) {
+    assert(reportText.indexOf(reportTail[index - 1]) < reportText.indexOf(reportTail[index]), `Thứ tự trên phiếu xuất sai tại ${reportTail[index]}`)
+  }
   await page.screenshot({ path: path.join(artifactDir, 'report-mobile.png'), fullPage: false })
 
   const downloadPromise = page.waitForEvent('download')
@@ -147,18 +225,23 @@ try {
   const png = await readFile(downloadPath)
   assert(png.readUInt32BE(16) === 1080, `Ảnh xuất phải rộng 1080px, thực tế ${png.readUInt32BE(16)}px`)
   assert(png.readUInt32BE(20) >= 1920, `Ảnh xuất phải cao ít nhất 1920px, thực tế ${png.readUInt32BE(20)}px`)
+  await assertExportedLogos(page, png, 'Phiếu sa hình')
 
   await page.goto(baseUrl)
   await chooseVehicle(page, 'HẠNG XE B SỐ TỰ ĐỘNG')
   await enterStudent(page, 'Học viên BTĐ')
+  const automaticOrder = await page.locator('.lesson-card:not(.lesson-card--emergency)').evaluateAll((cards) => cards.map((card) => card.id))
+  assert(JSON.stringify(automaticOrder) === JSON.stringify(bCourseOrder), `Thứ tự bài BTĐ không đúng: ${automaticOrder.join(', ')}`)
   assert(await page.getByText('Không giữ được điểm côn', { exact: true }).count() === 0, 'BTĐ không được có tiêu chí điểm côn')
   assert(await page.getByText('Chết máy', { exact: true }).count() === 0, 'BTĐ không được có lỗi chết máy do côn')
-  assert(await page.getByText('Thay đổi tốc độ trên đường thẳng', { exact: true }).count() === 1, 'BTĐ phải dùng bài thay đổi tốc độ')
+  assert(await page.getByText('Thay đổi tốc độ trên đường bằng (tăng tốc, kiểm soát tốc độ)', { exact: true }).count() === 1, 'BTĐ phải dùng bài thay đổi tốc độ')
 
   await page.goto(baseUrl)
   await chooseVehicle(page, 'HẠNG XE HẠNG C1')
   await enterStudent(page, 'Học viên C1')
   assert(await page.locator('.lesson-card:not(.lesson-card--emergency)').count() === 10, 'C1 phải có đúng 10 bài thi')
+  const c1Order = await page.locator('.lesson-card:not(.lesson-card--emergency)').evaluateAll((cards) => cards.map((card) => card.id))
+  assert(JSON.stringify(c1Order) === JSON.stringify(bCourseOrder.filter((id) => id !== 'lesson-parallel-parking')), `Thứ tự bài C1 không đúng: ${c1Order.join(', ')}`)
   assert(await page.getByText('Ghép xe ngang vào nơi đỗ', { exact: true }).count() === 0, 'C1 không được có bài ghép xe ngang')
   assert(await page.getByText('BÀI 10', { exact: true }).count() === 1, 'Bài Kết thúc của C1 phải được đánh số 10')
   assert(await page.getByText('Canh thân xe chưa tốt', { exact: true }).count() >= 2, 'C1 phải có lỗi canh thân xe')

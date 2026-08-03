@@ -108,7 +108,7 @@ export function EvaluationReport({ state, reportRef }: EvaluationReportProps) {
       </div>
 
       <footer className="report-footer">
-        <div><ShieldCheck size={27} /><strong>PHÚ GIÁO</strong></div>
+        <TrainingCenterBrand compact light />
         <span>TRUNG TÂM GIÁO DỤC NGHỀ NGHIỆP PHÚ GIÁO</span>
         <i>✦</i>
       </footer>
