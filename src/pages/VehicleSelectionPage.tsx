@@ -20,10 +20,10 @@ export function VehicleSelectionPage({ onSelect }: VehicleSelectionPageProps) {
 
         <div className="vehicle-hero__copy">
           <div className="eyebrow"><Sparkles size={16} /> PHIẾU ĐÁNH GIÁ ĐIỆN TỬ</div>
-          <h1>ĐÁNH GIÁ BÀI THI<br /><span>SÁT HẠCH SA HÌNH</span></h1>
-          <p>Chấm nhanh, nhận xét rõ ràng và xuất phiếu PNG sắc nét ngay trên điện thoại.</p>
+          <h1>PHIẾU ĐÁNH GIÁ<br /><span>THỰC HÀNH LÁI XE</span></h1>
+          <p>Chọn hạng xe, nội dung tập, chấm nhanh và xuất phiếu PNG sắc nét ngay trên điện thoại.</p>
           <div className="hero-points">
-            <span><CheckCircle2 size={17} /> Đúng số bài từng hạng</span>
+            <span><CheckCircle2 size={17} /> Đúng kỹ năng từng nội dung</span>
             <span><CheckCircle2 size={17} /> Tổng kết tự động</span>
             <span><CheckCircle2 size={17} /> Không lưu dữ liệu</span>
           </div>

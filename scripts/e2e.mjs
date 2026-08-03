@@ -10,8 +10,9 @@ function assert(condition, message) {
   if (!condition) throw new Error(message)
 }
 
-async function chooseVehicle(page, name) {
+async function chooseVehicle(page, name, training = 'SA HÌNH') {
   await page.getByRole('button', { name }).click()
+  await page.getByRole('button', { name: training }).click()
 }
 
 async function enterStudent(page, name) {
@@ -41,6 +42,35 @@ try {
     card: document.querySelector('.vehicle-card')?.getBoundingClientRect().toJSON(),
   }))
   assert(dimensions.scrollWidth <= dimensions.viewport, `Trang chọn hạng bị tràn ngang: ${JSON.stringify(dimensions)}`)
+
+  await page.getByRole('button', { name: 'HẠNG XE B SỐ SÀN' }).click()
+  await page.screenshot({ path: path.join(artifactDir, 'training-selection-mobile.png'), fullPage: true })
+  assert(await page.getByText('Tập cơ bản', { exact: true }).count() === 1, 'Phải có lựa chọn Tập cơ bản')
+  assert(await page.getByText('Sa hình', { exact: true }).count() === 1, 'Phải có lựa chọn Sa hình')
+  assert(await page.getByText('Đường trường', { exact: true }).count() === 1, 'Phải có lựa chọn Đường trường')
+  assert(await page.getByText('SẮP PHÁT TRIỂN', { exact: true }).count() === 1, 'Đường trường phải hiển thị sắp phát triển')
+  await page.getByRole('button', { name: 'TẬP CƠ BẢN' }).click()
+  const basicDate = await enterStudent(page, 'Học viên Cơ Bản')
+  assert(await page.locator('.lesson-card').count() === 8, 'Tập cơ bản BSS phải có đúng 8 kỹ năng')
+  assert(await page.locator('.lesson-card--emergency').count() === 0, 'Tập cơ bản không có mục tình huống khẩn cấp sa hình')
+  assert(await page.getByText('Tìm và giữ điểm côn', { exact: true }).count() === 1, 'BSS cơ bản phải có kỹ năng điểm côn')
+  assert(await page.getByRole('button', { name: 'Cần luyện thêm điểm côn' }).count() === 1, 'BSS cơ bản phải có nhận xét nhanh điểm côn')
+  await page.getByRole('button', { name: 'Đánh dấu kỹ năng còn lại là Tốt' }).click()
+  await page.getByRole('button', { name: 'Xem phiếu đánh giá' }).click()
+  const basicReportText = await page.getByTestId('evaluation-report').innerText()
+  assert(basicReportText.includes('KỸ NĂNG LÁI XE CƠ BẢN'), 'Phiếu cơ bản phải có đúng tiêu đề')
+  assert(basicReportText.includes('ĐÃ NẮM KỸ NĂNG CƠ BẢN'), '8 kỹ năng Tốt phải có kết luận đã nắm kỹ năng cơ bản')
+  assert(basicReportText.includes('8 kỹ năng'), 'Phiếu cơ bản phải tổng kết đủ 8 kỹ năng')
+  const basicDownloadPromise = page.waitForEvent('download')
+  await page.getByRole('button', { name: 'Tải ảnh PNG' }).click()
+  const basicDownload = await basicDownloadPromise
+  const [basicYear, basicMonth, basicDay] = basicDate.split('-')
+  assert(basicDownload.suggestedFilename() === `DanhGiaTapXeCoBan_HocvienCoBan_${basicDay}-${basicMonth}-${basicYear}.png`, `Tên ảnh tập cơ bản không đúng: ${basicDownload.suggestedFilename()}`)
+  const basicDownloadPath = await basicDownload.path()
+  assert(basicDownloadPath, 'Không nhận được tệp PNG tập cơ bản')
+  await copyFile(basicDownloadPath, path.join(artifactDir, 'basic-exported-report.png'))
+
+  await page.goto(baseUrl)
 
   await chooseVehicle(page, 'HẠNG XE B SỐ SÀN')
   const bssDate = await enterStudent(page, 'Nguyễn Văn An')
@@ -96,6 +126,20 @@ try {
   const c1ReportText = await page.getByTestId('evaluation-report').innerText()
   assert(!c1ReportText.includes('Ghép xe ngang vào nơi đỗ'), 'Phiếu xuất C1 không được có bài ghép xe ngang')
   assert(c1ReportText.includes('10 bài'), 'Phiếu C1 phải tổng kết đủ 10 bài Tốt')
+
+  await page.goto(baseUrl)
+  await chooseVehicle(page, 'HẠNG XE HẠNG C1', 'TẬP CƠ BẢN')
+  await enterStudent(page, 'Học viên C1 Cơ Bản')
+  assert(await page.locator('.lesson-card').count() === 8, 'Tập cơ bản C1 phải có đúng 8 kỹ năng')
+  assert(await page.getByText('Lùi và canh đuôi xe', { exact: true }).count() === 1, 'C1 cơ bản phải có kỹ năng canh đuôi xe')
+  assert(await page.getByRole('button', { name: 'Cần luyện canh thân xe' }).count() === 1, 'C1 cơ bản phải có nhận xét nhanh canh thân xe')
+
+  await page.goto(baseUrl)
+  await chooseVehicle(page, 'HẠNG XE B SỐ TỰ ĐỘNG', 'TẬP CƠ BẢN')
+  await enterStudent(page, 'Học viên BTĐ Cơ Bản')
+  assert(await page.locator('.lesson-card').count() === 8, 'Tập cơ bản BTĐ phải có đúng 8 kỹ năng')
+  assert(await page.getByText('Sử dụng chân phanh và chân ga', { exact: true }).count() === 1, 'BTĐ cơ bản phải có kỹ năng phanh và ga riêng')
+  assert(await page.getByText('Tìm và giữ điểm côn', { exact: true }).count() === 0, 'BTĐ cơ bản không được có kỹ năng điểm côn')
   await mobile.close()
 
   const desktop = await browser.newContext({ viewport: { width: 1440, height: 1000 }, deviceScaleFactor: 1 })

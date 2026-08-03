@@ -9,6 +9,7 @@ interface LessonEvaluationCardProps {
 }
 
 export function LessonEvaluationCard({ lesson, onChange, isEmergency = false }: LessonEvaluationCardProps) {
+  const isBasicSkill = lesson.id.startsWith('basic-')
   const setStatus = (status: EvaluationStatus) => {
     onChange({
       ...lesson,
@@ -39,7 +40,7 @@ export function LessonEvaluationCard({ lesson, onChange, isEmergency = false }: 
           {isEmergency ? '!' : String(lesson.order).padStart(2, '0')}
         </div>
         <div className="lesson-title">
-          <span>{isEmergency ? 'ĐÁNH GIÁ RIÊNG' : `BÀI ${lesson.order}`}</span>
+          <span>{isEmergency ? 'ĐÁNH GIÁ RIÊNG' : `${isBasicSkill ? 'KỸ NĂNG' : 'BÀI'} ${lesson.order}`}</span>
           <h3>{lesson.name}</h3>
         </div>
         <div className="lesson-symbol" aria-hidden="true">{lesson.symbol}</div>

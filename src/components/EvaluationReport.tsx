@@ -1,5 +1,6 @@
 import { Award, CarFront, Check, ClipboardPenLine, MessageSquareText, ShieldCheck, TriangleAlert } from 'lucide-react'
 import { BrandMark } from './Brand'
+import { TrainingCenterBrand } from './TrainingCenterBrand'
 import { VEHICLE_LABELS } from '../data/lessonConfigs'
 import type { EvaluationState } from '../types/evaluation'
 import { CONCLUSION_META, formatDate, STATUS_META, summarize } from '../utils/evaluation'
@@ -10,20 +11,23 @@ interface EvaluationReportProps {
 }
 
 export function EvaluationReport({ state, reportRef }: EvaluationReportProps) {
+  const isBasic = state.trainingType === 'BASIC'
   const totals = summarize(state.lessons)
-  const conclusion = state.finalConclusion ? CONCLUSION_META[state.finalConclusion] : CONCLUSION_META.NEEDS_IMPROVEMENT
+  const conclusion = state.finalConclusion
+    ? CONCLUSION_META[state.finalConclusion]
+    : CONCLUSION_META[isBasic ? 'BASIC_SKILLS_ACQUIRED' : 'NEEDS_IMPROVEMENT']
   const emergency = state.emergencyEvaluation
 
   return (
-    <div className="report-page" ref={reportRef} data-testid="evaluation-report">
+    <div className={`report-page ${isBasic ? 'report-page--basic' : ''}`} ref={reportRef} data-testid="evaluation-report">
       <header className="report-header">
         <div className="report-header__flare report-header__flare--one" />
         <div className="report-header__flare report-header__flare--two" />
-        <BrandMark dark />
+        {isBasic ? <TrainingCenterBrand light /> : <BrandMark dark />}
         <div className="report-title">
           <small>PHIẾU ĐÁNH GIÁ</small>
-          <h1>KẾT QUẢ BÀI THI<br />SÁT HẠCH SA HÌNH</h1>
-          <div><i /> <span>AN TOÀN — TỰ TIN — VỮNG TAY LÁI</span> <i /></div>
+          <h1>{isBasic ? <>KẾT QUẢ ĐÁNH GIÁ<br />KỸ NĂNG LÁI XE CƠ BẢN</> : <>KẾT QUẢ BÀI THI<br />SÁT HẠCH SA HÌNH</>}</h1>
+          <div><i /> <span>{isBasic ? 'NẮM CHẮC NỀN TẢNG — LÁI XE AN TOÀN' : 'AN TOÀN — TỰ TIN — VỮNG TAY LÁI'}</span> <i /></div>
         </div>
         <div className="report-vehicle-badge">
           <div><CarFront size={31} /></div>
@@ -44,10 +48,10 @@ export function EvaluationReport({ state, reportRef }: EvaluationReportProps) {
           <InfoItem label="Hạng xe" value={state.vehicleCategory ? VEHICLE_LABELS[state.vehicleCategory] : '—'} />
         </section>
 
-        <ReportSectionTitle number="2" title="KẾT QUẢ ĐÁNH GIÁ TỪNG BÀI THI" />
-        <section className="report-table" aria-label="Kết quả từng bài thi">
+        <ReportSectionTitle number="2" title={isBasic ? 'KẾT QUẢ ĐÁNH GIÁ TỪNG KỸ NĂNG' : 'KẾT QUẢ ĐÁNH GIÁ TỪNG BÀI THI'} />
+        <section className="report-table" aria-label={isBasic ? 'Kết quả từng kỹ năng' : 'Kết quả từng bài thi'}>
           <div className="report-table__header">
-            <span>STT</span><span>NỘI DUNG BÀI THI</span><span>ĐÁNH GIÁ</span><span>LỖI & GHI CHÚ</span>
+            <span>STT</span><span>{isBasic ? 'NỘI DUNG KỸ NĂNG' : 'NỘI DUNG BÀI THI'}</span><span>ĐÁNH GIÁ</span><span>LỖI & GHI CHÚ</span>
           </div>
           {state.lessons.map((lesson) => {
             const status = lesson.status ? STATUS_META[lesson.status] : null
@@ -80,11 +84,11 @@ export function EvaluationReport({ state, reportRef }: EvaluationReportProps) {
           </>
         )}
 
-        <ReportSectionTitle number="4" title="TỔNG KẾT KẾT QUẢ" />
+        <ReportSectionTitle number={isBasic ? '3' : '4'} title="TỔNG KẾT KẾT QUẢ" />
         <section className="report-summary">
-          <SummaryBox type="good" icon={<Award size={40} />} label="TỐT" number={totals.GOOD} />
-          <SummaryBox type="notice" icon={<TriangleAlert size={39} />} label="CẦN LƯU Ý" number={totals.NOTICE} />
-          <SummaryBox type="practice" icon={<ClipboardPenLine size={39} />} label="CẦN LUYỆN THÊM" number={totals.NEEDS_PRACTICE} />
+          <SummaryBox type="good" icon={<Award size={40} />} label="TỐT" number={totals.GOOD} unit={isBasic ? 'kỹ năng' : 'bài'} />
+          <SummaryBox type="notice" icon={<TriangleAlert size={39} />} label="CẦN LƯU Ý" number={totals.NOTICE} unit={isBasic ? 'kỹ năng' : 'bài'} />
+          <SummaryBox type="practice" icon={<ClipboardPenLine size={39} />} label="CẦN LUYỆN THÊM" number={totals.NEEDS_PRACTICE} unit={isBasic ? 'kỹ năng' : 'bài'} />
         </section>
 
         <section className={`report-conclusion report-conclusion--${conclusion.className}`}>
@@ -109,8 +113,8 @@ export function EvaluationReport({ state, reportRef }: EvaluationReportProps) {
       </div>
 
       <footer className="report-footer">
-        <div><CarFront size={27} /><strong>QUỐC ANH</strong></div>
-        <span>ĐÀO TẠO LÁI XE UY TÍN — CHẤT LƯỢNG — TRÁCH NHIỆM</span>
+        <div>{isBasic ? <><ShieldCheck size={27} /><strong>PHÚ GIÁO</strong></> : <><CarFront size={27} /><strong>QUỐC ANH</strong></>}</div>
+        <span>{isBasic ? 'TRUNG TÂM GIÁO DỤC NGHỀ NGHIỆP PHÚ GIÁO' : 'ĐÀO TẠO LÁI XE UY TÍN — CHẤT LƯỢNG — TRÁCH NHIỆM'}</span>
         <i>✦</i>
       </footer>
     </div>
@@ -125,6 +129,6 @@ function InfoItem({ label, value, strong = false }: { label: string; value: stri
   return <div className="report-info-item"><span>{label}:</span><b className={strong ? 'is-strong' : ''}>{value}</b></div>
 }
 
-function SummaryBox({ type, icon, label, number }: { type: string; icon: React.ReactNode; label: string; number: number }) {
-  return <div className={`report-summary-box report-summary-box--${type}`}><div>{icon}</div><span><small>{label}</small><strong>{number} <i>bài</i></strong></span></div>
+function SummaryBox({ type, icon, label, number, unit }: { type: string; icon: React.ReactNode; label: string; number: number; unit: string }) {
+  return <div className={`report-summary-box report-summary-box--${type}`}><div>{icon}</div><span><small>{label}</small><strong>{number} <i>{unit}</i></strong></span></div>
 }

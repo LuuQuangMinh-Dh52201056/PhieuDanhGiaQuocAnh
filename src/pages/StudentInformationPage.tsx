@@ -11,6 +11,7 @@ interface StudentInformationPageProps {
 }
 
 export function StudentInformationPage({ state, onChange, onBack, onContinue }: StudentInformationPageProps) {
+  const trainingLabel = state.trainingType === 'BASIC' ? 'TẬP CƠ BẢN' : 'SA HÌNH'
   const submit = (event: React.FormEvent) => {
     event.preventDefault()
     onContinue()
@@ -18,10 +19,10 @@ export function StudentInformationPage({ state, onChange, onBack, onContinue }: 
 
   return (
     <div className="app-shell">
-      <AppHeader activeStep={2} />
+      <AppHeader activeStep={3} centerBrand={state.trainingType === 'BASIC'} />
       <main className="content-page content-page--narrow">
         <div className="page-heading">
-          <div className="page-heading__number">02</div>
+          <div className="page-heading__number">03</div>
           <div>
             <span>THÔNG TIN BUỔI ĐÁNH GIÁ</span>
             <h1>Thông tin học viên</h1>
@@ -32,8 +33,8 @@ export function StudentInformationPage({ state, onChange, onBack, onContinue }: 
         <form className="info-card" onSubmit={submit}>
           <div className="vehicle-summary">
             <div className="vehicle-summary__icon"><CarFront size={25} /></div>
-            <div><small>HẠNG XE ĐÃ CHỌN</small><strong>{state.vehicleCategory ? VEHICLE_LABELS[state.vehicleCategory] : '—'}</strong></div>
-            <button type="button" onClick={onBack}>Đổi hạng xe</button>
+            <div><small>HẠNG XE • NỘI DUNG TẬP</small><strong>{state.vehicleCategory ? VEHICLE_LABELS[state.vehicleCategory] : '—'} • {trainingLabel}</strong></div>
+            <button type="button" onClick={onBack}>Đổi nội dung</button>
           </div>
 
           <div className="form-grid">

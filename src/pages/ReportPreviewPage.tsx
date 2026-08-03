@@ -3,8 +3,8 @@ import { toBlob, toPng } from 'html-to-image'
 import { ArrowLeft, CheckCircle2, Download, FilePenLine, Images, LoaderCircle, RefreshCcw, Share2 } from 'lucide-react'
 import { AppHeader } from '../components/AppHeader'
 import { EvaluationReport } from '../components/EvaluationReport'
-import type { EvaluationState, FinalConclusion } from '../types/evaluation'
-import { CONCLUSION_META, generateFileName } from '../utils/evaluation'
+import type { EvaluationConclusion, EvaluationState } from '../types/evaluation'
+import { BASIC_CONCLUSIONS, CONCLUSION_META, COURSE_CONCLUSIONS, generateFileName } from '../utils/evaluation'
 
 interface ReportPreviewPageProps {
   state: EvaluationState
@@ -20,6 +20,7 @@ export function ReportPreviewPage({ state, onChange, onEdit, onNew }: ReportPrev
   const [message, setMessage] = useState('')
   const isAppleMobile = /iPad|iPhone|iPod/.test(navigator.userAgent)
     || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1)
+  const conclusions: EvaluationConclusion[] = state.trainingType === 'BASIC' ? BASIC_CONCLUSIONS : COURSE_CONCLUSIONS
 
   useEffect(() => {
     const stage = stageRef.current
@@ -104,7 +105,7 @@ export function ReportPreviewPage({ state, onChange, onEdit, onNew }: ReportPrev
         // Safari iOS xử lý ảnh ổn định nhất khi chỉ chia sẻ tệp, không kèm text.
         const shareData = isAppleMobile
           ? { files: [file] }
-          : { title: 'Phiếu đánh giá sa hình', text: `Phiếu đánh giá của ${state.studentName}`, files: [file] }
+          : { title: state.trainingType === 'BASIC' ? 'Phiếu đánh giá tập xe cơ bản' : 'Phiếu đánh giá sa hình', text: `Phiếu đánh giá của ${state.studentName}`, files: [file] }
         await navigator.share(shareData)
         setMessage(intent === 'photos'
           ? 'Nếu bạn đã chọn “Lưu hình ảnh”, phiếu hiện đã nằm trong ứng dụng Ảnh.'
@@ -128,7 +129,7 @@ export function ReportPreviewPage({ state, onChange, onEdit, onNew }: ReportPrev
 
   return (
     <div className="app-shell report-preview-page">
-      <AppHeader activeStep={4} />
+      <AppHeader activeStep={5} centerBrand={state.trainingType === 'BASIC'} />
       <main className="report-preview-content">
         <div className="report-preview-heading">
           <div>
@@ -143,7 +144,7 @@ export function ReportPreviewPage({ state, onChange, onEdit, onNew }: ReportPrev
           <strong>Kết luận cuối cùng</strong>
           <p>Hệ thống đã đề xuất dựa trên kết quả; giáo viên có thể thay đổi trước khi xuất.</p>
           <div className="conclusion-options">
-            {(Object.keys(CONCLUSION_META) as FinalConclusion[]).map((key) => (
+            {conclusions.map((key) => (
               <button type="button" key={key} className={state.finalConclusion === key ? 'is-selected' : ''} onClick={() => onChange({ finalConclusion: key })}>
                 <span>{state.finalConclusion === key && <CheckCircle2 size={17} />}</span>{CONCLUSION_META[key].label}
               </button>

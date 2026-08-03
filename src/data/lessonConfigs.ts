@@ -6,21 +6,21 @@ export const VEHICLE_CATEGORIES: VehicleCategoryInfo[] = [
     shortLabel: 'BSS',
     label: 'B SỐ SÀN',
     description: 'Đánh giá phối hợp côn, ga, phanh và thao tác chuyển số.',
-    feature: '11 bài thi • Xe số sàn',
+    feature: 'Tập cơ bản • Sa hình',
   },
   {
     id: 'B_AUTOMATIC',
     shortLabel: 'BTĐ',
     label: 'B SỐ TỰ ĐỘNG',
     description: 'Tập trung kiểm soát tốc độ, canh xe và quan sát gương.',
-    feature: '11 bài thi • Xe tự động',
+    feature: 'Tập cơ bản • Sa hình',
   },
   {
     id: 'C1',
     shortLabel: 'C1',
     label: 'HẠNG C1',
     description: 'Đánh giá xe tải, canh thân xe, bánh sau và đuôi xe.',
-    feature: '10 bài thi • Xe tải',
+    feature: 'Tập cơ bản • Sa hình',
   },
 ]
 
