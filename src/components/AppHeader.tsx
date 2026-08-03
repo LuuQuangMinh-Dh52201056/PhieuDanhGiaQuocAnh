@@ -13,7 +13,7 @@ export function AppHeader({ activeStep }: AppHeaderProps) {
       <div className="app-header__inner">
         <div className="app-header__top">
           <TrainingCenterBrand compact />
-          <div className="app-privacy"><ShieldCheck size={17} /> Dữ liệu chỉ tồn tại tạm thời</div>
+          <div className="app-privacy"><ShieldCheck size={17} /> Bảo mật thông tin học viên</div>
         </div>
         <div className="stepper" aria-label={`Bước ${activeStep} trên 5`}>
           {steps.map((step, index) => {

@@ -1028,13 +1028,13 @@ textarea:focus-visible { outline-color: rgba(10, 138, 72, .28); }
 .training-option--road {
   min-height: 340px;
   color: var(--green-950);
-  border-color: #d5e5db;
+  border: 2px solid #0b914c;
   background:
     radial-gradient(circle at 102% 15%, rgba(20,161,87,.09), transparent 37%),
     #fff;
   box-shadow: 0 16px 38px rgba(8,95,51,.09);
 }
-.training-option--course { border: 2px solid var(--green-700); }
+.training-option:hover { border-color: #057039; }
 .training-option__icon,
 .training-option--basic .training-option__icon,
 .training-option--course .training-option__icon,
