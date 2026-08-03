@@ -1,4 +1,7 @@
-import logoPhuGiao from '../hinhanh/logoPHUGIAO.jfif'
+// Nhúng logo thành data URL để Safari không phải tải lại ảnh khi dựng PNG.
+import embeddedLogoPhuGiao from '../hinhanh/logoPHUGIAO.jfif?inline'
+
+const logoPhuGiao = embeddedLogoPhuGiao.replace('data:application/octet-stream', 'data:image/jpeg')
 
 interface TrainingCenterBrandProps {
   compact?: boolean

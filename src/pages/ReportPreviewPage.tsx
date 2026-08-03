@@ -45,6 +45,20 @@ export function ReportPreviewPage({ state, onChange, onEdit, onNew }: ReportPrev
     const node = reportRef.current
     if (!node) throw new Error('Không tìm thấy phiếu đánh giá')
     await document.fonts.ready
+    const images = Array.from(node.querySelectorAll('img'))
+    await Promise.all(images.map(async (image) => {
+      if (!image.complete) {
+        await new Promise<void>((resolve) => {
+          image.addEventListener('load', () => resolve(), { once: true })
+          image.addEventListener('error', () => resolve(), { once: true })
+        })
+      }
+      try {
+        await image.decode?.()
+      } catch {
+        // Vẫn tiếp tục xuất nếu trình duyệt cũ không hỗ trợ decode().
+      }
+    }))
     const previousStyle = node.getAttribute('style')
     Object.assign(node.style, {
       transform: 'none',

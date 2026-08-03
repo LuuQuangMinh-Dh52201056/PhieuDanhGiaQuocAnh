@@ -3,6 +3,7 @@ import { AppHeader } from '../components/AppHeader'
 import { AppFooter } from '../components/AppFooter'
 import { VEHICLE_LABELS } from '../data/lessonConfigs'
 import type { EvaluationState } from '../types/evaluation'
+import { formatDate } from '../utils/evaluation'
 
 interface StudentInformationPageProps {
   state: EvaluationState
@@ -53,7 +54,11 @@ export function StudentInformationPage({ state, onChange, onBack, onContinue }: 
 
             <label className="field">
               <span><CalendarDays size={17} /> Ngày đánh giá</span>
-              <input type="date" value={state.evaluationDate} onChange={(event) => onChange({ evaluationDate: event.target.value })} aria-label="Ngày đánh giá" />
+              <div className="date-input-control">
+                <strong>{formatDate(state.evaluationDate)}</strong>
+                <CalendarDays size={19} aria-hidden="true" />
+                <input type="date" value={state.evaluationDate} onChange={(event) => onChange({ evaluationDate: event.target.value })} aria-label="Ngày đánh giá" />
+              </div>
             </label>
 
             <label className="field">
@@ -79,7 +84,7 @@ export function StudentInformationPage({ state, onChange, onBack, onContinue }: 
 
           <div className="form-note">
             <ShieldNotice />
-            <p><strong>Quyền riêng tư:</strong> Thông tin chỉ tồn tại trong lúc trang đang mở và sẽ bị xóa khi tải lại.</p>
+            <p><strong>Bảo mật:</strong> Thông tin học viên chỉ được sử dụng để tạo phiếu trong phiên hiện tại.</p>
           </div>
 
           <div className="form-actions">

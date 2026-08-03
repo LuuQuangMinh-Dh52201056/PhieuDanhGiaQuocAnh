@@ -46,7 +46,7 @@ try {
   assert(dimensions.scrollWidth <= dimensions.viewport, `Trang chọn hạng bị tràn ngang: ${JSON.stringify(dimensions)}`)
   assert(await page.getByText('QUỐC ANH', { exact: true }).count() === 0, 'Không được còn thương hiệu Quốc Anh')
   const logoSource = await page.locator('.training-brand__mark img').first().getAttribute('src')
-  assert(logoSource?.includes('logoPHUGIAO'), `Phải sử dụng ảnh logo Phú Giáo thật, nhận được: ${logoSource}`)
+  assert(logoSource?.startsWith('data:image/'), 'Logo Phú Giáo phải được nhúng trực tiếp để không mất khi Safari xuất PNG')
 
   await page.getByRole('button', { name: 'HẠNG XE B SỐ SÀN' }).click()
   await page.screenshot({ path: path.join(artifactDir, 'training-selection-mobile.png'), fullPage: true })
@@ -55,6 +55,13 @@ try {
   assert(await page.getByText('Đường trường', { exact: true }).count() === 1, 'Phải có lựa chọn Đường trường')
   assert(await page.getByText('11 NỘI DUNG', { exact: true }).count() === 1, 'Đường trường phải có 11 nội dung')
   await page.getByRole('button', { name: 'TẬP CƠ BẢN' }).click()
+  const dateInputValue = await page.getByLabel('Ngày đánh giá').inputValue()
+  const [dateYear, dateMonth, dateDay] = dateInputValue.split('-')
+  assert(
+    await page.locator('.date-input-control strong').innerText() === `${dateDay}/${dateMonth}/${dateYear}`,
+    'Ô ngày trên điện thoại phải hiển thị gọn theo định dạng dd/mm/yyyy',
+  )
+  await page.screenshot({ path: path.join(artifactDir, 'student-info-mobile.png'), fullPage: false })
   const basicDate = await enterStudent(page, 'Học viên Cơ Bản')
   assert(await page.locator('.checklist-item-card').count() === 13, 'Tập cơ bản phải có đúng 13 nội dung')
   assert(await page.getByText('Mở cửa xe và lên xe an toàn', { exact: true }).count() === 1, 'Phiếu cơ bản phải đúng nội dung mẫu')
