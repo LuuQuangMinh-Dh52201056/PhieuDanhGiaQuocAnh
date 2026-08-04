@@ -1289,6 +1289,47 @@ textarea:focus-visible { outline-color: rgba(10, 138, 72, .28); }
 .report-signature > strong { color: var(--green-800); }
 .report-footer { color: #fff; border-top-color: #79cc96; background: linear-gradient(90deg,#034526,#087a3e,#034526); }
 
+/* Màu phẳng chỉ dùng lúc dựng PNG: tránh WebKit chia gradient thành các ô màu. */
+.report-page.report-export-flat {
+  color-scheme: only light;
+  forced-color-adjust: none;
+  -webkit-print-color-adjust: exact;
+  print-color-adjust: exact;
+  background-color: #f8fbf9 !important;
+  background-image: none !important;
+  box-shadow: none !important;
+}
+.report-page.report-export-flat *,
+.report-page.report-export-flat *::before,
+.report-page.report-export-flat *::after {
+  background-image: none !important;
+  box-shadow: none !important;
+  text-shadow: none !important;
+  filter: none !important;
+  backdrop-filter: none !important;
+}
+.report-page.report-export-flat .report-header,
+.report-page.report-export-flat .checklist-report-header { background-color: #eef8f1 !important; }
+.report-page.report-export-flat .report-header__flare,
+.report-page.report-export-flat .report-conclusion::after,
+.report-page.report-export-flat .checklist-report-header::after { display: none !important; }
+.report-page.report-export-flat .vehicle-category-badge,
+.report-page.report-export-flat .report-vehicle-badge,
+.report-page.report-export-flat .checklist-report-header__vehicle,
+.report-page.report-export-flat .report-section-title,
+.report-page.report-export-flat .report-table__header,
+.report-page.report-export-flat .checklist-report-table__header { background-color: #087a3e !important; }
+.report-page.report-export-flat .report-title > div i,
+.report-page.report-export-flat .report-conclusion__content small i { background-color: #79c795 !important; }
+.report-page.report-export-flat .report-status--good { background-color: #0b914c !important; }
+.report-page.report-export-flat .report-status--notice { background-color: #ef8a14 !important; }
+.report-page.report-export-flat .report-status--practice { background-color: #d92d34 !important; }
+.report-page.report-export-flat .report-emergency { background-color: #fffaf0 !important; }
+.report-page.report-export-flat .report-conclusion { background-color: #06713a !important; }
+.report-page.report-export-flat .report-conclusion__medal { background-color: #c6ead2 !important; }
+.report-page.report-export-flat .report-footer,
+.report-page.report-export-flat .checklist-report-footer { background-color: #075b31 !important; }
+
 /* Checklist PNG tone hierarchy */
 .checklist-report-header__vehicle > div { width: 39px; height: 39px; }
 .checklist-report-header__vehicle span { font-size: 9px; }
@@ -1373,4 +1414,1419 @@ textarea:focus-visible { outline-color: rgba(10, 138, 72, .28); }
   .report-preview-content { width: 1080px; padding: 0; }
   .report-preview-canvas { height: auto !important; box-shadow: none; overflow: visible; }
   .report-preview-canvas .report-page { position: static; margin: 0; transform: none; }
+}
+
+/* =========================================================
+   BẢN CHỈNH PHIẾU ĐÁNH GIÁ – 04/08/2026
+   - Giữ nguyên logo và bộ nhận diện
+   - Thu gọn phần đầu và phần ký tên
+   - Tăng cỡ chữ bảng đánh giá
+   - Tăng cỡ chữ nhận xét giáo viên
+   ========================================================= */
+
+/* 1. PHẦN MÀU ĐỎ PHÍA TRÊN: THU GỌN CHIỀU CAO HEADER */
+.report-page:not(.checklist-report) .report-header {
+  height: 218px;
+  min-height: 218px;
+  grid-template-columns: 300px minmax(0, 1fr) 230px;
+  gap: 12px;
+  padding: 18px 39px 30px;
+}
+
+/* Thu gọn đường cong phía dưới header */
+.report-page:not(.checklist-report) .report-header::after {
+  bottom: -22px;
+  height: 42px;
+}
+
+/* Giữ nguyên logo: không thay đổi .training-brand__mark và ảnh logo */
+.report-page:not(.checklist-report) .report-header .training-brand__mark {
+  width: 96px;
+  height: 96px;
+}
+
+/* Thu gọn khối hạng xe để cân đối với header mới */
+.report-page:not(.checklist-report) .report-vehicle-badge {
+  width: 145px;
+  height: 166px;
+  border-radius: 20px 20px 54px 54px;
+}
+
+.report-page:not(.checklist-report) .report-vehicle-badge::before {
+  border-radius: 13px 13px 46px 46px;
+}
+
+.report-page:not(.checklist-report) .report-vehicle-badge > div {
+  width: 48px;
+  height: 48px;
+}
+
+.report-page:not(.checklist-report) .report-vehicle-badge small {
+  margin-top: 5px;
+  font-size: 9px;
+}
+
+.report-page:not(.checklist-report) .report-vehicle-badge strong {
+  font-size: 45px;
+}
+
+.report-page:not(.checklist-report) .report-vehicle-badge span {
+  font-size: 11px;
+}
+
+/* Cân lại tiêu đề trong header, không làm thay đổi logo */
+.report-page:not(.checklist-report) .report-title {
+  transform: translateY(-1px);
+}
+
+.report-page:not(.checklist-report) .report-title > small {
+  font-size: 31px;
+}
+
+.report-page:not(.checklist-report) .report-title h1 {
+  margin: 6px 0 10px;
+  font-size: 25px;
+}
+
+.report-page:not(.checklist-report) .report-title > div {
+  font-size: 9px;
+}
+
+/* 2. PHẦN MÀU VÀNG: TĂNG CỠ CHỮ BẢNG ĐÁNH GIÁ */
+.report-page:not(.checklist-report) .report-table__header {
+  min-height: 44px;
+  font-size: 13px;
+  line-height: 1.25;
+}
+
+.report-page:not(.checklist-report) .report-table__row {
+  min-height: 58px;
+  font-size: 12px;
+}
+
+.report-page:not(.checklist-report) .report-table__row > span {
+  padding: 8px 11px;
+}
+
+.report-page:not(.checklist-report) .report-order {
+  font-size: 14px;
+}
+
+.report-page:not(.checklist-report) .report-lesson-name {
+  gap: 10px;
+}
+
+.report-page:not(.checklist-report) .report-lesson-name i {
+  width: 30px;
+  height: 30px;
+  font-size: 15px;
+}
+
+.report-page:not(.checklist-report) .report-lesson-name strong {
+  font-size: 12px;
+  line-height: 1.4;
+}
+
+.report-page:not(.checklist-report) .report-status {
+  min-width: 112px;
+  min-height: 30px;
+  padding: 3px 10px;
+  font-size: 11px;
+  font-weight: 800;
+}
+
+.report-page:not(.checklist-report) .report-details {
+  font-size: 11.5px;
+  line-height: 1.45;
+}
+
+.report-page:not(.checklist-report) .report-details--clear {
+  font-size: 11.5px;
+}
+
+/* 3. PHẦN MÀU ĐỎ PHÍA DƯỚI: THU GỌN VÙNG NHẬN XÉT VÀ KÝ TÊN */
+.report-page:not(.checklist-report) .report-comment-signature {
+  min-height: 170px;
+  grid-template-columns: 1.25fr .75fr;
+  margin-top: 10px;
+}
+
+.report-page:not(.checklist-report) .report-teacher-comment {
+  padding: 17px 20px;
+}
+
+.report-page:not(.checklist-report) .report-signature {
+  min-height: 170px;
+  padding: 17px 22px;
+}
+
+.report-page:not(.checklist-report) .signature-line {
+  margin-top: auto;
+  margin-bottom: 8px;
+  padding-bottom: 5px;
+}
+
+/* 4. PHẦN MÀU TÍM: TĂNG CHỮ NHẬN XÉT GIÁO VIÊN */
+.report-page:not(.checklist-report) .report-teacher-comment strong {
+  font-size: 13px;
+  letter-spacing: .15px;
+}
+
+.report-page:not(.checklist-report) .report-teacher-comment p {
+  margin-top: 8px;
+  font-size: 13px;
+  line-height: 1.55;
+  font-weight: 500;
+}
+
+/* Tăng nhẹ chữ khu vực giáo viên hướng dẫn cho đồng bộ */
+.report-page:not(.checklist-report) .report-signature > strong {
+  font-size: 12px;
+}
+
+.report-page:not(.checklist-report) .signature-line {
+  font-size: 14px;
+}
+
+/* Giữ chiều cao toàn phiếu 1080x1920 và tránh tràn nội dung */
+.report-page:not(.checklist-report) {
+  min-height: 1920px;
+}
+
+/* Khi xuất PNG màu phẳng vẫn giữ đúng kích thước mới */
+.report-page.report-export-flat:not(.checklist-report) .report-header {
+  height: 218px !important;
+  min-height: 218px !important;
+}
+
+/* =========================================================
+   BẢN CHỈNH V2 – CHỮ LỚN KHI XUẤT PNG
+   Áp dụng cho phiếu sát hạch sa hình 1080 x 1920
+   Giữ nguyên logo Phú Giáo
+   ========================================================= */
+
+/* Giữ đúng kích thước ảnh xuất */
+.report-page:not(.checklist-report) {
+  width: 1080px !important;
+  height: 1920px !important;
+  min-height: 1920px !important;
+  max-height: 1920px !important;
+}
+
+/* =========================================================
+   1. KHUNG ĐỎ PHÍA TRÊN – THU GỌN
+   ========================================================= */
+.report-page:not(.checklist-report) .report-header {
+  height: 200px !important;
+  min-height: 200px !important;
+  max-height: 200px !important;
+  grid-template-columns: 300px minmax(0, 1fr) 210px !important;
+  gap: 10px !important;
+  padding: 12px 34px 24px !important;
+}
+
+/* Giữ logo đúng kích thước hiện tại */
+.report-page:not(.checklist-report) .report-header .training-brand__mark {
+  width: 96px !important;
+  height: 96px !important;
+}
+
+.report-page:not(.checklist-report) .report-header::after {
+  bottom: -19px !important;
+  height: 37px !important;
+}
+
+/* Thu gọn bảng hạng xe, không đụng tới logo */
+.report-page:not(.checklist-report) .report-vehicle-badge {
+  width: 132px !important;
+  height: 150px !important;
+  border-radius: 18px 18px 48px 48px !important;
+}
+
+.report-page:not(.checklist-report) .report-vehicle-badge::before {
+  border-radius: 12px 12px 41px 41px !important;
+}
+
+.report-page:not(.checklist-report) .report-vehicle-badge > div {
+  width: 44px !important;
+  height: 44px !important;
+}
+
+.report-page:not(.checklist-report) .report-vehicle-badge small {
+  margin-top: 4px !important;
+  font-size: 9px !important;
+}
+
+.report-page:not(.checklist-report) .report-vehicle-badge strong {
+  font-size: 42px !important;
+}
+
+.report-page:not(.checklist-report) .report-vehicle-badge span {
+  font-size: 10px !important;
+}
+
+.report-page:not(.checklist-report) .report-title {
+  transform: none !important;
+}
+
+.report-page:not(.checklist-report) .report-title > small {
+  font-size: 31px !important;
+}
+
+.report-page:not(.checklist-report) .report-title h1 {
+  margin: 5px 0 8px !important;
+  font-size: 25px !important;
+  line-height: 1.15 !important;
+}
+
+.report-page:not(.checklist-report) .report-title > div {
+  font-size: 10px !important;
+}
+
+/* Giảm khoảng trống chung trong thân phiếu */
+.report-page:not(.checklist-report) .report-body {
+  padding: 0 27px 14px !important;
+}
+
+.report-page:not(.checklist-report) .report-section-title {
+  height: 45px !important;
+  margin: 7px 0 6px !important;
+}
+
+.report-page:not(.checklist-report) .report-section-title > span {
+  width: 44px !important;
+  height: 44px !important;
+}
+
+.report-page:not(.checklist-report) .report-section-title > strong {
+  font-size: 16px !important;
+}
+
+/* =========================================================
+   2. KHUNG VÀNG – PHÓNG TO TOÀN BỘ CHỮ TRONG BẢNG
+   ========================================================= */
+.report-page:not(.checklist-report) .report-table__header,
+.report-page:not(.checklist-report) .report-table__row {
+  grid-template-columns: 64px 350px 160px minmax(0, 1fr) !important;
+}
+
+.report-page:not(.checklist-report) .report-table__header {
+  min-height: 45px !important;
+  font-size: 14px !important;
+  line-height: 1.2 !important;
+}
+
+.report-page:not(.checklist-report) .report-table__row {
+  min-height: 56px !important;
+  font-size: 14px !important;
+}
+
+.report-page:not(.checklist-report) .report-table__row > span {
+  padding: 7px 10px !important;
+}
+
+.report-page:not(.checklist-report) .report-order {
+  font-size: 15px !important;
+}
+
+.report-page:not(.checklist-report) .report-lesson-name {
+  gap: 10px !important;
+}
+
+.report-page:not(.checklist-report) .report-lesson-name i {
+  width: 32px !important;
+  height: 32px !important;
+  font-size: 16px !important;
+}
+
+.report-page:not(.checklist-report) .report-lesson-name strong {
+  font-size: 14px !important;
+  line-height: 1.32 !important;
+  font-weight: 700 !important;
+}
+
+.report-page:not(.checklist-report) .report-status {
+  min-width: 116px !important;
+  min-height: 31px !important;
+  padding: 3px 10px !important;
+  font-size: 12px !important;
+  font-weight: 800 !important;
+}
+
+.report-page:not(.checklist-report) .report-details,
+.report-page:not(.checklist-report) .report-details--clear {
+  font-size: 13px !important;
+  line-height: 1.38 !important;
+}
+
+.report-page:not(.checklist-report) .report-details--clear svg {
+  width: 18px !important;
+  height: 18px !important;
+}
+
+/* Chữ thông tin học viên rõ hơn */
+.report-page:not(.checklist-report) .report-info-grid {
+  padding: 9px 20px 11px !important;
+}
+
+.report-page:not(.checklist-report) .report-info-item {
+  min-height: 37px !important;
+  grid-template-columns: 172px 1fr !important;
+  font-size: 13px !important;
+}
+
+.report-page:not(.checklist-report) .report-info-item b {
+  font-size: 14px !important;
+}
+
+.report-page:not(.checklist-report) .report-info-item b.is-strong {
+  font-size: 16px !important;
+}
+
+/* Tăng chữ tình huống khẩn cấp */
+.report-page:not(.checklist-report) .report-emergency {
+  min-height: 66px !important;
+  padding: 9px 16px !important;
+}
+
+.report-page:not(.checklist-report) .report-emergency small {
+  font-size: 9px !important;
+}
+
+.report-page:not(.checklist-report) .report-emergency strong {
+  font-size: 14px !important;
+}
+
+.report-page:not(.checklist-report) .report-emergency p {
+  font-size: 12px !important;
+}
+
+/* Tổng kết gọn nhưng chữ rõ */
+.report-page:not(.checklist-report) .report-summary-box {
+  height: 81px !important;
+}
+
+.report-page:not(.checklist-report) .report-summary-box small {
+  font-size: 12px !important;
+}
+
+.report-page:not(.checklist-report) .report-summary-box strong {
+  font-size: 29px !important;
+}
+
+.report-page:not(.checklist-report) .report-conclusion {
+  min-height: 112px !important;
+  margin-top: 10px !important;
+}
+
+.report-page:not(.checklist-report) .report-conclusion__content > strong {
+  font-size: 29px !important;
+}
+
+.report-page:not(.checklist-report) .report-conclusion__content p {
+  font-size: 12px !important;
+}
+
+/* =========================================================
+   3. KHUNG ĐỎ PHÍA DƯỚI – ÉP GỌN KHU VỰC KÝ TÊN
+   ========================================================= */
+.report-page:not(.checklist-report) .report-comment-signature {
+  height: 175px !important;
+  min-height: 175px !important;
+  max-height: 175px !important;
+  grid-template-columns: 1.25fr .75fr !important;
+  margin-top: 9px !important;
+  overflow: hidden !important;
+}
+
+.report-page:not(.checklist-report) .report-teacher-comment {
+  padding: 17px 20px !important;
+}
+
+.report-page:not(.checklist-report) .report-signature {
+  height: 175px !important;
+  min-height: 175px !important;
+  max-height: 175px !important;
+  padding: 17px 22px !important;
+}
+
+/* =========================================================
+   4. KHUNG TÍM – PHÓNG TO NHẬN XÉT GIÁO VIÊN
+   ========================================================= */
+.report-page:not(.checklist-report) .report-teacher-comment > svg {
+  width: 28px !important;
+  height: 28px !important;
+}
+
+.report-page:not(.checklist-report) .report-teacher-comment strong {
+  font-size: 15px !important;
+  line-height: 1.25 !important;
+  letter-spacing: .1px !important;
+}
+
+.report-page:not(.checklist-report) .report-teacher-comment p {
+  margin-top: 8px !important;
+  font-size: 16px !important;
+  line-height: 1.42 !important;
+  font-weight: 500 !important;
+}
+
+.report-page:not(.checklist-report) .report-signature > strong {
+  font-size: 14px !important;
+}
+
+.report-page:not(.checklist-report) .signature-line {
+  margin-top: auto !important;
+  margin-bottom: 7px !important;
+  padding-bottom: 5px !important;
+  font-size: 15px !important;
+}
+
+/* Thu gọn footer, logo footer vẫn giữ nguyên */
+.report-page:not(.checklist-report) .report-footer {
+  height: 60px !important;
+  min-height: 60px !important;
+}
+
+/* Bắt buộc giữ các thay đổi trên khi dựng PNG màu phẳng */
+.report-page.report-export-flat:not(.checklist-report) .report-header {
+  height: 200px !important;
+  min-height: 200px !important;
+  max-height: 200px !important;
+}
+
+.report-page.report-export-flat:not(.checklist-report) .report-comment-signature,
+.report-page.report-export-flat:not(.checklist-report) .report-signature {
+  height: 175px !important;
+  min-height: 175px !important;
+  max-height: 175px !important;
+}
+
+/* =========================================================
+   BẢN CHỈNH V3 – PHIẾU TO, DÀI, CÂN ĐỐI CHUYÊN NGHIỆP
+   Yêu cầu:
+   - Mục 2, 3, 4 to và thoáng hơn
+   - Phần nhận xét giáo viên và giáo viên hướng dẫn to dài xuống
+   - Logo góc trái trên to hơn một chút
+   - Tên trung tâm giáo dục nghề nghiệp to hơn
+   - Giữ nguyên nhận diện xanh trắng, khổ ảnh 1080 x 1920
+   ========================================================= */
+
+/* Khổ phiếu cố định */
+.report-page:not(.checklist-report) {
+  width: 1080px !important;
+  height: 1920px !important;
+  min-height: 1920px !important;
+  max-height: 1920px !important;
+  display: flex !important;
+  flex-direction: column !important;
+}
+
+/* =========================================================
+   1) HEADER – CHUYÊN NGHIỆP, LOGO TO HƠN
+   ========================================================= */
+.report-page:not(.checklist-report) .report-header {
+  height: 228px !important;
+  min-height: 228px !important;
+  max-height: 228px !important;
+  grid-template-columns: 330px minmax(0, 1fr) 210px !important;
+  gap: 14px !important;
+  padding: 16px 34px 28px !important;
+  align-items: center !important;
+}
+
+.report-page:not(.checklist-report) .report-header::after {
+  bottom: -18px !important;
+  height: 40px !important;
+}
+
+.report-page:not(.checklist-report) .report-header .training-brand {
+  gap: 15px !important;
+  align-items: center !important;
+}
+
+.report-page:not(.checklist-report) .report-header .training-brand__mark {
+  width: 110px !important;
+  height: 110px !important;
+}
+
+.report-page:not(.checklist-report) .report-header .training-brand__copy {
+  gap: 4px !important;
+}
+
+.report-page:not(.checklist-report) .report-header .training-brand__copy small {
+  font-size: 10px !important;
+  line-height: 1.35 !important;
+  letter-spacing: .7px !important;
+  font-weight: 800 !important;
+}
+
+.report-page:not(.checklist-report) .report-header .training-brand__copy strong {
+  font-size: 30px !important;
+  line-height: 1.05 !important;
+  letter-spacing: .3px !important;
+}
+
+.report-page:not(.checklist-report) .report-title > small {
+  font-size: 34px !important;
+  line-height: 1 !important;
+}
+
+.report-page:not(.checklist-report) .report-title h1 {
+  margin: 6px 0 10px !important;
+  font-size: 29px !important;
+  line-height: 1.15 !important;
+  letter-spacing: .15px !important;
+}
+
+.report-page:not(.checklist-report) .report-title > div {
+  font-size: 10.5px !important;
+  letter-spacing: 1.2px !important;
+}
+
+.report-page:not(.checklist-report) .report-vehicle-badge {
+  width: 138px !important;
+  height: 160px !important;
+  border-radius: 18px 18px 50px 50px !important;
+}
+
+.report-page:not(.checklist-report) .report-vehicle-badge::before {
+  border-radius: 12px 12px 43px 43px !important;
+}
+
+.report-page:not(.checklist-report) .report-vehicle-badge > div {
+  width: 46px !important;
+  height: 46px !important;
+}
+
+.report-page:not(.checklist-report) .report-vehicle-badge small {
+  margin-top: 5px !important;
+  font-size: 9px !important;
+}
+
+.report-page:not(.checklist-report) .report-vehicle-badge strong {
+  font-size: 46px !important;
+}
+
+.report-page:not(.checklist-report) .report-vehicle-badge span {
+  font-size: 10.5px !important;
+}
+
+/* =========================================================
+   2) KHUNG THÂN – TĂNG ĐỘ THOÁNG VÀ CÂN ĐỐI
+   ========================================================= */
+.report-page:not(.checklist-report) .report-body {
+  flex: 1 !important;
+  padding: 0 24px 14px !important;
+}
+
+.report-page:not(.checklist-report) .report-section-title {
+  height: 52px !important;
+  margin: 8px 0 7px !important;
+  padding: 0 34px 0 58px !important;
+}
+
+.report-page:not(.checklist-report) .report-section-title > span {
+  width: 48px !important;
+  height: 48px !important;
+  font-size: 21px !important;
+}
+
+.report-page:not(.checklist-report) .report-section-title > strong {
+  font-size: 18px !important;
+  letter-spacing: .15px !important;
+}
+
+/* =========================================================
+   3) THÔNG TIN HỌC VIÊN – RÕ VÀ SANG HƠN
+   ========================================================= */
+.report-page:not(.checklist-report) .report-info-grid {
+  padding: 11px 22px 13px !important;
+}
+
+.report-page:not(.checklist-report) .report-info-item {
+  min-height: 40px !important;
+  grid-template-columns: 185px 1fr !important;
+  font-size: 13px !important;
+}
+
+.report-page:not(.checklist-report) .report-info-item span {
+  font-size: 13px !important;
+}
+
+.report-page:not(.checklist-report) .report-info-item b {
+  font-size: 15px !important;
+  font-weight: 700 !important;
+}
+
+.report-page:not(.checklist-report) .report-info-item b.is-strong {
+  font-size: 17px !important;
+}
+
+/* =========================================================
+   4) MỤC 2 – BẢNG BÀI THI TO, DỄ NHÌN, PHÔ RA
+   ========================================================= */
+.report-page:not(.checklist-report) .report-table__header,
+.report-page:not(.checklist-report) .report-table__row {
+  grid-template-columns: 64px 355px 170px minmax(0, 1fr) !important;
+}
+
+.report-page:not(.checklist-report) .report-table__header {
+  min-height: 48px !important;
+  font-size: 15px !important;
+  line-height: 1.2 !important;
+}
+
+.report-page:not(.checklist-report) .report-table__header > span {
+  padding: 4px 6px !important;
+}
+
+.report-page:not(.checklist-report) .report-table__row {
+  min-height: 64px !important;
+  font-size: 14px !important;
+}
+
+.report-page:not(.checklist-report) .report-table__row > span {
+  padding: 8px 11px !important;
+}
+
+.report-page:not(.checklist-report) .report-order {
+  font-size: 15px !important;
+}
+
+.report-page:not(.checklist-report) .report-lesson-name {
+  gap: 11px !important;
+}
+
+.report-page:not(.checklist-report) .report-lesson-name i {
+  width: 32px !important;
+  height: 32px !important;
+  font-size: 16px !important;
+  border-radius: 7px !important;
+}
+
+.report-page:not(.checklist-report) .report-lesson-name strong {
+  font-size: 14.5px !important;
+  line-height: 1.34 !important;
+  font-weight: 700 !important;
+}
+
+.report-page:not(.checklist-report) .report-status {
+  min-width: 120px !important;
+  min-height: 33px !important;
+  padding: 3px 12px !important;
+  font-size: 12px !important;
+  font-weight: 800 !important;
+}
+
+.report-page:not(.checklist-report) .report-details,
+.report-page:not(.checklist-report) .report-details--clear {
+  font-size: 13px !important;
+  line-height: 1.42 !important;
+  font-weight: 500 !important;
+}
+
+.report-page:not(.checklist-report) .report-details--clear {
+  gap: 6px !important;
+}
+
+.report-page:not(.checklist-report) .report-details--clear svg {
+  width: 18px !important;
+  height: 18px !important;
+}
+
+/* =========================================================
+   5) MỤC 3 – TÌNH HUỐNG KHẨN CẤP TO VÀ DÀI HƠN
+   ========================================================= */
+.report-page:not(.checklist-report) .report-emergency {
+  min-height: 82px !important;
+  grid-template-columns: 60px 200px 1fr !important;
+  gap: 14px !important;
+  padding: 13px 18px !important;
+}
+
+.report-page:not(.checklist-report) .report-emergency__icon {
+  width: 50px !important;
+  height: 50px !important;
+}
+
+.report-page:not(.checklist-report) .report-emergency small {
+  font-size: 9px !important;
+  letter-spacing: .2px !important;
+}
+
+.report-page:not(.checklist-report) .report-emergency strong {
+  font-size: 16px !important;
+  line-height: 1.2 !important;
+}
+
+.report-page:not(.checklist-report) .report-emergency p {
+  font-size: 12.5px !important;
+  line-height: 1.45 !important;
+}
+
+/* =========================================================
+   6) MỤC 4 – TỔNG KẾT TO VÀ NỔI BẬT HƠN
+   ========================================================= */
+.report-page:not(.checklist-report) .report-summary {
+  gap: 16px !important;
+}
+
+.report-page:not(.checklist-report) .report-summary-box {
+  height: 96px !important;
+  gap: 14px !important;
+  border-width: 2px !important;
+}
+
+.report-page:not(.checklist-report) .report-summary-box > div {
+  width: 58px !important;
+  height: 58px !important;
+}
+
+.report-page:not(.checklist-report) .report-summary-box small {
+  font-size: 13px !important;
+}
+
+.report-page:not(.checklist-report) .report-summary-box strong {
+  font-size: 31px !important;
+}
+
+.report-page:not(.checklist-report) .report-summary-box strong i {
+  font-size: 14px !important;
+}
+
+.report-page:not(.checklist-report) .report-conclusion {
+  min-height: 128px !important;
+  margin-top: 12px !important;
+  grid-template-columns: 120px 1fr !important;
+}
+
+.report-page:not(.checklist-report) .report-conclusion__medal {
+  width: 80px !important;
+  height: 80px !important;
+}
+
+.report-page:not(.checklist-report) .report-conclusion__content {
+  padding-right: 72px !important;
+}
+
+.report-page:not(.checklist-report) .report-conclusion__content small {
+  font-size: 11px !important;
+}
+
+.report-page:not(.checklist-report) .report-conclusion__content > strong {
+  margin: 4px 0 2px !important;
+  font-size: 34px !important;
+  line-height: 1.08 !important;
+}
+
+.report-page:not(.checklist-report) .report-conclusion__content p {
+  font-size: 12px !important;
+  line-height: 1.4 !important;
+}
+
+/* =========================================================
+   7) NHẬN XÉT GIÁO VIÊN + GIÁO VIÊN HƯỚNG DẪN
+   TO, DÀI XUỐNG, PHÔ RA DỄ NHÌN
+   ========================================================= */
+.report-page:not(.checklist-report) .report-comment-signature {
+  height: 230px !important;
+  min-height: 230px !important;
+  max-height: 230px !important;
+  grid-template-columns: 1.4fr .95fr !important;
+  margin-top: 11px !important;
+  overflow: hidden !important;
+}
+
+.report-page:not(.checklist-report) .report-teacher-comment {
+  gap: 14px !important;
+  padding: 20px 22px !important;
+}
+
+.report-page:not(.checklist-report) .report-teacher-comment > svg {
+  width: 30px !important;
+  height: 30px !important;
+  flex-shrink: 0 !important;
+}
+
+.report-page:not(.checklist-report) .report-teacher-comment strong {
+  font-size: 17px !important;
+  line-height: 1.25 !important;
+  letter-spacing: .1px !important;
+}
+
+.report-page:not(.checklist-report) .report-teacher-comment p {
+  margin: 10px 0 0 !important;
+  font-size: 17px !important;
+  line-height: 1.5 !important;
+  font-weight: 500 !important;
+}
+
+.report-page:not(.checklist-report) .report-signature {
+  height: 230px !important;
+  min-height: 230px !important;
+  max-height: 230px !important;
+  padding: 20px 22px !important;
+}
+
+.report-page:not(.checklist-report) .report-signature > strong {
+  font-size: 16px !important;
+  line-height: 1.25 !important;
+}
+
+.report-page:not(.checklist-report) .signature-line {
+  margin-top: auto !important;
+  margin-bottom: 10px !important;
+  padding-bottom: 7px !important;
+  font-size: 18px !important;
+}
+
+/* Footer cân đối lại để tổng thể trông "xịn" hơn */
+.report-page:not(.checklist-report) .report-footer {
+  height: 58px !important;
+  min-height: 58px !important;
+  max-height: 58px !important;
+}
+
+/* Bắt buộc áp dụng luôn khi export PNG dạng flat */
+.report-page.report-export-flat:not(.checklist-report) .report-header {
+  height: 228px !important;
+  min-height: 228px !important;
+  max-height: 228px !important;
+}
+
+.report-page.report-export-flat:not(.checklist-report) .report-comment-signature,
+.report-page.report-export-flat:not(.checklist-report) .report-signature {
+  height: 230px !important;
+  min-height: 230px !important;
+  max-height: 230px !important;
+}
+
+/* =========================================================
+   V6 — FOOTER TRẮNG PHÚ GIÁO HOÀN CHỈNH
+   Logo + AN TOÀN + TRÁCH NHIỆM + VỮNG TAY LÁI
+   ========================================================= */
+
+/* Toàn trang dùng flex để footer luôn nằm sau nội dung */
+.app-shell {
+  width: 100% !important;
+  min-height: 100vh !important;
+  display: flex !important;
+  flex-direction: column !important;
+  overflow: visible !important;
+}
+
+.app-main,
+.app-shell > main,
+.report-preview-page {
+  width: 100% !important;
+  flex: 1 0 auto !important;
+}
+
+/* Không để vùng preview cắt mất footer */
+.report-preview-page,
+.report-preview-content {
+  overflow: visible !important;
+}
+
+/* Footer trắng của giao diện web */
+.site-footer {
+  width: 100% !important;
+  min-height: 118px !important;
+  height: auto !important;
+  flex: 0 0 auto !important;
+
+  display: flex !important;
+  align-items: center !important;
+  justify-content: space-between !important;
+  gap: 34px !important;
+
+  position: relative !important;
+  inset: auto !important;
+  z-index: 30 !important;
+
+  margin: 0 !important;
+  padding: 20px max(32px, calc((100% - 1220px) / 2)) !important;
+
+  visibility: visible !important;
+  opacity: 1 !important;
+  overflow: visible !important;
+  transform: none !important;
+
+  color: #08713b !important;
+  border-top: 3px solid #179b52 !important;
+  background:
+    radial-gradient(ellipse at 0 100%, rgba(35, 163, 94, .13), transparent 34%),
+    radial-gradient(ellipse at 100% 100%, rgba(35, 163, 94, .10), transparent 34%),
+    #ffffff !important;
+  box-shadow: 0 -8px 24px rgba(7, 76, 42, .055) !important;
+}
+
+/* Khối logo bên trái */
+.site-footer .training-brand {
+  min-width: 390px !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  gap: 14px !important;
+  flex-shrink: 0 !important;
+  visibility: visible !important;
+  opacity: 1 !important;
+}
+
+.site-footer .training-brand__mark {
+  width: 74px !important;
+  height: 74px !important;
+  display: grid !important;
+  place-items: center !important;
+  flex-shrink: 0 !important;
+  overflow: hidden !important;
+  border-radius: 50% !important;
+  background: #ffffff !important;
+  box-shadow:
+    0 0 0 1px rgba(5, 83, 45, .10),
+    0 8px 20px rgba(5, 83, 45, .12) !important;
+}
+
+.site-footer .training-brand__mark img {
+  width: 100% !important;
+  height: 100% !important;
+  display: block !important;
+  object-fit: contain !important;
+}
+
+.site-footer .training-brand__copy {
+  display: flex !important;
+  flex-direction: column !important;
+  gap: 4px !important;
+}
+
+.site-footer .training-brand__copy small {
+  display: block !important;
+  max-width: none !important;
+  color: #08713b !important;
+  font-size: 11px !important;
+  line-height: 1.25 !important;
+  font-weight: 800 !important;
+  letter-spacing: .75px !important;
+  white-space: nowrap !important;
+}
+
+.site-footer .training-brand__copy strong {
+  display: block !important;
+  color: #08713b !important;
+  font-family: 'Montserrat', 'Be Vietnam Pro', sans-serif !important;
+  font-size: 27px !important;
+  line-height: 1.05 !important;
+  font-weight: 800 !important;
+  letter-spacing: .45px !important;
+  white-space: nowrap !important;
+}
+
+/* Ba giá trị đào tạo bên phải */
+.site-footer__values {
+  width: min(760px, 60%) !important;
+  min-width: 590px !important;
+  display: grid !important;
+  grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+  align-items: stretch !important;
+  visibility: visible !important;
+  opacity: 1 !important;
+}
+
+.site-footer__values > span {
+  min-height: 72px !important;
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: center !important;
+  justify-content: center !important;
+  gap: 9px !important;
+
+  color: #087a3e !important;
+  border-left: 1px solid #cbded2 !important;
+  visibility: visible !important;
+  opacity: 1 !important;
+}
+
+.site-footer__values svg {
+  width: 29px !important;
+  height: 29px !important;
+  display: block !important;
+  color: #07904a !important;
+  stroke: currentColor !important;
+}
+
+.site-footer__values strong {
+  display: block !important;
+  color: #08713b !important;
+  font-size: 11px !important;
+  line-height: 1.2 !important;
+  font-weight: 800 !important;
+  letter-spacing: .55px !important;
+  white-space: nowrap !important;
+}
+
+/* Tablet */
+@media (max-width: 960px) {
+  .site-footer {
+    flex-direction: column !important;
+    align-items: stretch !important;
+    gap: 18px !important;
+    padding: 22px !important;
+  }
+
+  .site-footer .training-brand {
+    min-width: 0 !important;
+    margin: 0 auto !important;
+  }
+
+  .site-footer__values {
+    width: 100% !important;
+    min-width: 0 !important;
+  }
+}
+
+/* Điện thoại */
+@media (max-width: 680px) {
+  .site-footer {
+    min-height: 0 !important;
+    gap: 15px !important;
+    padding: 18px 12px !important;
+  }
+
+  .site-footer .training-brand {
+    gap: 9px !important;
+  }
+
+  .site-footer .training-brand__mark {
+    width: 56px !important;
+    height: 56px !important;
+  }
+
+  .site-footer .training-brand__copy small {
+    font-size: 7px !important;
+    white-space: normal !important;
+  }
+
+  .site-footer .training-brand__copy strong {
+    font-size: 19px !important;
+  }
+
+  .site-footer__values > span {
+    min-height: 56px !important;
+    gap: 5px !important;
+  }
+
+  .site-footer__values svg {
+    width: 22px !important;
+    height: 22px !important;
+  }
+
+  .site-footer__values strong {
+    font-size: 8px !important;
+  }
+}
+
+/* Footer trắng chỉ dùng cho giao diện web.
+   Khi in/xuất PNG, phiếu vẫn dùng .report-footer riêng. */
+@media print {
+  .app-shell > .site-footer,
+  body > .site-footer {
+    display: none !important;
+  }
+}
+
+/* =========================================================
+   V7 — FORM GỌN GIỐNG ẢNH MẪU, GIỮ NGUYÊN CHỮ TO
+   - Khổ xuất 1080 x 1920
+   - Không giảm font-size của bản V6
+   - Chỉ cân lại chiều cao, khoảng cách và bố cục
+   ========================================================= */
+
+/* Khổ ảnh cố định */
+.report-page:not(.checklist-report) {
+  width: 1080px !important;
+  height: 1920px !important;
+  min-height: 1920px !important;
+  max-height: 1920px !important;
+  display: flex !important;
+  flex-direction: column !important;
+  overflow: hidden !important;
+}
+
+/* =========================================================
+   HEADER GỌN HƠN NHƯ ẢNH MẪU
+   ========================================================= */
+.report-page:not(.checklist-report) .report-header {
+  height: 198px !important;
+  min-height: 198px !important;
+  max-height: 198px !important;
+  grid-template-columns: 325px minmax(0, 1fr) 205px !important;
+  gap: 12px !important;
+  padding: 13px 32px 25px !important;
+  align-items: center !important;
+}
+
+.report-page:not(.checklist-report) .report-header::after {
+  bottom: -17px !important;
+  height: 36px !important;
+}
+
+.report-page:not(.checklist-report) .report-header .training-brand {
+  gap: 14px !important;
+}
+
+.report-page:not(.checklist-report) .report-header .training-brand__mark {
+  width: 104px !important;
+  height: 104px !important;
+}
+
+.report-page:not(.checklist-report) .report-header .training-brand__copy {
+  gap: 3px !important;
+}
+
+/* Chỉ cân vị trí, giữ cỡ chữ đã làm lớn */
+.report-page:not(.checklist-report) .report-title {
+  transform: translateY(-1px) !important;
+}
+
+.report-page:not(.checklist-report) .report-title h1 {
+  margin-top: 5px !important;
+  margin-bottom: 8px !important;
+}
+
+.report-page:not(.checklist-report) .report-vehicle-badge {
+  width: 132px !important;
+  height: 150px !important;
+  border-radius: 18px 18px 48px 48px !important;
+}
+
+.report-page:not(.checklist-report) .report-vehicle-badge::before {
+  border-radius: 12px 12px 41px 41px !important;
+}
+
+.report-page:not(.checklist-report) .report-vehicle-badge > div {
+  width: 44px !important;
+  height: 44px !important;
+}
+
+/* =========================================================
+   THÂN PHIẾU
+   ========================================================= */
+.report-page:not(.checklist-report) .report-body {
+  flex: 1 1 auto !important;
+  min-height: 0 !important;
+  padding: 0 24px 12px !important;
+  overflow: hidden !important;
+}
+
+/* Tiêu đề mục 1, 2, 3, 4 gọn hơn nhưng vẫn giữ chữ lớn */
+.report-page:not(.checklist-report) .report-section-title {
+  height: 46px !important;
+  min-height: 46px !important;
+  margin: 6px 0 6px !important;
+  padding-left: 55px !important;
+  padding-right: 31px !important;
+}
+
+.report-page:not(.checklist-report) .report-section-title > span {
+  width: 44px !important;
+  height: 44px !important;
+}
+
+.report-page:not(.checklist-report) .report-section-title > strong {
+  line-height: 1.15 !important;
+}
+
+/* =========================================================
+   MỤC 1 — THÔNG TIN HỌC VIÊN
+   ========================================================= */
+.report-page:not(.checklist-report) .report-info-grid {
+  gap: 0 40px !important;
+  padding: 8px 20px 9px !important;
+}
+
+.report-page:not(.checklist-report) .report-info-item {
+  min-height: 36px !important;
+  grid-template-columns: 178px minmax(0, 1fr) !important;
+}
+
+/* =========================================================
+   MỤC 2 — BẢNG ĐÁNH GIÁ
+   Giữ nguyên font lớn, chỉ giảm chiều cao dòng
+   ========================================================= */
+.report-page:not(.checklist-report) .report-table__header,
+.report-page:not(.checklist-report) .report-table__row {
+  grid-template-columns: 64px 355px 170px minmax(0, 1fr) !important;
+}
+
+.report-page:not(.checklist-report) .report-table__header {
+  min-height: 43px !important;
+  height: 43px !important;
+}
+
+.report-page:not(.checklist-report) .report-table__row {
+  min-height: 55px !important;
+  height: 55px !important;
+}
+
+.report-page:not(.checklist-report) .report-table__row > span {
+  padding-top: 6px !important;
+  padding-bottom: 6px !important;
+}
+
+.report-page:not(.checklist-report) .report-lesson-name {
+  gap: 10px !important;
+}
+
+.report-page:not(.checklist-report) .report-lesson-name i {
+  width: 30px !important;
+  height: 30px !important;
+}
+
+.report-page:not(.checklist-report) .report-status {
+  min-height: 30px !important;
+}
+
+/* =========================================================
+   MỤC 3 — TÌNH HUỐNG KHẨN CẤP
+   ========================================================= */
+.report-page:not(.checklist-report) .report-emergency {
+  min-height: 68px !important;
+  height: 68px !important;
+  grid-template-columns: 56px 190px minmax(0, 1fr) !important;
+  gap: 12px !important;
+  padding: 9px 16px !important;
+}
+
+.report-page:not(.checklist-report) .report-emergency__icon {
+  width: 46px !important;
+  height: 46px !important;
+}
+
+/* =========================================================
+   MỤC 4 — TỔNG KẾT
+   ========================================================= */
+.report-page:not(.checklist-report) .report-summary {
+  gap: 14px !important;
+}
+
+.report-page:not(.checklist-report) .report-summary-box {
+  height: 82px !important;
+  min-height: 82px !important;
+  gap: 12px !important;
+}
+
+.report-page:not(.checklist-report) .report-summary-box > div {
+  width: 52px !important;
+  height: 52px !important;
+}
+
+.report-page:not(.checklist-report) .report-conclusion {
+  min-height: 108px !important;
+  height: 108px !important;
+  margin-top: 9px !important;
+  grid-template-columns: 108px minmax(0, 1fr) !important;
+}
+
+.report-page:not(.checklist-report) .report-conclusion__medal {
+  width: 70px !important;
+  height: 70px !important;
+}
+
+.report-page:not(.checklist-report) .report-conclusion__content {
+  padding-right: 62px !important;
+}
+
+/* =========================================================
+   NHẬN XÉT + GIÁO VIÊN HƯỚNG DẪN
+   Giữ chữ to, làm form cân đối như ảnh mẫu
+   ========================================================= */
+.report-page:not(.checklist-report) .report-comment-signature {
+  height: 186px !important;
+  min-height: 186px !important;
+  max-height: 186px !important;
+  grid-template-columns: 1.42fr .92fr !important;
+  margin-top: 9px !important;
+  overflow: hidden !important;
+}
+
+.report-page:not(.checklist-report) .report-teacher-comment {
+  gap: 13px !important;
+  padding: 17px 20px !important;
+}
+
+.report-page:not(.checklist-report) .report-signature {
+  height: 186px !important;
+  min-height: 186px !important;
+  max-height: 186px !important;
+  padding: 17px 20px !important;
+}
+
+.report-page:not(.checklist-report) .signature-line {
+  margin-bottom: 6px !important;
+  padding-bottom: 5px !important;
+}
+
+/* Footer xanh trong ảnh */
+.report-page:not(.checklist-report) .report-footer {
+  height: 60px !important;
+  min-height: 60px !important;
+  max-height: 60px !important;
+  flex: 0 0 60px !important;
+}
+
+/* =========================================================
+   GIỮ ĐÚNG FORM KHI XUẤT PNG MÀU PHẲNG
+   ========================================================= */
+.report-page.report-export-flat:not(.checklist-report) .report-header {
+  height: 198px !important;
+  min-height: 198px !important;
+  max-height: 198px !important;
+}
+
+.report-page.report-export-flat:not(.checklist-report) .report-table__header {
+  height: 43px !important;
+  min-height: 43px !important;
+}
+
+.report-page.report-export-flat:not(.checklist-report) .report-table__row {
+  height: 55px !important;
+  min-height: 55px !important;
+}
+
+.report-page.report-export-flat:not(.checklist-report) .report-emergency {
+  height: 68px !important;
+  min-height: 68px !important;
+}
+
+.report-page.report-export-flat:not(.checklist-report) .report-summary-box {
+  height: 82px !important;
+  min-height: 82px !important;
+}
+
+.report-page.report-export-flat:not(.checklist-report) .report-conclusion {
+  height: 108px !important;
+  min-height: 108px !important;
+}
+
+.report-page.report-export-flat:not(.checklist-report) .report-comment-signature,
+.report-page.report-export-flat:not(.checklist-report) .report-signature {
+  height: 186px !important;
+  min-height: 186px !important;
+  max-height: 186px !important;
+}
+
+/* Preview không cắt phần dưới của form */
+.report-preview-canvas {
+  overflow: hidden !important;
+}
+
+/* In vẫn đúng khổ */
+@media print {
+  .report-page:not(.checklist-report) {
+    width: 1080px !important;
+    height: 1920px !important;
+    min-height: 1920px !important;
+    max-height: 1920px !important;
+  }
 }

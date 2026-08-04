@@ -91,16 +91,21 @@ export function ReportPreviewPage({ state, onChange, onEdit, onNew }: ReportPrev
       }
     }))
     const previousStyle = node.getAttribute('style')
+    const alreadyUsedStableExportColors = node.classList.contains('report-export-flat')
+    node.classList.add('report-export-flat')
     Object.assign(node.style, {
       transform: 'none',
       position: 'static',
       left: '0',
       marginLeft: '0',
     })
+    // Chờ hai khung hình để WebKit áp dụng trọn bộ màu xuất ổn định trước khi chụp.
+    await new Promise<void>((resolve) => requestAnimationFrame(() => resolve()))
     await new Promise<void>((resolve) => requestAnimationFrame(() => resolve()))
     return {
       node,
       restore: () => {
+        if (!alreadyUsedStableExportColors) node.classList.remove('report-export-flat')
         if (previousStyle === null) node.removeAttribute('style')
         else node.setAttribute('style', previousStyle)
       },
@@ -125,7 +130,7 @@ export function ReportPreviewPage({ state, onChange, onEdit, onNew }: ReportPrev
       })
       const renderOptions = {
         cacheBust: true,
-        backgroundColor: '#f5f7fa',
+        backgroundColor: '#f8fbf9',
         imagePlaceholder: PHU_GIAO_LOGO_DATA_URL,
         skipAutoScale: true,
       }
@@ -251,7 +256,7 @@ export function ReportPreviewPage({ state, onChange, onEdit, onNew }: ReportPrev
       }
     } catch (error) {
       if (error instanceof Error && error.name === 'AbortError') setMessage('Đã đóng bảng chia sẻ.')
-      else setMessage('Chưa thể chia sẻ ảnh trên thiết bị này. Bạn có thể dùng nút Tải PNG siêu nét.')
+      else setMessage('Chưa thể chia sẻ ảnh trên thiết bị này. Bạn có thể dùng nút Lưu Ảnh.')
     } finally {
       setBusy(null)
     }
@@ -293,7 +298,7 @@ export function ReportPreviewPage({ state, onChange, onEdit, onNew }: ReportPrev
         {isAppleMobile && (
           <div className="ios-save-guide">
             <Images size={19} />
-            <span><strong>Lưu trên iPhone:</strong> chạm “Lưu ảnh siêu nét”, sau đó chọn “Lưu hình ảnh” trong bảng chia sẻ của iOS.</span>
+            <span><strong>Lưu trên iPhone:</strong> chạm “Lưu Ảnh”, sau đó chọn “Lưu hình ảnh” trong bảng chia sẻ của iOS.</span>
           </div>
         )}
 
@@ -317,7 +322,7 @@ export function ReportPreviewPage({ state, onChange, onEdit, onNew }: ReportPrev
             {busy === 'download' || busy === 'save'
               ? <LoaderCircle className="spin" size={19} />
               : isAppleMobile ? <Images size={19} /> : <Download size={19} />}
-            {isAppleMobile ? 'Lưu ảnh siêu nét' : 'Tải PNG siêu nét'}
+            Lưu Ảnh
           </button>
           <button className="button button--danger-ghost" type="button" onClick={onNew}><RefreshCcw size={18} /> Tạo phiếu mới</button>
         </div>

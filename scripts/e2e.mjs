@@ -186,7 +186,7 @@ try {
   assert(!basicReportText.includes('QUỐC ANH'), 'Phiếu cơ bản không được còn thương hiệu Quốc Anh')
   await assertReportFooterBrand(page, 'Phiếu tập cơ bản')
   const basicDownloadPromise = page.waitForEvent('download')
-  await page.getByRole('button', { name: 'Tải PNG siêu nét' }).click()
+  await page.getByRole('button', { name: 'Lưu Ảnh' }).click()
   const basicDownload = await basicDownloadPromise
   const [basicYear, basicMonth, basicDay] = basicDate.split('-')
   assert(basicDownload.suggestedFilename() === `DanhGiaTapXeCoBan_HocvienCoBan_${basicDay}-${basicMonth}-${basicYear}.png`, `Tên ảnh tập cơ bản không đúng: ${basicDownload.suggestedFilename()}`)
@@ -213,7 +213,7 @@ try {
   assert(roadReportText.includes('Đạt yêu cầu'), 'Phiếu đường trường phải hiển thị đánh giá chung')
   await assertReportFooterBrand(page, 'Phiếu đường trường')
   const roadDownloadPromise = page.waitForEvent('download')
-  await page.getByRole('button', { name: 'Tải PNG siêu nét' }).click()
+  await page.getByRole('button', { name: 'Lưu Ảnh' }).click()
   const roadDownload = await roadDownloadPromise
   const [roadYear, roadMonth, roadDay] = roadDate.split('-')
   assert(roadDownload.suggestedFilename() === `DanhGiaDuongTruong_HocvienDuongTruong_${roadDay}-${roadMonth}-${roadYear}.png`, `Tên ảnh đường trường không đúng: ${roadDownload.suggestedFilename()}`)
@@ -262,7 +262,7 @@ try {
   await page.screenshot({ path: path.join(artifactDir, 'report-mobile.png'), fullPage: false })
 
   const downloadPromise = page.waitForEvent('download')
-  await page.getByRole('button', { name: 'Tải PNG siêu nét' }).click()
+  await page.getByRole('button', { name: 'Lưu Ảnh' }).click()
   const download = await downloadPromise
   const [year, month, day] = bssDate.split('-')
   assert(download.suggestedFilename() === `DanhGiaSaHinh_NguyenVanAn_${day}-${month}-${year}.png`, `Tên ảnh không đúng: ${download.suggestedFilename()}`)
@@ -338,7 +338,7 @@ try {
   await iphonePage.getByRole('button', { name: 'Đánh dấu bài còn lại là Tốt' }).click()
   await iphonePage.getByTestId('status-emergency-GOOD').click()
   await iphonePage.getByRole('button', { name: 'Xem phiếu đánh giá' }).click()
-  assert(await iphonePage.getByRole('button', { name: 'Lưu ảnh siêu nét' }).count() === 1, 'Safari iPhone phải hiển thị nút Lưu ảnh siêu nét')
+  assert(await iphonePage.getByRole('button', { name: 'Lưu Ảnh' }).count() === 1, 'Safari iPhone phải hiển thị nút Lưu Ảnh')
   assert(await iphonePage.getByText('Lưu trên iPhone:', { exact: true }).count() === 1, 'Safari iPhone phải hiển thị hướng dẫn lưu hình ảnh')
   await iphone.close()
 
