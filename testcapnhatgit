@@ -1,0 +1,11 @@
+cd /e/webdanhgia
+git add .
+echo ".vscode/" >> .gitignore
+git add .gitignore
+git add src/styles.css
+git add src/pages/ReportPreviewPage.tsx
+git add scripts/e2e.mjs
+git status
+git commit -m "Cap nhat giao dien phieu danh gia"
+git pull --rebase origin main
+git push origin main

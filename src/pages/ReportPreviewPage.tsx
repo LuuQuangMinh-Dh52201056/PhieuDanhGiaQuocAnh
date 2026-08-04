@@ -302,12 +302,6 @@ export function ReportPreviewPage({ state, onChange, onEdit, onNew }: ReportPrev
           </div>
         )}
 
-        <div className="export-quality-banner">
-          <ScanLine size={22} />
-          <span><strong>Xuất phiếu chất lượng cao</strong> Ảnh PNG rõ chữ, rõ logo và đường viền khi phóng to.</span>
-          <b>{isCompactDevice ? 'TỐI ƯU CHO ĐIỆN THOẠI' : 'RỘNG ĐẾN 2700 PX'}</b>
-        </div>
-
         <div className="export-action-bar">
           <button className="button button--ghost" type="button" onClick={onEdit}><ArrowLeft size={18} /> Sửa đánh giá</button>
           <button className="button button--outline" type="button" onClick={() => shareImage('share')} disabled={busy !== null}>
