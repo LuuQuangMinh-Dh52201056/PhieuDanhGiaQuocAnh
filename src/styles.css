@@ -2830,3 +2830,2233 @@ textarea:focus-visible { outline-color: rgba(10, 138, 72, .28); }
     max-height: 1920px !important;
   }
 }
+
+/* =========================================================
+   V9 — PHIẾU CHECKLIST TO, RÕ, CÂN ĐỐI CHUYÊN NGHIỆP
+   Áp dụng cho:
+   - Phiếu đánh giá đào tạo học viên đường trường
+   - Phiếu đánh giá buổi học làm quen xe và sa hình cơ bản
+   Giữ đúng khổ xuất ảnh 1080 x 1920.
+   ========================================================= */
+
+/* Khổ phiếu checklist cố định */
+.report-page.checklist-report {
+  width: 1080px !important;
+  height: 1920px !important;
+  min-height: 1920px !important;
+  max-height: 1920px !important;
+  display: flex !important;
+  flex-direction: column !important;
+  overflow: hidden !important;
+  color: #173629 !important;
+  background:
+    radial-gradient(circle at 100% 11%, rgba(8, 122, 62, .055), transparent 360px),
+    #f8fbf9 !important;
+}
+
+/* =========================================================
+   1. HEADER — LOGO, TIÊU ĐỀ, HẠNG XE
+   ========================================================= */
+.report-page.checklist-report .checklist-report-header {
+  height: 222px !important;
+  min-height: 222px !important;
+  max-height: 222px !important;
+  grid-template-columns: 330px minmax(0, 1fr) 210px !important;
+  gap: 14px !important;
+  padding: 18px 34px 27px !important;
+  border-top-width: 13px !important;
+  border-bottom-width: 5px !important;
+}
+
+.report-page.checklist-report
+  .checklist-report-header__brand
+  .training-brand {
+  gap: 14px !important;
+}
+
+.report-page.checklist-report
+  .checklist-report-header__brand
+  .training-brand__mark {
+  width: 108px !important;
+  height: 108px !important;
+}
+
+.report-page.checklist-report
+  .checklist-report-header__brand
+  .training-brand__copy {
+  gap: 4px !important;
+}
+
+.report-page.checklist-report
+  .checklist-report-header__brand
+  .training-brand__copy small {
+  max-width: none !important;
+  font-size: 10px !important;
+  line-height: 1.3 !important;
+  font-weight: 800 !important;
+  letter-spacing: .65px !important;
+  white-space: nowrap !important;
+}
+
+.report-page.checklist-report
+  .checklist-report-header__brand
+  .training-brand__copy strong {
+  font-size: 29px !important;
+  line-height: 1.05 !important;
+  letter-spacing: .35px !important;
+}
+
+.report-page.checklist-report .checklist-report-header__title small {
+  font-size: 10px !important;
+  line-height: 1.25 !important;
+  letter-spacing: 1.35px !important;
+}
+
+.report-page.checklist-report .checklist-report-header__title h1 {
+  margin: 8px 0 7px !important;
+  font-size: 30px !important;
+  line-height: 1.16 !important;
+  letter-spacing: .1px !important;
+}
+
+.report-page.checklist-report .checklist-report-header__title p {
+  font-size: 12px !important;
+  line-height: 1.25 !important;
+  letter-spacing: 1.05px !important;
+}
+
+.report-page.checklist-report .checklist-report-header__vehicle {
+  width: 142px !important;
+  height: 160px !important;
+  border-radius: 19px 19px 50px 50px !important;
+}
+
+.report-page.checklist-report
+  .checklist-report-header__vehicle > div {
+  width: 45px !important;
+  height: 45px !important;
+}
+
+.report-page.checklist-report
+  .checklist-report-header__vehicle small {
+  margin-top: 6px !important;
+  font-size: 9px !important;
+}
+
+.report-page.checklist-report
+  .checklist-report-header__vehicle strong {
+  font-size: 40px !important;
+  line-height: 1 !important;
+}
+
+.report-page.checklist-report
+  .checklist-report-header__vehicle span {
+  font-size: 11px !important;
+  line-height: 1.2 !important;
+}
+
+/* =========================================================
+   2. THÂN PHIẾU
+   ========================================================= */
+.report-page.checklist-report .checklist-report-body {
+  flex: 1 1 auto !important;
+  min-height: 0 !important;
+  padding: 17px 30px 15px !important;
+  overflow: hidden !important;
+}
+
+/* Thông tin học viên */
+.report-page.checklist-report .checklist-report-info {
+  gap: 0 38px !important;
+  padding: 12px 21px 13px !important;
+  border-width: 1.5px !important;
+  border-radius: 14px !important;
+}
+
+.report-page.checklist-report .checklist-report-info > div {
+  min-height: 41px !important;
+  grid-template-columns: 180px minmax(0, 1fr) !important;
+  font-size: 13px !important;
+}
+
+.report-page.checklist-report .checklist-report-info span {
+  font-size: 13px !important;
+}
+
+.report-page.checklist-report .checklist-report-info b {
+  font-size: 15px !important;
+  line-height: 1.25 !important;
+  font-weight: 700 !important;
+}
+
+.report-page.checklist-report .checklist-report-info b.is-strong {
+  font-size: 17px !important;
+  font-weight: 800 !important;
+}
+
+/* Tiêu đề mục I, II, III */
+.report-page.checklist-report .checklist-report-heading {
+  min-height: 50px !important;
+  gap: 12px !important;
+  margin: 11px 0 7px !important;
+}
+
+.report-page.checklist-report .checklist-report-heading span {
+  width: 46px !important;
+  height: 46px !important;
+  font-size: 17px !important;
+  border-width: 3px !important;
+}
+
+.report-page.checklist-report .checklist-report-heading strong {
+  font-size: 18px !important;
+  line-height: 1.25 !important;
+  letter-spacing: .1px !important;
+}
+
+/* =========================================================
+   3. BẢNG ĐÁNH GIÁ TỪNG NỘI DUNG
+   ========================================================= */
+.report-page.checklist-report .checklist-report-table {
+  border-width: 1.5px !important;
+  border-radius: 12px !important;
+}
+
+/* Giữ bảng 3 hoặc 4 lựa chọn cân đối */
+.report-page.checklist-report .checklist-report-table__header,
+.report-page.checklist-report .checklist-report-table__row {
+  grid-template-columns:
+    64px
+    minmax(0, 1fr)
+    repeat(var(--rating-count), 116px) !important;
+}
+
+/* Hàng tiêu đề */
+.report-page.checklist-report .checklist-report-table__header {
+  height: 48px !important;
+  min-height: 48px !important;
+  font-size: 13px !important;
+  line-height: 1.2 !important;
+  font-weight: 800 !important;
+}
+
+.report-page.checklist-report
+  .checklist-report-table__header > span {
+  padding: 5px 6px !important;
+}
+
+/* Từng dòng nội dung */
+.report-page.checklist-report .checklist-report-table__row {
+  min-height: 59px !important;
+  font-size: 13px !important;
+}
+
+.report-page.checklist-report
+  .checklist-report-table__row > span {
+  padding: 7px 9px !important;
+}
+
+/* Số thứ tự */
+.report-page.checklist-report
+  .checklist-report-table__row > span:first-child {
+  font-size: 15px !important;
+  font-weight: 800 !important;
+}
+
+/* Nội dung chính */
+.report-page.checklist-report .checklist-report-table__content {
+  gap: 4px !important;
+  padding-left: 12px !important;
+  padding-right: 12px !important;
+}
+
+.report-page.checklist-report
+  .checklist-report-table__content strong {
+  font-size: 14px !important;
+  line-height: 1.35 !important;
+  font-weight: 700 !important;
+}
+
+.report-page.checklist-report
+  .checklist-report-table__content small {
+  font-size: 10.5px !important;
+  line-height: 1.4 !important;
+}
+
+/* Ô tick */
+.report-page.checklist-report .checklist-report-check i,
+.report-page.checklist-report .checklist-report-overall i {
+  width: 31px !important;
+  height: 31px !important;
+  border-width: 2px !important;
+  border-radius: 6px !important;
+}
+
+.report-page.checklist-report .checklist-report-check svg,
+.report-page.checklist-report .checklist-report-overall svg {
+  width: 21px !important;
+  height: 21px !important;
+}
+
+/* =========================================================
+   4. ĐÁNH GIÁ CHUNG
+   ========================================================= */
+.report-page.checklist-report .checklist-report-overall {
+  gap: 14px !important;
+}
+
+.report-page.checklist-report
+  .checklist-report-overall > div {
+  min-height: 68px !important;
+  gap: 13px !important;
+  padding: 11px 17px !important;
+  border-width: 1.5px !important;
+  border-radius: 12px !important;
+  font-size: 13px !important;
+  line-height: 1.35 !important;
+  font-weight: 700 !important;
+}
+
+/* =========================================================
+   5. NHẬN XÉT GIÁO VIÊN VÀ CHỮ KÝ
+   ========================================================= */
+.report-page.checklist-report .checklist-report-comment {
+  min-height: 145px !important;
+  grid-template-columns: 42px minmax(0, 1fr) 290px !important;
+  gap: 14px !important;
+  padding: 18px 20px !important;
+  border-width: 1.5px !important;
+  border-radius: 13px !important;
+}
+
+.report-page.checklist-report
+  .checklist-report-comment > svg {
+  width: 30px !important;
+  height: 30px !important;
+}
+
+.report-page.checklist-report .checklist-report-comment p {
+  font-size: 14px !important;
+  line-height: 1.55 !important;
+  font-weight: 500 !important;
+}
+
+.report-page.checklist-report
+  .checklist-report-comment > div {
+  height: 108px !important;
+  padding-left: 22px !important;
+}
+
+.report-page.checklist-report
+  .checklist-report-comment > div small {
+  font-size: 11px !important;
+  line-height: 1.25 !important;
+  font-weight: 800 !important;
+}
+
+.report-page.checklist-report
+  .checklist-report-comment > div strong {
+  padding-bottom: 6px !important;
+  font-size: 14px !important;
+  line-height: 1.3 !important;
+  font-weight: 700 !important;
+}
+
+/* =========================================================
+   6. FOOTER XANH
+   ========================================================= */
+.report-page.checklist-report .checklist-report-footer {
+  height: 64px !important;
+  min-height: 64px !important;
+  max-height: 64px !important;
+  flex: 0 0 64px !important;
+  grid-template-columns: 300px minmax(0, 1fr) 300px !important;
+  padding: 0 34px !important;
+}
+
+.report-page.checklist-report
+  .checklist-report-footer .training-brand__mark {
+  width: 45px !important;
+  height: 45px !important;
+}
+
+.report-page.checklist-report
+  .checklist-report-footer .training-brand__copy small {
+  font-size: 6.5px !important;
+}
+
+.report-page.checklist-report
+  .checklist-report-footer .training-brand__copy strong {
+  font-size: 15px !important;
+}
+
+.report-page.checklist-report
+  .checklist-report-footer > .report-footer__tagline {
+  font-size: 11px !important;
+  font-weight: 800 !important;
+  letter-spacing: .8px !important;
+}
+
+/* =========================================================
+   7. TỰ CÂN ĐỐI PHIẾU CÓ 13 DÒNG
+   Phiếu làm quen xe có nhiều dòng hơn phiếu đường trường.
+   ========================================================= */
+.report-page.checklist-report
+  .checklist-report-table:has(.checklist-report-table__row:nth-child(14))
+  .checklist-report-table__row {
+  min-height: 56px !important;
+}
+
+.report-page.checklist-report
+  .checklist-report-table:has(.checklist-report-table__row:nth-child(14))
+  .checklist-report-table__content strong {
+  font-size: 13.5px !important;
+}
+
+.report-page.checklist-report
+  .checklist-report-table:has(.checklist-report-table__row:nth-child(14))
+  .checklist-report-table__content small {
+  font-size: 10px !important;
+}
+
+/* =========================================================
+   8. GIỮ ĐÚNG KHI XUẤT PNG MÀU PHẲNG
+   ========================================================= */
+.report-page.checklist-report.report-export-flat
+  .checklist-report-header {
+  height: 222px !important;
+  min-height: 222px !important;
+  max-height: 222px !important;
+}
+
+.report-page.checklist-report.report-export-flat
+  .checklist-report-table__header {
+  height: 48px !important;
+  min-height: 48px !important;
+}
+
+.report-page.checklist-report.report-export-flat
+  .checklist-report-table__row {
+  min-height: 59px !important;
+}
+
+.report-page.checklist-report.report-export-flat
+  .checklist-report-table:has(.checklist-report-table__row:nth-child(14))
+  .checklist-report-table__row {
+  min-height: 56px !important;
+}
+
+.report-page.checklist-report.report-export-flat
+  .checklist-report-footer {
+  height: 64px !important;
+  min-height: 64px !important;
+  max-height: 64px !important;
+}
+
+/* In đúng khổ */
+@media print {
+  .report-page.checklist-report {
+    width: 1080px !important;
+    height: 1920px !important;
+    min-height: 1920px !important;
+    max-height: 1920px !important;
+  }
+}
+
+/* =========================================================
+   V10 — TỐI ƯU XUẤT ẢNH PNG GIỐNG HỆT BẢN XEM TRƯỚC
+   Áp dụng cho 3 phiếu:
+   1) Phiếu sát hạch sa hình
+   2) Phiếu đánh giá đào tạo học viên đường trường
+   3) Phiếu đánh giá buổi học làm quen xe & sa hình cơ bản
+
+   Mục tiêu:
+   - Khi tải ảnh về: to, rõ, đẹp, rõ logo và rõ tên trung tâm
+   - Chữ trong bảng, nhận xét, footer rõ ràng
+   - Giữ đúng khổ 1080 x 1920
+   ========================================================= */
+
+/* ---------------------------------------------------------
+   0. CHẤT LƯỢNG HIỂN THỊ CHUNG
+   --------------------------------------------------------- */
+.report-page,
+.report-page * {
+  text-rendering: geometricPrecision !important;
+  -webkit-font-smoothing: antialiased !important;
+  -moz-osx-font-smoothing: grayscale !important;
+  box-sizing: border-box !important;
+}
+
+.report-page {
+  width: 1080px !important;
+  min-width: 1080px !important;
+  max-width: 1080px !important;
+  height: 1920px !important;
+  min-height: 1920px !important;
+  max-height: 1920px !important;
+  overflow: hidden !important;
+}
+
+/* ---------------------------------------------------------
+   1. PHIẾU SA HÌNH
+   --------------------------------------------------------- */
+.report-page:not(.checklist-report) .report-header {
+  height: 208px !important;
+  min-height: 208px !important;
+  max-height: 208px !important;
+  grid-template-columns: 325px minmax(0, 1fr) 210px !important;
+  gap: 12px !important;
+  padding: 14px 34px 24px !important;
+  align-items: center !important;
+}
+
+.report-page:not(.checklist-report) .report-header .training-brand {
+  gap: 14px !important;
+}
+
+.report-page:not(.checklist-report) .report-header .training-brand__mark {
+  width: 106px !important;
+  height: 106px !important;
+}
+
+.report-page:not(.checklist-report) .report-header .training-brand__copy small {
+  font-size: 10px !important;
+  line-height: 1.3 !important;
+  font-weight: 800 !important;
+  letter-spacing: .7px !important;
+}
+
+.report-page:not(.checklist-report) .report-header .training-brand__copy strong {
+  font-size: 30px !important;
+  line-height: 1.05 !important;
+  letter-spacing: .3px !important;
+}
+
+.report-page:not(.checklist-report) .report-title > small {
+  font-size: 33px !important;
+  line-height: 1 !important;
+}
+
+.report-page:not(.checklist-report) .report-title h1 {
+  margin: 6px 0 9px !important;
+  font-size: 28px !important;
+  line-height: 1.14 !important;
+  letter-spacing: .12px !important;
+}
+
+.report-page:not(.checklist-report) .report-title > div {
+  font-size: 10px !important;
+  letter-spacing: 1.1px !important;
+}
+
+.report-page:not(.checklist-report) .report-vehicle-badge {
+  width: 136px !important;
+  height: 154px !important;
+}
+
+.report-page:not(.checklist-report) .report-vehicle-badge strong {
+  font-size: 44px !important;
+}
+
+.report-page:not(.checklist-report) .report-vehicle-badge span {
+  font-size: 10.5px !important;
+}
+
+.report-page:not(.checklist-report) .report-body {
+  padding: 0 24px 12px !important;
+}
+
+.report-page:not(.checklist-report) .report-section-title {
+  height: 47px !important;
+  min-height: 47px !important;
+  margin: 7px 0 6px !important;
+}
+
+.report-page:not(.checklist-report) .report-section-title > span {
+  width: 45px !important;
+  height: 45px !important;
+}
+
+.report-page:not(.checklist-report) .report-section-title > strong {
+  font-size: 17px !important;
+}
+
+.report-page:not(.checklist-report) .report-info-grid {
+  padding: 9px 20px 10px !important;
+  gap: 0 40px !important;
+}
+
+.report-page:not(.checklist-report) .report-info-item {
+  min-height: 37px !important;
+  grid-template-columns: 178px 1fr !important;
+  font-size: 13px !important;
+}
+
+.report-page:not(.checklist-report) .report-info-item b {
+  font-size: 15px !important;
+}
+
+.report-page:not(.checklist-report) .report-info-item b.is-strong {
+  font-size: 17px !important;
+}
+
+/* Bảng sa hình */
+.report-page:not(.checklist-report) .report-table__header,
+.report-page:not(.checklist-report) .report-table__row {
+  grid-template-columns: 64px 355px 168px minmax(0, 1fr) !important;
+}
+
+.report-page:not(.checklist-report) .report-table__header {
+  height: 46px !important;
+  min-height: 46px !important;
+  font-size: 15px !important;
+  font-weight: 800 !important;
+}
+
+.report-page:not(.checklist-report) .report-table__row {
+  min-height: 58px !important;
+  font-size: 14px !important;
+}
+
+.report-page:not(.checklist-report) .report-table__row > span {
+  padding: 7px 10px !important;
+}
+
+.report-page:not(.checklist-report) .report-order {
+  font-size: 15px !important;
+  font-weight: 800 !important;
+}
+
+.report-page:not(.checklist-report) .report-lesson-name i {
+  width: 31px !important;
+  height: 31px !important;
+  font-size: 16px !important;
+}
+
+.report-page:not(.checklist-report) .report-lesson-name strong {
+  font-size: 15px !important;
+  line-height: 1.32 !important;
+  font-weight: 700 !important;
+}
+
+.report-page:not(.checklist-report) .report-status {
+  min-width: 120px !important;
+  min-height: 33px !important;
+  padding: 4px 12px !important;
+  font-size: 13px !important;
+  font-weight: 800 !important;
+}
+
+.report-page:not(.checklist-report) .report-details,
+.report-page:not(.checklist-report) .report-details--clear {
+  font-size: 13.5px !important;
+  line-height: 1.42 !important;
+  font-weight: 500 !important;
+}
+
+.report-page:not(.checklist-report) .report-details--clear svg {
+  width: 18px !important;
+  height: 18px !important;
+}
+
+.report-page:not(.checklist-report) .report-emergency {
+  min-height: 74px !important;
+  height: 74px !important;
+  grid-template-columns: 58px 192px minmax(0, 1fr) !important;
+  gap: 13px !important;
+  padding: 10px 17px !important;
+}
+
+.report-page:not(.checklist-report) .report-emergency strong {
+  font-size: 15px !important;
+  font-weight: 800 !important;
+}
+
+.report-page:not(.checklist-report) .report-emergency p {
+  font-size: 13px !important;
+  line-height: 1.42 !important;
+}
+
+.report-page:not(.checklist-report) .report-summary-box {
+  height: 84px !important;
+  min-height: 84px !important;
+}
+
+.report-page:not(.checklist-report) .report-summary-box small {
+  font-size: 12px !important;
+}
+
+.report-page:not(.checklist-report) .report-summary-box strong {
+  font-size: 30px !important;
+}
+
+.report-page:not(.checklist-report) .report-conclusion {
+  min-height: 112px !important;
+  height: 112px !important;
+  margin-top: 10px !important;
+}
+
+.report-page:not(.checklist-report) .report-conclusion__content > strong {
+  font-size: 32px !important;
+  line-height: 1.08 !important;
+}
+
+.report-page:not(.checklist-report) .report-conclusion__content p {
+  font-size: 12px !important;
+}
+
+.report-page:not(.checklist-report) .report-comment-signature {
+  height: 190px !important;
+  min-height: 190px !important;
+  max-height: 190px !important;
+  grid-template-columns: 1.42fr .92fr !important;
+}
+
+.report-page:not(.checklist-report) .report-teacher-comment {
+  padding: 18px 21px !important;
+  gap: 14px !important;
+}
+
+.report-page:not(.checklist-report) .report-teacher-comment > svg {
+  width: 29px !important;
+  height: 29px !important;
+}
+
+.report-page:not(.checklist-report) .report-teacher-comment strong {
+  font-size: 16px !important;
+  font-weight: 800 !important;
+}
+
+.report-page:not(.checklist-report) .report-teacher-comment p {
+  font-size: 16px !important;
+  line-height: 1.5 !important;
+  font-weight: 500 !important;
+}
+
+.report-page:not(.checklist-report) .report-signature {
+  padding: 18px 21px !important;
+}
+
+.report-page:not(.checklist-report) .report-signature > strong {
+  font-size: 15px !important;
+  font-weight: 800 !important;
+}
+
+.report-page:not(.checklist-report) .signature-line {
+  font-size: 17px !important;
+  font-weight: 700 !important;
+}
+
+/* Footer sa hình rõ hơn */
+.report-page:not(.checklist-report) .report-footer {
+  height: 62px !important;
+  min-height: 62px !important;
+  max-height: 62px !important;
+  flex: 0 0 62px !important;
+  padding: 0 34px !important;
+}
+
+.report-page:not(.checklist-report) .report-footer .training-brand__mark {
+  width: 44px !important;
+  height: 44px !important;
+}
+
+.report-page:not(.checklist-report) .report-footer .training-brand__copy small {
+  font-size: 6.5px !important;
+  line-height: 1.25 !important;
+}
+
+.report-page:not(.checklist-report) .report-footer .training-brand__copy strong {
+  font-size: 15px !important;
+  line-height: 1.05 !important;
+}
+
+.report-page:not(.checklist-report) .report-footer > .report-footer__tagline,
+.report-page:not(.checklist-report) .report-footer > strong {
+  font-size: 11px !important;
+  letter-spacing: .8px !important;
+  font-weight: 800 !important;
+}
+
+/* ---------------------------------------------------------
+   2. PHIẾU ĐƯỜNG TRƯỜNG + LÀM QUEN XE CƠ BẢN
+   --------------------------------------------------------- */
+.report-page.checklist-report .checklist-report-header {
+  height: 222px !important;
+  min-height: 222px !important;
+  max-height: 222px !important;
+  grid-template-columns: 330px minmax(0, 1fr) 210px !important;
+  gap: 14px !important;
+  padding: 18px 34px 27px !important;
+}
+
+.report-page.checklist-report .training-brand {
+  gap: 14px !important;
+}
+
+.report-page.checklist-report .training-brand__mark {
+  width: 108px !important;
+  height: 108px !important;
+}
+
+.report-page.checklist-report .training-brand__copy small {
+  max-width: none !important;
+  font-size: 10px !important;
+  line-height: 1.3 !important;
+  font-weight: 800 !important;
+  letter-spacing: .7px !important;
+  white-space: nowrap !important;
+}
+
+.report-page.checklist-report .training-brand__copy strong {
+  font-size: 29px !important;
+  line-height: 1.05 !important;
+  letter-spacing: .35px !important;
+}
+
+.report-page.checklist-report .checklist-report-header__title small {
+  font-size: 10px !important;
+  line-height: 1.25 !important;
+  letter-spacing: 1.3px !important;
+}
+
+.report-page.checklist-report .checklist-report-header__title h1 {
+  margin: 8px 0 7px !important;
+  font-size: 30px !important;
+  line-height: 1.16 !important;
+}
+
+.report-page.checklist-report .checklist-report-header__title p {
+  font-size: 12px !important;
+  line-height: 1.25 !important;
+  letter-spacing: 1.05px !important;
+}
+
+.report-page.checklist-report .checklist-report-header__vehicle {
+  width: 142px !important;
+  height: 160px !important;
+}
+
+.report-page.checklist-report .checklist-report-header__vehicle strong {
+  font-size: 40px !important;
+}
+
+.report-page.checklist-report .checklist-report-header__vehicle span {
+  font-size: 11px !important;
+}
+
+.report-page.checklist-report .checklist-report-body {
+  padding: 17px 30px 15px !important;
+}
+
+.report-page.checklist-report .checklist-report-info {
+  gap: 0 38px !important;
+  padding: 12px 21px 13px !important;
+}
+
+.report-page.checklist-report .checklist-report-info > div {
+  min-height: 41px !important;
+  grid-template-columns: 182px minmax(0, 1fr) !important;
+  font-size: 13px !important;
+}
+
+.report-page.checklist-report .checklist-report-info b {
+  font-size: 15px !important;
+  line-height: 1.25 !important;
+}
+
+.report-page.checklist-report .checklist-report-info b.is-strong {
+  font-size: 17px !important;
+  font-weight: 800 !important;
+}
+
+.report-page.checklist-report .checklist-report-heading {
+  min-height: 49px !important;
+  gap: 12px !important;
+  margin: 11px 0 7px !important;
+}
+
+.report-page.checklist-report .checklist-report-heading span {
+  width: 46px !important;
+  height: 46px !important;
+  font-size: 17px !important;
+}
+
+.report-page.checklist-report .checklist-report-heading strong {
+  font-size: 18px !important;
+  line-height: 1.25 !important;
+}
+
+/* Bảng checklist rõ hơn */
+.report-page.checklist-report .checklist-report-table__header,
+.report-page.checklist-report .checklist-report-table__row {
+  grid-template-columns: 64px minmax(0, 1fr) repeat(var(--rating-count), 116px) !important;
+}
+
+.report-page.checklist-report .checklist-report-table__header {
+  height: 48px !important;
+  min-height: 48px !important;
+  font-size: 13px !important;
+  font-weight: 800 !important;
+}
+
+.report-page.checklist-report .checklist-report-table__row {
+  min-height: 58px !important;
+  font-size: 13px !important;
+}
+
+.report-page.checklist-report .checklist-report-table__row > span {
+  padding: 7px 9px !important;
+}
+
+.report-page.checklist-report .checklist-report-table__row > span:first-child {
+  font-size: 15px !important;
+  font-weight: 800 !important;
+}
+
+.report-page.checklist-report .checklist-report-table__content {
+  gap: 4px !important;
+  padding-left: 12px !important;
+  padding-right: 12px !important;
+}
+
+.report-page.checklist-report .checklist-report-table__content strong {
+  font-size: 14px !important;
+  line-height: 1.35 !important;
+  font-weight: 700 !important;
+}
+
+.report-page.checklist-report .checklist-report-table__content small {
+  font-size: 10.5px !important;
+  line-height: 1.4 !important;
+}
+
+.report-page.checklist-report .checklist-report-check i,
+.report-page.checklist-report .checklist-report-overall i {
+  width: 31px !important;
+  height: 31px !important;
+  border-width: 2px !important;
+  border-radius: 6px !important;
+}
+
+.report-page.checklist-report .checklist-report-check svg,
+.report-page.checklist-report .checklist-report-overall svg {
+  width: 21px !important;
+  height: 21px !important;
+}
+
+.report-page.checklist-report .checklist-report-overall {
+  gap: 14px !important;
+}
+
+.report-page.checklist-report .checklist-report-overall > div {
+  min-height: 68px !important;
+  gap: 13px !important;
+  padding: 11px 17px !important;
+  font-size: 13px !important;
+  line-height: 1.35 !important;
+  font-weight: 700 !important;
+}
+
+.report-page.checklist-report .checklist-report-comment {
+  min-height: 148px !important;
+  grid-template-columns: 42px minmax(0, 1fr) 290px !important;
+  gap: 14px !important;
+  padding: 18px 20px !important;
+}
+
+.report-page.checklist-report .checklist-report-comment > svg {
+  width: 30px !important;
+  height: 30px !important;
+}
+
+.report-page.checklist-report .checklist-report-comment p {
+  font-size: 14px !important;
+  line-height: 1.55 !important;
+  font-weight: 500 !important;
+}
+
+.report-page.checklist-report .checklist-report-comment > div {
+  height: 108px !important;
+  padding-left: 22px !important;
+}
+
+.report-page.checklist-report .checklist-report-comment > div small {
+  font-size: 11px !important;
+  font-weight: 800 !important;
+}
+
+.report-page.checklist-report .checklist-report-comment > div strong {
+  font-size: 14px !important;
+  font-weight: 700 !important;
+  padding-bottom: 6px !important;
+}
+
+.report-page.checklist-report .checklist-report-footer {
+  height: 64px !important;
+  min-height: 64px !important;
+  max-height: 64px !important;
+  grid-template-columns: 300px minmax(0, 1fr) 300px !important;
+  padding: 0 34px !important;
+}
+
+.report-page.checklist-report .checklist-report-footer .training-brand__mark {
+  width: 45px !important;
+  height: 45px !important;
+}
+
+.report-page.checklist-report .checklist-report-footer .training-brand__copy small {
+  font-size: 6.5px !important;
+  line-height: 1.25 !important;
+}
+
+.report-page.checklist-report .checklist-report-footer .training-brand__copy strong {
+  font-size: 15px !important;
+  line-height: 1.05 !important;
+}
+
+.report-page.checklist-report .checklist-report-footer > .report-footer__tagline,
+.report-page.checklist-report .checklist-report-footer > strong {
+  font-size: 11px !important;
+  font-weight: 800 !important;
+  letter-spacing: .8px !important;
+}
+
+/* Tự cân cho phiếu có 13 dòng */
+.report-page.checklist-report
+  .checklist-report-table:has(.checklist-report-table__row:nth-child(14))
+  .checklist-report-table__row {
+  min-height: 55px !important;
+}
+
+.report-page.checklist-report
+  .checklist-report-table:has(.checklist-report-table__row:nth-child(14))
+  .checklist-report-table__content strong {
+  font-size: 13.5px !important;
+}
+
+.report-page.checklist-report
+  .checklist-report-table:has(.checklist-report-table__row:nth-child(14))
+  .checklist-report-table__content small {
+  font-size: 10px !important;
+}
+
+/* ---------------------------------------------------------
+   3. ĐỒNG NHẤT CHẾ ĐỘ EXPORT FLAT
+   Để ảnh tải về giống như preview
+   --------------------------------------------------------- */
+.report-page.report-export-flat,
+.report-page.report-export-flat * {
+  text-rendering: geometricPrecision !important;
+  -webkit-font-smoothing: antialiased !important;
+}
+
+.report-page.report-export-flat:not(.checklist-report) .report-header {
+  height: 208px !important;
+  min-height: 208px !important;
+  max-height: 208px !important;
+}
+
+.report-page.report-export-flat:not(.checklist-report) .report-table__header {
+  height: 46px !important;
+  min-height: 46px !important;
+}
+
+.report-page.report-export-flat:not(.checklist-report) .report-table__row {
+  min-height: 58px !important;
+}
+
+.report-page.report-export-flat:not(.checklist-report) .report-emergency {
+  height: 74px !important;
+  min-height: 74px !important;
+}
+
+.report-page.report-export-flat:not(.checklist-report) .report-comment-signature,
+.report-page.report-export-flat:not(.checklist-report) .report-signature {
+  height: 190px !important;
+  min-height: 190px !important;
+  max-height: 190px !important;
+}
+
+.report-page.checklist-report.report-export-flat .checklist-report-header {
+  height: 222px !important;
+  min-height: 222px !important;
+  max-height: 222px !important;
+}
+
+.report-page.checklist-report.report-export-flat .checklist-report-table__header {
+  height: 48px !important;
+  min-height: 48px !important;
+}
+
+.report-page.checklist-report.report-export-flat .checklist-report-table__row {
+  min-height: 58px !important;
+}
+
+.report-page.checklist-report.report-export-flat
+  .checklist-report-table:has(.checklist-report-table__row:nth-child(14))
+  .checklist-report-table__row {
+  min-height: 55px !important;
+}
+
+.report-page.checklist-report.report-export-flat .checklist-report-footer {
+  height: 64px !important;
+  min-height: 64px !important;
+  max-height: 64px !important;
+}
+
+/* ---------------------------------------------------------
+   4. IN / CHỤP ẢNH ĐÚNG KHỔ
+   --------------------------------------------------------- */
+@media print {
+  .report-page {
+    width: 1080px !important;
+    min-width: 1080px !important;
+    max-width: 1080px !important;
+    height: 1920px !important;
+    min-height: 1920px !important;
+    max-height: 1920px !important;
+  }
+}
+
+/* =========================================================
+   V11 — TỐI ƯU TRANG ĐÁNH GIÁ NHẬP LIỆU
+   Mục tiêu:
+   - Chữ to, rõ, dễ đọc
+   - Tận dụng khoảng trống trong từng bài đánh giá
+   - Ô chọn / ô lỗi / ô nhận xét lớn hơn
+   - Nhìn xịn, cân đối, dễ phô, dễ xem
+   - Giữ các phiếu export của V10
+   ========================================================= */
+
+/* ---------------------------------------------------------
+   A. KHUNG TRANG CHUNG
+   --------------------------------------------------------- */
+.evaluation-shell,
+.checklist-shell {
+  --surface-radius-lg: 20px;
+  --surface-radius-md: 14px;
+}
+
+.page-shell,
+.checklist-page,
+.evaluation-page {
+  padding-bottom: 110px !important;
+}
+
+.form-note {
+  gap: 13px !important;
+  margin: 0 32px 14px !important;
+  padding: 16px 18px !important;
+  border-radius: 14px !important;
+  font-size: 13px !important;
+}
+
+.form-note svg {
+  width: 30px !important;
+  height: 30px !important;
+}
+
+.form-note p {
+  font-size: 13px !important;
+  line-height: 1.6 !important;
+}
+
+/* ---------------------------------------------------------
+   B. PHIẾU SA HÌNH / ĐƯỜNG TRƯỜNG DẠNG THẺ ĐÁNH GIÁ
+   lesson-card
+   --------------------------------------------------------- */
+
+.lesson-list {
+  gap: 22px !important;
+}
+
+.lesson-card {
+  border-width: 1.5px !important;
+  border-radius: 22px !important;
+  box-shadow: 0 10px 28px rgba(7,83,45,.08) !important;
+}
+
+.lesson-card__header,
+.evaluation-shell--basic .lesson-card__header,
+.lesson-card--emergency .lesson-card__header {
+  min-height: 86px !important;
+  padding: 16px 22px !important;
+  gap: 16px !important;
+}
+
+.lesson-index,
+.evaluation-shell--basic .lesson-index,
+.lesson-card--emergency .lesson-index {
+  width: 54px !important;
+  height: 54px !important;
+  font-size: 16px !important;
+  border-width: 2px !important;
+}
+
+.lesson-title span {
+  font-size: 10px !important;
+  letter-spacing: 1.6px !important;
+  font-weight: 800 !important;
+}
+
+.lesson-title h3 {
+  margin-top: 5px !important;
+  font-size: 19px !important;
+  line-height: 1.3 !important;
+  letter-spacing: -.01em !important;
+}
+
+.lesson-symbol,
+.evaluation-shell--basic .lesson-symbol {
+  width: 46px !important;
+  height: 46px !important;
+  border-radius: 14px !important;
+  font-size: 24px !important;
+}
+
+.lesson-card__body {
+  padding: 24px !important;
+}
+
+/* Nút Tốt / Cần lưu ý / Cần luyện thêm */
+.status-selector {
+  gap: 12px !important;
+}
+
+.status-button {
+  min-height: 60px !important;
+  gap: 9px !important;
+  border-radius: 14px !important;
+  font-size: 14px !important;
+  font-weight: 700 !important;
+}
+
+.status-button svg {
+  width: 20px !important;
+  height: 20px !important;
+}
+
+.status-button.is-selected {
+  box-shadow: 0 9px 18px rgba(22,148,71,.18) !important;
+}
+
+/* Trọng điểm */
+.focus-line {
+  margin: 18px 0 !important;
+  padding: 14px 16px !important;
+  gap: 10px !important;
+  border-radius: 12px !important;
+  font-size: 13px !important;
+  line-height: 1.65 !important;
+}
+
+.focus-line svg {
+  width: 18px !important;
+  height: 18px !important;
+  margin-top: 2px !important;
+}
+
+.focus-line strong {
+  font-size: 13px !important;
+  font-weight: 800 !important;
+}
+
+/* Tiêu đề phụ */
+.section-mini-title {
+  gap: 9px !important;
+  margin-bottom: 12px !important;
+  font-size: 14px !important;
+  font-weight: 800 !important;
+}
+
+.section-mini-title svg {
+  width: 18px !important;
+  height: 18px !important;
+}
+
+.section-mini-title small {
+  font-size: 11px !important;
+  font-weight: 500 !important;
+}
+
+/* Lỗi ghi nhận */
+.error-grid {
+  gap: 9px !important;
+}
+
+.error-option {
+  min-height: 46px !important;
+  gap: 11px !important;
+  padding: 10px 12px !important;
+  border-radius: 11px !important;
+  font-size: 13px !important;
+  line-height: 1.4 !important;
+}
+
+.custom-check {
+  width: 21px !important;
+  height: 21px !important;
+  border-width: 1.8px !important;
+  border-radius: 6px !important;
+}
+
+.custom-check svg {
+  width: 14px !important;
+  height: 14px !important;
+}
+
+/* Ghi chú thêm */
+.lesson-note {
+  margin-top: 17px !important;
+  gap: 9px !important;
+  font-size: 13px !important;
+  font-weight: 800 !important;
+}
+
+.lesson-note > svg:first-child,
+.lesson-note > svg:nth-of-type(2) {
+  width: 18px !important;
+  height: 18px !important;
+}
+
+.lesson-note input {
+  height: 46px !important;
+  padding: 0 14px !important;
+  border-radius: 11px !important;
+  font-size: 13px !important;
+  font-weight: 500 !important;
+}
+
+/* Thẻ nhận xét giáo viên ở trang nhập */
+.teacher-comment-card {
+  margin-top: 28px !important;
+  padding: 26px !important;
+  border-radius: 20px !important;
+  box-shadow: 0 10px 28px rgba(7,83,45,.08) !important;
+}
+
+.teacher-comment-card__heading {
+  gap: 14px !important;
+  margin-bottom: 16px !important;
+}
+
+.comment-icon {
+  width: 50px !important;
+  height: 50px !important;
+  border-radius: 14px !important;
+}
+
+.teacher-comment-card__heading small {
+  font-size: 10px !important;
+  letter-spacing: 1.6px !important;
+  font-weight: 800 !important;
+}
+
+.teacher-comment-card__heading h2 {
+  font-size: 20px !important;
+  line-height: 1.25 !important;
+}
+
+.teacher-comment-card textarea {
+  min-height: 135px !important;
+  padding: 16px !important;
+  border-radius: 13px !important;
+  font-size: 13px !important;
+  line-height: 1.75 !important;
+}
+
+.quick-comments {
+  gap: 9px !important;
+}
+
+.quick-comments button {
+  min-height: 35px !important;
+  padding: 0 12px !important;
+  font-size: 11px !important;
+  border-radius: 999px !important;
+}
+
+.comment-toolbar > small {
+  font-size: 11px !important;
+}
+
+.validation-banner {
+  gap: 10px !important;
+  margin-top: 18px !important;
+  padding: 14px 16px !important;
+  border-radius: 12px !important;
+  font-size: 13px !important;
+}
+
+/* Thanh hành động cuối */
+.evaluation-actions {
+  bottom: 16px !important;
+  gap: 18px !important;
+  margin-top: 30px !important;
+  padding: 16px 18px !important;
+  border-radius: 20px !important;
+  box-shadow: 0 16px 40px rgba(8,76,42,.16) !important;
+}
+
+.evaluation-actions__note {
+  gap: 6px !important;
+  font-size: 12px !important;
+}
+
+.evaluation-actions__note strong {
+  font-size: 22px !important;
+}
+
+.evaluation-actions button,
+.evaluation-actions .button,
+.evaluation-actions a {
+  min-height: 56px !important;
+  padding: 0 28px !important;
+  border-radius: 15px !important;
+  font-size: 16px !important;
+  font-weight: 800 !important;
+}
+
+/* ---------------------------------------------------------
+   C. TRANG CHECKLIST
+   Tập làm quen xe cơ bản / Đường trường checklist
+   --------------------------------------------------------- */
+
+.checklist-shell {
+  background: linear-gradient(#087a3e 0 430px, #edf7f0 430px) !important;
+}
+
+.checklist-page {
+  padding-top: 38px !important;
+}
+
+.checklist-intro {
+  color: #fff !important;
+}
+
+/* thanh tiến độ trên đầu */
+.checklist-progress {
+  min-height: 112px !important;
+  gap: 22px !important;
+  margin-bottom: 24px !important;
+  padding: 22px 24px !important;
+  border-radius: 18px !important;
+}
+
+.checklist-progress > div:first-child strong {
+  font-size: 31px !important;
+}
+
+.checklist-progress > div:first-child span {
+  font-size: 12px !important;
+}
+
+.checklist-progress .progress-bar {
+  height: 9px !important;
+}
+
+.checklist-progress > button {
+  min-height: 48px !important;
+  padding: 0 18px !important;
+  border-radius: 12px !important;
+  font-size: 12px !important;
+  font-weight: 800 !important;
+}
+
+/* guide header */
+.checklist-column-guide {
+  min-height: 54px !important;
+  padding: 0 18px !important;
+  border-radius: 14px !important;
+  font-size: 11px !important;
+  letter-spacing: .9px !important;
+}
+
+.checklist-column-guide--3 {
+  grid-template-columns: 1fr repeat(3, 160px) !important;
+}
+
+.checklist-column-guide--4 {
+  grid-template-columns: 1fr repeat(4, 130px) !important;
+}
+
+.checklist-column-guide > span:first-child {
+  padding-left: 60px !important;
+}
+
+/* danh sách bài */
+.checklist-list {
+  gap: 12px !important;
+}
+
+.checklist-item-card {
+  border-width: 1.5px !important;
+  border-radius: 16px !important;
+  box-shadow: 0 7px 18px rgba(15,76,43,.06) !important;
+}
+
+.checklist-item-copy {
+  min-height: 92px !important;
+  gap: 15px !important;
+  padding: 16px 18px !important;
+}
+
+.checklist-item-number {
+  width: 48px !important;
+  height: 48px !important;
+  border-radius: 12px !important;
+  font-size: 14px !important;
+  border-width: 1.5px !important;
+}
+
+.checklist-item-copy > div {
+  gap: 6px !important;
+}
+
+.checklist-item-copy strong {
+  font-size: 15px !important;
+  line-height: 1.45 !important;
+  font-weight: 700 !important;
+}
+
+.checklist-item-copy small {
+  font-size: 11px !important;
+  line-height: 1.5 !important;
+}
+
+/* vùng lựa chọn bên phải */
+.checklist-rating-grid--3 {
+  width: 510px !important;
+  grid-template-columns: repeat(3, 1fr) !important;
+}
+
+.checklist-rating-grid--4 {
+  width: 560px !important;
+  grid-template-columns: repeat(4, 1fr) !important;
+}
+
+.checklist-rating-grid button {
+  min-height: 92px !important;
+  gap: 7px !important;
+}
+
+.checklist-rating-grid button > span,
+.checklist-overall-options button > span {
+  width: 30px !important;
+  height: 30px !important;
+  border-width: 2px !important;
+  border-radius: 7px !important;
+}
+
+.checklist-rating-grid button small {
+  font-size: 12px !important;
+  line-height: 1.35 !important;
+  font-weight: 700 !important;
+}
+
+/* đánh giá chung */
+.checklist-overall-card {
+  margin-top: 24px !important;
+  padding: 24px !important;
+  border-radius: 20px !important;
+  box-shadow: 0 10px 26px rgba(15,76,43,.08) !important;
+}
+
+.checklist-overall-card > div:first-child small {
+  font-size: 10px !important;
+  letter-spacing: 1.7px !important;
+}
+
+.checklist-overall-card h2 {
+  margin: 4px 0 18px !important;
+  font-size: 22px !important;
+  line-height: 1.25 !important;
+}
+
+.checklist-overall-options {
+  gap: 12px !important;
+}
+
+.checklist-overall-options button {
+  min-height: 64px !important;
+  gap: 12px !important;
+  padding: 12px 16px !important;
+  border-radius: 13px !important;
+  font-size: 13px !important;
+  line-height: 1.45 !important;
+  font-weight: 700 !important;
+}
+
+/* thẻ nhận xét */
+.checklist-comment-card {
+  margin-top: 24px !important;
+}
+
+.checklist-comment-card .teacher-comment-card__heading h2 {
+  font-size: 22px !important;
+}
+
+.checklist-comment-card textarea {
+  min-height: 132px !important;
+  font-size: 13px !important;
+  line-height: 1.72 !important;
+}
+
+/* sticky action dưới cùng của checklist */
+.checklist-page .evaluation-actions,
+.checklist-shell .evaluation-actions {
+  padding: 16px 18px !important;
+}
+
+.checklist-page .evaluation-actions button,
+.checklist-shell .evaluation-actions button {
+  min-height: 58px !important;
+  padding: 0 28px !important;
+  border-radius: 16px !important;
+  font-size: 16px !important;
+}
+
+/* ---------------------------------------------------------
+   D. TỐI ƯU MOBILE / MÀN HÌNH HẸP
+   --------------------------------------------------------- */
+@media (max-width: 1200px) {
+  .checklist-rating-grid--3,
+  .checklist-rating-grid--4 {
+    width: 100% !important;
+  }
+
+  .checklist-item-card {
+    grid-template-columns: 1fr !important;
+  }
+
+  .checklist-item-copy {
+    min-height: 88px !important;
+  }
+
+  .checklist-rating-grid button {
+    min-height: 76px !important;
+  }
+
+  .lesson-title h3 {
+    font-size: 17px !important;
+  }
+}
+
+@media (max-width: 768px) {
+  .lesson-card__header {
+    min-height: 80px !important;
+    padding: 14px 16px !important;
+  }
+
+  .lesson-index {
+    width: 48px !important;
+    height: 48px !important;
+  }
+
+  .lesson-title h3 {
+    font-size: 15px !important;
+  }
+
+  .lesson-card__body {
+    padding: 18px !important;
+  }
+
+  .status-selector {
+    grid-template-columns: 1fr !important;
+  }
+
+  .error-grid {
+    grid-template-columns: 1fr !important;
+  }
+
+  .evaluation-actions {
+    flex-direction: column !important;
+    align-items: stretch !important;
+  }
+
+  .evaluation-actions__note {
+    justify-content: center !important;
+  }
+
+  .checklist-progress {
+    grid-template-columns: 1fr !important;
+  }
+
+  .checklist-column-guide {
+    display: none !important;
+  }
+
+  .checklist-item-copy strong {
+    font-size: 14px !important;
+  }
+
+  .checklist-rating-grid button small {
+    font-size: 11px !important;
+  }
+
+  .checklist-overall-options {
+    grid-template-columns: 1fr !important;
+  }
+}
+
+/* =========================================================
+   V12 — HOÀN THIỆN HAI TRANG ĐÁNH GIÁ CHECKLIST
+   - Sửa chữ tối bị chìm trên nền xanh
+   - Cân đối tiêu đề, tiến độ, bảng và ô chọn
+   - Chữ lớn, rõ nhưng nút nhỏ lại một chút
+   - Áp dụng cho:
+     + Phiếu đánh giá buổi học cơ bản
+     + Phiếu đánh giá đường trường
+   ========================================================= */
+
+/* =========================================================
+   1. PHẦN ĐẦU MÀU XANH — TĂNG TƯƠNG PHẢN
+   ========================================================= */
+
+.checklist-shell {
+  background:
+    linear-gradient(
+      180deg,
+      #087a3e 0,
+      #078244 350px,
+      #edf7f0 350px,
+      #f7fbf8 100%
+    ) !important;
+}
+
+/* Khu vực tiêu đề đầu trang */
+.checklist-shell .checklist-intro {
+  position: relative !important;
+  color: #ffffff !important;
+  padding-top: 4px !important;
+  padding-bottom: 4px !important;
+}
+
+/* Nhãn HẠNG XE */
+.checklist-shell .checklist-intro .page-heading--light span,
+.checklist-shell .checklist-intro .page-heading span {
+  color: #d6f6e1 !important;
+  font-size: 11px !important;
+  line-height: 1.3 !important;
+  font-weight: 800 !important;
+  letter-spacing: 1.6px !important;
+  text-shadow: 0 1px 1px rgba(0, 54, 28, .16) !important;
+}
+
+/* Tiêu đề chính */
+.checklist-shell .checklist-intro .page-heading--light h1,
+.checklist-shell .checklist-intro .page-heading h1 {
+  color: #ffffff !important;
+  margin: 4px 0 5px !important;
+  font-size: 34px !important;
+  line-height: 1.16 !important;
+  font-weight: 800 !important;
+  letter-spacing: -.35px !important;
+  text-shadow: 0 2px 4px rgba(0, 59, 31, .20) !important;
+}
+
+/* Mô tả */
+.checklist-shell .checklist-intro .page-heading--light p,
+.checklist-shell .checklist-intro .page-heading p {
+  color: rgba(255, 255, 255, .88) !important;
+  margin: 0 !important;
+  font-size: 14px !important;
+  line-height: 1.5 !important;
+  font-weight: 500 !important;
+}
+
+/* Số bước 04 */
+.checklist-shell .checklist-intro .page-heading__number,
+.checklist-shell .checklist-intro
+  .page-heading--light .page-heading__number {
+  width: 68px !important;
+  height: 68px !important;
+  color: #087a3e !important;
+  border: 4px solid #d9f3e2 !important;
+  background: #ffffff !important;
+  box-shadow:
+    0 0 0 6px rgba(255,255,255,.24),
+    0 8px 18px rgba(0,62,32,.18) !important;
+  font-size: 18px !important;
+  font-weight: 800 !important;
+}
+
+/* Cân lại khối heading */
+.checklist-shell .checklist-intro .page-heading {
+  min-height: 106px !important;
+  align-items: center !important;
+  gap: 18px !important;
+  margin-bottom: 14px !important;
+}
+
+/* =========================================================
+   2. THANH TIẾN ĐỘ
+   ========================================================= */
+
+.checklist-shell .checklist-progress {
+  min-height: 104px !important;
+  grid-template-columns: 150px minmax(0, 1fr) auto !important;
+  gap: 22px !important;
+  margin-bottom: 22px !important;
+  padding: 20px 24px !important;
+  color: #17382a !important;
+  border: 1px solid rgba(203, 225, 211, .95) !important;
+  border-radius: 19px !important;
+  background: rgba(255,255,255,.98) !important;
+  box-shadow:
+    0 12px 30px rgba(2,67,35,.13),
+    inset 0 1px rgba(255,255,255,.9) !important;
+}
+
+/* Số 0 / 13 */
+.checklist-shell .checklist-progress > div:first-child {
+  display: flex !important;
+  align-items: baseline !important;
+  gap: 7px !important;
+}
+
+.checklist-shell .checklist-progress > div:first-child strong {
+  color: #087a3e !important;
+  font-size: 31px !important;
+  line-height: 1 !important;
+  font-weight: 800 !important;
+}
+
+.checklist-shell .checklist-progress > div:first-child span {
+  color: #557065 !important;
+  font-size: 12px !important;
+  line-height: 1.4 !important;
+}
+
+/* Thanh chạy */
+.checklist-shell .checklist-progress .progress-bar {
+  height: 9px !important;
+  overflow: hidden !important;
+  border-radius: 999px !important;
+  background: #e1eee6 !important;
+}
+
+.checklist-shell .checklist-progress .progress-bar span {
+  background: linear-gradient(90deg, #07934c, #5bc987) !important;
+  box-shadow: inset 0 1px rgba(255,255,255,.32) !important;
+}
+
+/* Nút đánh dấu tất cả: nhỏ hơn V11 một chút */
+.checklist-shell .checklist-progress > button {
+  min-height: 46px !important;
+  padding: 0 17px !important;
+  gap: 8px !important;
+  color: #08713b !important;
+  border: 1px solid #8fcca7 !important;
+  border-radius: 12px !important;
+  background: linear-gradient(180deg, #f6fcf8, #ebf8f0) !important;
+  box-shadow: 0 5px 13px rgba(8,113,59,.08) !important;
+  font-size: 12px !important;
+  line-height: 1.25 !important;
+  font-weight: 800 !important;
+}
+
+.checklist-shell .checklist-progress > button:hover {
+  color: #ffffff !important;
+  border-color: #0c934d !important;
+  background: linear-gradient(135deg, #12a158, #08713b) !important;
+}
+
+.checklist-shell .checklist-progress > button svg {
+  width: 18px !important;
+  height: 18px !important;
+}
+
+/* =========================================================
+   3. TIÊU ĐỀ CỘT
+   ========================================================= */
+
+.checklist-shell .checklist-column-guide {
+  min-height: 55px !important;
+  padding: 0 18px !important;
+  color: #ffffff !important;
+  border: 1px solid rgba(255,255,255,.13) !important;
+  border-radius: 15px !important;
+  background:
+    linear-gradient(90deg, #06753d, #0ba257 75%, #0aa052) !important;
+  box-shadow:
+    0 8px 19px rgba(5,98,51,.15),
+    inset 0 1px rgba(255,255,255,.16) !important;
+  font-size: 12px !important;
+  line-height: 1.25 !important;
+  font-weight: 800 !important;
+  letter-spacing: .8px !important;
+}
+
+.checklist-shell .checklist-column-guide > span {
+  color: #ffffff !important;
+  text-shadow: 0 1px 2px rgba(0,65,33,.20) !important;
+}
+
+/* Độ rộng cột cân đối hơn */
+.checklist-shell .checklist-column-guide--3 {
+  grid-template-columns: minmax(0, 1fr) repeat(3, 170px) !important;
+}
+
+.checklist-shell .checklist-column-guide--4 {
+  grid-template-columns: minmax(0, 1fr) repeat(4, 140px) !important;
+}
+
+.checklist-shell .checklist-column-guide > span:first-child {
+  padding-left: 62px !important;
+  text-align: left !important;
+}
+
+/* =========================================================
+   4. TỪNG DÒNG ĐÁNH GIÁ
+   ========================================================= */
+
+.checklist-shell .checklist-list {
+  gap: 12px !important;
+}
+
+.checklist-shell .checklist-item-card {
+  overflow: hidden !important;
+  border: 1px solid #cbded2 !important;
+  border-radius: 17px !important;
+  background: #ffffff !important;
+  box-shadow:
+    0 7px 18px rgba(15,76,43,.065),
+    inset 0 1px rgba(255,255,255,.8) !important;
+  transition:
+    transform .18s ease,
+    border-color .18s ease,
+    box-shadow .18s ease !important;
+}
+
+.checklist-shell .checklist-item-card:hover {
+  transform: translateY(-1px) !important;
+  border-color: #74be8e !important;
+  box-shadow: 0 11px 24px rgba(15,76,43,.10) !important;
+}
+
+/* Nội dung trái */
+.checklist-shell .checklist-item-copy {
+  min-height: 88px !important;
+  gap: 15px !important;
+  padding: 15px 18px !important;
+  background:
+    linear-gradient(90deg, #ffffff, #fcfefd) !important;
+}
+
+.checklist-shell .checklist-item-number {
+  width: 49px !important;
+  height: 49px !important;
+  color: #087a3e !important;
+  border: 1.5px solid #91cba6 !important;
+  border-radius: 13px !important;
+  background: linear-gradient(145deg, #f7fcf8, #eaf7ee) !important;
+  box-shadow: 0 4px 10px rgba(8,113,59,.08) !important;
+  font-size: 14px !important;
+  line-height: 1 !important;
+  font-weight: 800 !important;
+}
+
+.checklist-shell .checklist-item-copy > div {
+  gap: 6px !important;
+}
+
+.checklist-shell .checklist-item-copy strong {
+  color: #123d2b !important;
+  font-size: 16px !important;
+  line-height: 1.42 !important;
+  font-weight: 700 !important;
+}
+
+.checklist-shell .checklist-item-copy small {
+  color: #657b70 !important;
+  font-size: 11px !important;
+  line-height: 1.48 !important;
+  font-weight: 500 !important;
+}
+
+/* Vùng lựa chọn */
+.checklist-shell .checklist-rating-grid--3 {
+  width: 510px !important;
+  grid-template-columns: repeat(3, 1fr) !important;
+}
+
+.checklist-shell .checklist-rating-grid--4 {
+  width: 560px !important;
+  grid-template-columns: repeat(4, 1fr) !important;
+}
+
+.checklist-shell .checklist-rating-grid button {
+  min-height: 88px !important;
+  gap: 6px !important;
+  padding: 8px 5px !important;
+  color: #667c70 !important;
+  border-left: 1px solid #d5e5db !important;
+  background: #fbfdfb !important;
+  font-size: 12px !important;
+  font-weight: 700 !important;
+}
+
+/* nút nhỏ hơn một chút so với V11 */
+.checklist-shell .checklist-rating-grid button > span,
+.checklist-shell .checklist-overall-options button > span {
+  width: 28px !important;
+  height: 28px !important;
+  border: 2px solid #91a99b !important;
+  border-radius: 7px !important;
+}
+
+.checklist-shell .checklist-rating-grid button small {
+  color: inherit !important;
+  font-size: 12px !important;
+  line-height: 1.3 !important;
+  font-weight: 700 !important;
+}
+
+/* Trạng thái chọn xanh */
+.checklist-shell
+  .checklist-rating-grid button.tone-green.is-selected,
+.checklist-shell
+  .checklist-rating-grid button.is-selected.tone-green {
+  color: #06703a !important;
+  background: linear-gradient(180deg, #e9f8ee, #ddf3e5) !important;
+  box-shadow: inset 0 -3px #109650 !important;
+}
+
+/* Cam */
+.checklist-shell
+  .checklist-rating-grid button.tone-orange.is-selected,
+.checklist-shell
+  .checklist-rating-grid button.is-selected.tone-orange {
+  color: #bd6509 !important;
+  background: linear-gradient(180deg, #fff8ed, #fff0d9) !important;
+  box-shadow: inset 0 -3px #ef8a14 !important;
+}
+
+/* Đỏ */
+.checklist-shell
+  .checklist-rating-grid button.tone-red.is-selected,
+.checklist-shell
+  .checklist-rating-grid button.is-selected.tone-red {
+  color: #bd2930 !important;
+  background: linear-gradient(180deg, #fff4f5, #ffe7e9) !important;
+  box-shadow: inset 0 -3px #e2383e !important;
+}
+
+/* =========================================================
+   5. ĐÁNH GIÁ CHUNG
+   ========================================================= */
+
+.checklist-shell .checklist-overall-card {
+  margin-top: 24px !important;
+  padding: 23px !important;
+  border: 1px solid #cbded2 !important;
+  border-radius: 20px !important;
+  background: #ffffff !important;
+  box-shadow: 0 10px 26px rgba(15,76,43,.075) !important;
+}
+
+.checklist-shell .checklist-overall-card > div:first-child small {
+  color: #087a3e !important;
+  font-size: 10px !important;
+  font-weight: 800 !important;
+  letter-spacing: 1.7px !important;
+}
+
+.checklist-shell .checklist-overall-card h2 {
+  color: #123d2b !important;
+  margin: 4px 0 17px !important;
+  font-size: 22px !important;
+  line-height: 1.25 !important;
+}
+
+.checklist-shell .checklist-overall-options {
+  gap: 12px !important;
+}
+
+.checklist-shell .checklist-overall-options button {
+  min-height: 60px !important;
+  gap: 11px !important;
+  padding: 11px 15px !important;
+  color: #526b5e !important;
+  border: 1px solid #ceded4 !important;
+  border-radius: 13px !important;
+  background: #fbfdfb !important;
+  font-size: 13px !important;
+  line-height: 1.4 !important;
+  font-weight: 700 !important;
+}
+
+/* =========================================================
+   6. NHẬN XÉT GIÁO VIÊN
+   ========================================================= */
+
+.checklist-shell .checklist-comment-card {
+  margin-top: 24px !important;
+  padding: 24px !important;
+  border: 1px solid #cbded2 !important;
+  border-radius: 20px !important;
+  background: #ffffff !important;
+  box-shadow: 0 10px 26px rgba(15,76,43,.075) !important;
+}
+
+.checklist-shell .checklist-comment-card .comment-icon {
+  width: 48px !important;
+  height: 48px !important;
+  border-radius: 14px !important;
+}
+
+.checklist-shell
+  .checklist-comment-card .teacher-comment-card__heading small {
+  font-size: 10px !important;
+}
+
+.checklist-shell
+  .checklist-comment-card .teacher-comment-card__heading h2 {
+  color: #123d2b !important;
+  font-size: 21px !important;
+  line-height: 1.25 !important;
+}
+
+.checklist-shell .checklist-comment-card textarea {
+  min-height: 128px !important;
+  padding: 15px !important;
+  color: #304f40 !important;
+  border: 1px solid #cfded5 !important;
+  border-radius: 13px !important;
+  background: #fbfdfb !important;
+  font-size: 13px !important;
+  line-height: 1.7 !important;
+}
+
+/* =========================================================
+   7. THANH HÀNH ĐỘNG DƯỚI
+   ========================================================= */
+
+.checklist-shell .evaluation-actions {
+  bottom: 12px !important;
+  padding: 14px 16px !important;
+  border: 1px solid rgba(190,216,200,.95) !important;
+  border-radius: 18px !important;
+  background: rgba(255,255,255,.96) !important;
+  box-shadow: 0 14px 36px rgba(7,77,41,.15) !important;
+}
+
+/* Nút nhỏ hơn V11 một chút */
+.checklist-shell .evaluation-actions button,
+.checklist-shell .evaluation-actions .button {
+  min-height: 52px !important;
+  padding: 0 23px !important;
+  border-radius: 14px !important;
+  font-size: 14px !important;
+  font-weight: 800 !important;
+}
+
+.checklist-shell .evaluation-actions__note {
+  color: #62776c !important;
+  font-size: 12px !important;
+}
+
+.checklist-shell .evaluation-actions__note strong {
+  color: #087a3e !important;
+  font-size: 21px !important;
+}
+
+/* =========================================================
+   8. TABLET / MOBILE
+   ========================================================= */
+
+@media (max-width: 1200px) {
+  .checklist-shell .checklist-column-guide {
+    display: none !important;
+  }
+
+  .checklist-shell .checklist-item-card {
+    grid-template-columns: 1fr !important;
+  }
+
+  .checklist-shell .checklist-rating-grid--3,
+  .checklist-shell .checklist-rating-grid--4 {
+    width: 100% !important;
+  }
+
+  .checklist-shell .checklist-rating-grid button {
+    min-height: 74px !important;
+    border-top: 1px solid #d5e5db !important;
+  }
+}
+
+@media (max-width: 768px) {
+  .checklist-shell {
+    background:
+      linear-gradient(
+        180deg,
+        #087a3e 0,
+        #078244 315px,
+        #edf7f0 315px,
+        #f7fbf8 100%
+      ) !important;
+  }
+
+  .checklist-shell .checklist-intro .page-heading {
+    min-height: 92px !important;
+    gap: 13px !important;
+  }
+
+  .checklist-shell .checklist-intro .page-heading__number {
+    width: 52px !important;
+    height: 52px !important;
+    font-size: 15px !important;
+  }
+
+  .checklist-shell .checklist-intro .page-heading h1 {
+    font-size: 24px !important;
+  }
+
+  .checklist-shell .checklist-intro .page-heading p {
+    font-size: 11px !important;
+  }
+
+  .checklist-shell .checklist-progress {
+    grid-template-columns: 1fr !important;
+    gap: 13px !important;
+    padding: 16px !important;
+  }
+
+  .checklist-shell .checklist-progress > button {
+    width: 100% !important;
+    justify-content: center !important;
+  }
+
+  .checklist-shell .checklist-item-copy {
+    min-height: 80px !important;
+    padding: 13px !important;
+  }
+
+  .checklist-shell .checklist-item-copy strong {
+    font-size: 14px !important;
+  }
+
+  .checklist-shell .checklist-rating-grid button {
+    min-height: 66px !important;
+  }
+
+  .checklist-shell .checklist-rating-grid button small {
+    font-size: 10px !important;
+  }
+
+  .checklist-shell .checklist-overall-options {
+    grid-template-columns: 1fr !important;
+  }
+
+  .checklist-shell .evaluation-actions {
+    flex-direction: column !important;
+    align-items: stretch !important;
+  }
+
+  .checklist-shell .evaluation-actions button,
+  .checklist-shell .evaluation-actions .button {
+    width: 100% !important;
+  }
+}
