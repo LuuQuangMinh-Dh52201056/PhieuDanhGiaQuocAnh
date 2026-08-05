@@ -4,7 +4,7 @@
 
 - Chọn hạng B số sàn, B số tự động hoặc C1.
 - Sau khi chọn hạng xe, chọn nội dung **Tập cơ bản**, **Sa hình** hoặc **Đường trường**.
-- Tập cơ bản dùng phiếu tích nhanh 13 nội dung với các mức **Đã hiểu / Còn yếu / Chưa rõ**.
+- Tập cơ bản dùng phiếu tích nhanh 16 nội dung với các mức **Đã hiểu / Còn yếu / Chưa rõ**.
 - Đường trường dùng phiếu tích nhanh 11 nội dung với các mức **Tốt / Khá / Trung bình / Yếu**.
 - Toàn bộ ứng dụng sử dụng thương hiệu **Trung tâm Giáo dục Nghề nghiệp Phú Giáo**; phiếu cơ bản và đường trường lấy màu xanh làm chủ đạo.
 - Đánh giá đúng số bài theo từng hạng: BSS/BTĐ có 11 bài, C1 có 10 bài và không có ghép xe ngang.
