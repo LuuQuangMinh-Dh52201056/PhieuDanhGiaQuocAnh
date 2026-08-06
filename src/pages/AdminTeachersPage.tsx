@@ -1,33 +1,32 @@
 import {
   useEffect,
   useMemo,
+  useRef,
   useState,
 } from 'react'
 
+import html2canvas from 'html2canvas'
+
 import {
-  deleteEvaluationAdminRecord,
-  getEvaluationAdminRecords,
+  ReportPreviewPage,
+} from './ReportPreviewPage'
+
+import {
   subscribeEvaluationAdminRecords,
   type AdminTrainingType,
   type EvaluationAdminRecord,
 } from '../services/evaluationAdminStore'
 
+import type {
+  EvaluationState,
+  TrainingType,
+} from '../types/evaluation'
+
 import '../styles/admin-teachers.css'
 
-/**
- * Bổ sung các trường chi tiết.
- *
- * Cách viết này vẫn build được trong trường hợp
- * interface EvaluationAdminRecord cũ chưa khai báo đủ.
- */
 type AdminRecord =
   EvaluationAdminRecord & {
-    vehicleNumber?: string
-    practiceAttempt?: string
-    trainingCourse?: string
-    teacherComment?: string
-    evaluationData?: unknown
-    updatedAt?: string
+    reportImageUrl?: string
   }
 
 type TrainingFilter =
@@ -128,18 +127,15 @@ function normalizeText(
 function getDateInputValue(
   date: Date,
 ): string {
-  const year =
-    date.getFullYear()
+  const year = date.getFullYear()
 
-  const month =
-    String(
-      date.getMonth() + 1,
-    ).padStart(2, '0')
+  const month = String(
+    date.getMonth() + 1,
+  ).padStart(2, '0')
 
-  const day =
-    String(
-      date.getDate(),
-    ).padStart(2, '0')
+  const day = String(
+    date.getDate(),
+  ).padStart(2, '0')
 
   return `${year}-${month}-${day}`
 }
@@ -195,8 +191,7 @@ function formatDateTime(
     return '—'
   }
 
-  const date =
-    new Date(value)
+  const date = new Date(value)
 
   if (
     Number.isNaN(
@@ -218,20 +213,10 @@ function formatDateTime(
   ).format(date)
 }
 
-function getUpdatedAt(
-  record: AdminRecord,
-): string {
-  return (
-    record.updatedAt ||
-    record.createdAt
-  )
-}
-
 function isToday(
   value: string,
 ): boolean {
-  const date =
-    new Date(value)
+  const date = new Date(value)
 
   if (
     Number.isNaN(
@@ -241,8 +226,7 @@ function isToday(
     return false
   }
 
-  const today =
-    new Date()
+  const today = new Date()
 
   return (
     date.getFullYear() ===
@@ -283,9 +267,7 @@ function isRecordInDateRange(
 
   if (startDate) {
     const start =
-      parseDateValue(
-        startDate,
-      )
+      parseDateValue(startDate)
 
     start.setHours(
       0,
@@ -294,18 +276,14 @@ function isRecordInDateRange(
       0,
     )
 
-    if (
-      recordDate < start
-    ) {
+    if (recordDate < start) {
       return false
     }
   }
 
   if (endDate) {
     const end =
-      parseDateValue(
-        endDate,
-      )
+      parseDateValue(endDate)
 
     end.setHours(
       23,
@@ -314,9 +292,7 @@ function isRecordInDateRange(
       999,
     )
 
-    if (
-      recordDate > end
-    ) {
+    if (recordDate > end) {
       return false
     }
   }
@@ -326,7 +302,9 @@ function isRecordInDateRange(
 
 function getDisplayResult(
   value:
-    string | null | undefined,
+    | string
+    | null
+    | undefined,
 ): string {
   if (!value) {
     return 'Chưa ghi'
@@ -341,8 +319,9 @@ function getDisplayResult(
 function escapeCsv(
   value: unknown,
 ): string {
-  const text =
-    String(value ?? '')
+  const text = String(
+    value ?? '',
+  )
 
   return `"${text.replace(
     /"/g,
@@ -368,45 +347,36 @@ function exportRecordsToCsv(
     'Thời gian cập nhật',
   ]
 
-  const rows =
-    records.map(
-      (record) => [
-        record.teacherName,
-        record.studentName,
+  const rows = records.map(
+    (record) => [
+      record.teacherName,
+      record.studentName,
 
-        TRAINING_LABELS[
-          record.trainingType
-        ],
-
-        record.vehicleCategory,
-
-        record.vehicleNumber ||
-          '',
-
-        record.practiceAttempt ||
-          '',
-
-        record.trainingCourse ||
-          '',
-
-        record.evaluationDate,
-
-        getDisplayResult(
-          record.overallResult,
-        ),
-
-        record.teacherComment ||
-          '',
-
-        formatDateTime(
-          record.createdAt,
-        ),
-
-        formatDateTime(
-          getUpdatedAt(record),
-        ),
+      TRAINING_LABELS[
+        record.trainingType
       ],
-    )
+
+      record.vehicleCategory,
+      record.vehicleNumber || '',
+      record.practiceAttempt || '',
+      record.trainingCourse || '',
+      record.evaluationDate,
+
+      getDisplayResult(
+        record.overallResult,
+      ),
+
+      record.teacherComment || '',
+
+      formatDateTime(
+        record.createdAt,
+      ),
+
+      formatDateTime(
+        record.updatedAt,
+      ),
+    ],
+  )
 
   const content = [
     header,
@@ -419,14 +389,13 @@ function exportRecordsToCsv(
     )
     .join('\n')
 
-  const blob =
-    new Blob(
-      [`\uFEFF${content}`],
-      {
-        type:
-          'text/csv;charset=utf-8',
-      },
-    )
+  const blob = new Blob(
+    [`\uFEFF${content}`],
+    {
+      type:
+        'text/csv;charset=utf-8',
+    },
+  )
 
   const url =
     URL.createObjectURL(blob)
@@ -474,11 +443,8 @@ function readText(
     Record<string, unknown>,
   keys: string[],
 ): string {
-  for (
-    const key of keys
-  ) {
-    const value =
-      source[key]
+  for (const key of keys) {
+    const value = source[key]
 
     if (
       typeof value ===
@@ -552,8 +518,7 @@ function createDetailItem(
           'detail',
           'comment',
         ],
-      ) ||
-      undefined,
+      ) || undefined,
 
     result:
       getDisplayResult(
@@ -584,14 +549,9 @@ function getEvaluationItems(
     const lessons =
       snapshot.lessons
 
-    if (
-      Array.isArray(lessons)
-    ) {
+    if (Array.isArray(lessons)) {
       lessons.forEach(
-        (
-          lesson,
-          index,
-        ) => {
+        (lesson, index) => {
           items.push(
             createDetailItem(
               lesson,
@@ -620,8 +580,7 @@ function getEvaluationItems(
         )
 
       items.push({
-        order:
-          items.length + 1,
+        order: items.length + 1,
 
         title:
           readText(
@@ -642,8 +601,7 @@ function getEvaluationItems(
               'note',
               'detail',
             ],
-          ) ||
-          undefined,
+          ) || undefined,
 
         result:
           getDisplayResult(
@@ -669,6 +627,225 @@ function getEvaluationItems(
   return checklistItems.map(
     createDetailItem,
   )
+}
+
+function mapAdminTrainingType(
+  value: AdminTrainingType,
+): TrainingType {
+  if (value === 'EXAM') {
+    return 'COURSE'
+  }
+
+  return value
+}
+
+function createHistoricalState(
+  record: AdminRecord,
+): EvaluationState | null {
+  const raw = asObject(
+    record.evaluationData,
+  )
+
+  if (!raw) {
+    return null
+  }
+
+  const rawTrainingType =
+    raw.trainingType
+
+  const trainingType:
+    TrainingType =
+    rawTrainingType ===
+      'BASIC' ||
+    rawTrainingType ===
+      'ROAD' ||
+    rawTrainingType ===
+      'COURSE'
+      ? rawTrainingType
+      : mapAdminTrainingType(
+          record.trainingType,
+        )
+
+  return {
+    vehicleCategory:
+      (raw.vehicleCategory ??
+        record.vehicleCategory) as
+        EvaluationState['vehicleCategory'],
+
+    trainingType,
+
+    studentName:
+      readText(raw, [
+        'studentName',
+      ]) || record.studentName,
+
+    evaluationDate:
+      readText(raw, [
+        'evaluationDate',
+      ]) || record.evaluationDate,
+
+    instructorName:
+      readText(raw, [
+        'instructorName',
+      ]) || record.teacherName,
+
+    vehicleNumber:
+      readText(raw, [
+        'vehicleNumber',
+      ]) ||
+      record.vehicleNumber ||
+      '',
+
+    practiceAttempt:
+      readText(raw, [
+        'practiceAttempt',
+      ]) ||
+      record.practiceAttempt ||
+      '',
+
+    trainingCourse:
+      readText(raw, [
+        'trainingCourse',
+      ]) ||
+      record.trainingCourse ||
+      '',
+
+    lessons:
+      Array.isArray(raw.lessons)
+        ? (raw.lessons as
+            EvaluationState['lessons'])
+        : [],
+
+    emergencyEvaluation:
+      (raw.emergencyEvaluation ??
+        null) as
+        EvaluationState['emergencyEvaluation'],
+
+    checklistItems:
+      Array.isArray(
+        raw.checklistItems,
+      )
+        ? (raw.checklistItems as
+            EvaluationState['checklistItems'])
+        : [],
+
+    checklistOverall:
+      (raw.checklistOverall ??
+        null) as
+        EvaluationState['checklistOverall'],
+
+    teacherComment:
+      readText(raw, [
+        'teacherComment',
+      ]) ||
+      record.teacherComment ||
+      '',
+
+    finalConclusion:
+      (raw.finalConclusion ??
+        null) as
+        EvaluationState['finalConclusion'],
+  }
+}
+
+function sanitizeFileName(
+  value: string,
+): string {
+  const normalized = value
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .replace(/đ/gi, 'd')
+    .replace(/[^a-zA-Z0-9_-]+/g, '-')
+    .replace(/-+/g, '-')
+    .replace(/^-|-$/g, '')
+
+  return normalized || 'phieu-danh-gia'
+}
+
+function triggerBlobDownload(
+  blob: Blob,
+  fileName: string,
+): void {
+  const url =
+    URL.createObjectURL(blob)
+
+  const link =
+    document.createElement('a')
+
+  link.href = url
+  link.download = fileName
+  link.rel = 'noopener'
+
+  document.body.appendChild(link)
+  link.click()
+  link.remove()
+
+  window.setTimeout(() => {
+    URL.revokeObjectURL(url)
+  }, 1500)
+}
+
+async function waitForImages(
+  root: HTMLElement,
+): Promise<void> {
+  const images = Array.from(
+    root.querySelectorAll('img'),
+  )
+
+  await Promise.all(
+    images.map(
+      (image) => {
+        if (
+          image.complete &&
+          image.naturalWidth > 0
+        ) {
+          return Promise.resolve()
+        }
+
+        return new Promise<void>(
+          (resolve) => {
+            const finish = () => {
+              image.removeEventListener(
+                'load',
+                finish,
+              )
+
+              image.removeEventListener(
+                'error',
+                finish,
+              )
+
+              resolve()
+            }
+
+            image.addEventListener(
+              'load',
+              finish,
+              { once: true },
+            )
+
+            image.addEventListener(
+              'error',
+              finish,
+              { once: true },
+            )
+          },
+        )
+      },
+    ),
+  )
+}
+
+function nextPaint(): Promise<void> {
+  return new Promise((resolve) => {
+    window.requestAnimationFrame(
+      () => {
+        window.requestAnimationFrame(
+          () => resolve(),
+        )
+      },
+    )
+  })
 }
 
 function SearchIcon() {
@@ -810,100 +987,120 @@ function AdminBrand() {
 }
 
 export default function AdminTeachersPage() {
-  const [
-    records,
-    setRecords,
-  ] =
-    useState<AdminRecord[]>(
-      () =>
-        getEvaluationAdminRecords() as
-          AdminRecord[],
-    )
+  const [records, setRecords] =
+    useState<AdminRecord[]>([])
 
-  const [
-    activeView,
-    setActiveView,
-  ] =
-    useState<AdminView>(
-      'RECORDS',
-    )
+  const [activeView, setActiveView] =
+    useState<AdminView>('RECORDS')
 
-  const [
-    searchText,
-    setSearchText,
-  ] = useState('')
+  const [searchText, setSearchText] =
+    useState('')
 
   const [
     trainingFilter,
     setTrainingFilter,
-  ] =
-    useState<TrainingFilter>(
-      'ALL',
-    )
+  ] = useState<TrainingFilter>('ALL')
 
   const [
     vehicleFilter,
     setVehicleFilter,
   ] = useState('ALL')
 
-  const [
-    datePreset,
-    setDatePreset,
-  ] =
-    useState<DatePreset>(
-      'ALL',
-    )
+  const [datePreset, setDatePreset] =
+    useState<DatePreset>('ALL')
 
-  const [
-    startDate,
-    setStartDate,
-  ] = useState('')
+  const [startDate, setStartDate] =
+    useState('')
 
-  const [
-    endDate,
-    setEndDate,
-  ] = useState('')
+  const [endDate, setEndDate] =
+    useState('')
 
-  const [
-    sortMode,
-    setSortMode,
-  ] =
-    useState<SortMode>(
-      'NEWEST',
-    )
+  const [sortMode, setSortMode] =
+    useState<SortMode>('NEWEST')
 
   const [
     selectedRecord,
     setSelectedRecord,
-  ] =
-    useState<
-      AdminRecord | null
-    >(null)
+  ] = useState<AdminRecord | null>(
+    null,
+  )
 
   const [
     selectedTeacher,
     setSelectedTeacher,
-  ] =
-    useState<
-      TeacherSummary | null
-    >(null)
+  ] = useState<TeacherSummary | null>(
+    null,
+  )
 
-  const refreshRecords =
-    () => {
-      setRecords(
-        getEvaluationAdminRecords() as
-          AdminRecord[],
-      )
-    }
+  const [
+    loadingRecords,
+    setLoadingRecords,
+  ] = useState(true)
+
+  const [
+    recordsError,
+    setRecordsError,
+  ] = useState('')
+
+  const [
+    subscriptionVersion,
+    setSubscriptionVersion,
+  ] = useState(0)
+
+  const [
+    historicalState,
+    setHistoricalState,
+  ] = useState<EvaluationState | null>(
+    null,
+  )
+
+  const [
+    exportingRecordId,
+    setExportingRecordId,
+  ] = useState<string | null>(null)
+
+  const reportRenderHostRef =
+    useRef<HTMLDivElement | null>(
+      null,
+    )
 
   useEffect(() => {
-    return subscribeEvaluationAdminRecords(
-      refreshRecords,
-    )
-  }, [])
+    setLoadingRecords(true)
+    setRecordsError('')
 
-  const vehicleOptions =
-    useMemo(() => {
+    const unsubscribe =
+      subscribeEvaluationAdminRecords(
+        (nextRecords) => {
+          setRecords(
+            nextRecords as
+              AdminRecord[],
+          )
+
+          setLoadingRecords(false)
+        },
+
+        (error) => {
+          console.error(error)
+
+          setRecordsError(
+            'Không thể tải dữ liệu từ Firebase. Hãy kiểm tra Firestore Rules và kết nối Internet.',
+          )
+
+          setLoadingRecords(false)
+        },
+      )
+
+    return unsubscribe
+  }, [subscriptionVersion])
+
+  const refreshRecords = () => {
+    setSubscriptionVersion(
+      (current) => current + 1,
+    )
+  }
+
+  const vehicleOptions = useMemo(
+    () => {
       return Array.from(
         new Set(
           records
@@ -918,31 +1115,26 @@ export default function AdminTeachersPage() {
           'vi-VN',
         ),
       )
-    }, [records])
+    },
+    [records],
+  )
 
   const applyDatePreset = (
     preset: DatePreset,
   ) => {
     setDatePreset(preset)
 
-    const today =
-      new Date()
+    const today = new Date()
 
-    if (
-      preset === 'ALL'
-    ) {
+    if (preset === 'ALL') {
       setStartDate('')
       setEndDate('')
       return
     }
 
-    if (
-      preset === 'TODAY'
-    ) {
+    if (preset === 'TODAY') {
       const value =
-        getDateInputValue(
-          today,
-        )
+        getDateInputValue(today)
 
       setStartDate(value)
       setEndDate(value)
@@ -950,8 +1142,7 @@ export default function AdminTeachersPage() {
     }
 
     if (
-      preset ===
-      'SEVEN_DAYS'
+      preset === 'SEVEN_DAYS'
     ) {
       const start =
         new Date(today)
@@ -961,120 +1152,99 @@ export default function AdminTeachersPage() {
       )
 
       setStartDate(
-        getDateInputValue(
-          start,
-        ),
+        getDateInputValue(start),
       )
 
       setEndDate(
-        getDateInputValue(
-          today,
-        ),
+        getDateInputValue(today),
       )
 
       return
     }
 
     if (
-      preset ===
-      'THIS_MONTH'
+      preset === 'THIS_MONTH'
     ) {
-      const start =
-        new Date(
-          today.getFullYear(),
-          today.getMonth(),
-          1,
-        )
+      const start = new Date(
+        today.getFullYear(),
+        today.getMonth(),
+        1,
+      )
 
       setStartDate(
-        getDateInputValue(
-          start,
-        ),
+        getDateInputValue(start),
       )
 
       setEndDate(
-        getDateInputValue(
-          today,
-        ),
+        getDateInputValue(today),
       )
     }
   }
 
-  const filteredRecords =
-    useMemo(() => {
+  const filteredRecords = useMemo(
+    () => {
       const search =
-        normalizeText(
-          searchText,
-        )
+        normalizeText(searchText)
 
-      const result =
-        records.filter(
-          (record) => {
-            const matchesTraining =
-              trainingFilter ===
-                'ALL' ||
-              record.trainingType ===
-                trainingFilter
+      const result = records.filter(
+        (record) => {
+          const matchesTraining =
+            trainingFilter ===
+              'ALL' ||
+            record.trainingType ===
+              trainingFilter
 
-            const matchesVehicle =
-              vehicleFilter ===
-                'ALL' ||
-              record.vehicleCategory ===
-                vehicleFilter
+          const matchesVehicle =
+            vehicleFilter ===
+              'ALL' ||
+            record.vehicleCategory ===
+              vehicleFilter
 
-            const matchesDate =
-              isRecordInDateRange(
-                record,
-                startDate,
-                endDate,
-              )
-
-            const matchesSearch =
-              !search ||
-              [
-                record.teacherName,
-                record.studentName,
-                record.vehicleCategory,
-                record.vehicleNumber ||
-                  '',
-                record.trainingCourse ||
-                  '',
-                record.practiceAttempt ||
-                  '',
-
-                TRAINING_LABELS[
-                  record.trainingType
-                ],
-
-                getDisplayResult(
-                  record.overallResult,
-                ),
-
-                record.teacherComment ||
-                  '',
-              ].some((value) =>
-                normalizeText(
-                  value,
-                ).includes(search),
-              )
-
-            return (
-              matchesTraining &&
-              matchesVehicle &&
-              matchesDate &&
-              matchesSearch
+          const matchesDate =
+            isRecordInDateRange(
+              record,
+              startDate,
+              endDate,
             )
-          },
-        )
+
+          const matchesSearch =
+            !search ||
+            [
+              record.teacherName,
+              record.studentName,
+              record.vehicleCategory,
+              record.vehicleNumber || '',
+              record.trainingCourse || '',
+              record.practiceAttempt || '',
+
+              TRAINING_LABELS[
+                record.trainingType
+              ],
+
+              getDisplayResult(
+                record.overallResult,
+              ),
+
+              record.teacherComment || '',
+            ].some((value) =>
+              normalizeText(
+                value,
+              ).includes(search),
+            )
+
+          return (
+            matchesTraining &&
+            matchesVehicle &&
+            matchesDate &&
+            matchesSearch
+          )
+        },
+      )
 
       return [...result].sort(
-        (
-          left,
-          right,
-        ) => {
+        (left, right) => {
           if (
-            sortMode ===
-            'OLDEST'
+            sortMode === 'OLDEST'
           ) {
             return (
               new Date(
@@ -1128,19 +1298,16 @@ export default function AdminTeachersPage() {
 
           return (
             new Date(
-              getUpdatedAt(
-                right,
-              ),
+              right.updatedAt,
             ).getTime() -
             new Date(
-              getUpdatedAt(
-                left,
-              ),
+              left.updatedAt,
             ).getTime()
           )
         },
       )
-    }, [
+    },
+    [
       records,
       searchText,
       trainingFilter,
@@ -1148,147 +1315,118 @@ export default function AdminTeachersPage() {
       startDate,
       endDate,
       sortMode,
-    ])
+    ],
+  )
 
-  const teacherSummaries =
-    useMemo<
-      TeacherSummary[]
-    >(() => {
-      const teacherMap =
-        new Map<
-          string,
-          AdminRecord[]
-        >()
+  const teacherSummaries = useMemo<
+    TeacherSummary[]
+  >(() => {
+    const teacherMap = new Map<
+      string,
+      AdminRecord[]
+    >()
 
-      for (
-        const record of
-        filteredRecords
-      ) {
-        const key =
-          normalizeText(
-            record.teacherName,
+    for (
+      const record of filteredRecords
+    ) {
+      const key = normalizeText(
+        record.teacherName,
+      )
+
+      const current =
+        teacherMap.get(key) || []
+
+      current.push(record)
+
+      teacherMap.set(
+        key,
+        current,
+      )
+    }
+
+    return Array.from(
+      teacherMap.entries(),
+    )
+      .map(([key, items]) => {
+        const sorted =
+          [...items].sort(
+            (left, right) =>
+              new Date(
+                right.updatedAt,
+              ).getTime() -
+              new Date(
+                left.updatedAt,
+              ).getTime(),
           )
 
-        const current =
-          teacherMap.get(key) ||
-          []
-
-        current.push(record)
-
-        teacherMap.set(
+        return {
           key,
-          current,
-        )
-      }
 
-      return Array.from(
-        teacherMap.entries(),
+          teacherName:
+            sorted[0].teacherName,
+
+          totalEvaluations:
+            sorted.length,
+
+          totalStudents:
+            new Set(
+              sorted.map((item) =>
+                normalizeText(
+                  item.studentName,
+                ),
+              ),
+            ).size,
+
+          latestCreatedAt:
+            sorted[0].updatedAt,
+
+          trainingTypes:
+            Array.from(
+              new Set(
+                sorted.map(
+                  (item) =>
+                    item.trainingType,
+                ),
+              ),
+            ),
+
+          vehicleCategories:
+            Array.from(
+              new Set(
+                sorted.map(
+                  (item) =>
+                    item.vehicleCategory,
+                ),
+              ),
+            ),
+
+          records: sorted,
+        }
+      })
+      .sort(
+        (left, right) =>
+          right.totalEvaluations -
+          left.totalEvaluations,
       )
-        .map(
-          ([key, items]) => {
-            const sorted =
-              [...items].sort(
-                (
-                  left,
-                  right,
-                ) =>
-                  new Date(
-                    getUpdatedAt(
-                      right,
-                    ),
-                  ).getTime() -
-                  new Date(
-                    getUpdatedAt(
-                      left,
-                    ),
-                  ).getTime(),
-              )
+  }, [filteredRecords])
 
-            return {
-              key,
-
-              teacherName:
-                sorted[0]
-                  .teacherName,
-
-              totalEvaluations:
-                sorted.length,
-
-              totalStudents:
-                new Set(
-                  sorted.map(
-                    (item) =>
-                      normalizeText(
-                        item.studentName,
-                      ),
-                  ),
-                ).size,
-
-              latestCreatedAt:
-                getUpdatedAt(
-                  sorted[0],
-                ),
-
-              trainingTypes:
-                Array.from(
-                  new Set(
-                    sorted.map(
-                      (item) =>
-                        item.trainingType,
-                    ),
-                  ),
-                ),
-
-              vehicleCategories:
-                Array.from(
-                  new Set(
-                    sorted.map(
-                      (item) =>
-                        item.vehicleCategory,
-                    ),
-                  ),
-                ),
-
-              records: sorted,
-            }
-          },
-        )
-        .sort(
-          (
-            left,
-            right,
-          ) =>
-            right.totalEvaluations -
-            left.totalEvaluations,
-        )
-    }, [filteredRecords])
-
-  const totalTeachers =
-    new Set(
-      records.map(
-        (record) =>
-          normalizeText(
-            record.teacherName,
-          ),
+  const totalTeachers = new Set(
+    records.map((record) =>
+      normalizeText(
+        record.teacherName,
       ),
-    ).size
+    ),
+  ).size
 
-  const totalToday =
-    records.filter(
-      (record) =>
-        isToday(
-          record.createdAt,
-        ),
-    ).length
+  const totalToday = records.filter(
+    (record) =>
+      isToday(record.createdAt),
+  ).length
 
   const hasActiveFilters =
-    Boolean(
-      searchText.trim(),
-    ) ||
-    trainingFilter !==
-      'ALL' ||
-    vehicleFilter !==
-      'ALL' ||
+    Boolean(searchText.trim()) ||
+    trainingFilter !== 'ALL' ||
+    vehicleFilter !== 'ALL' ||
     Boolean(startDate) ||
     Boolean(endDate)
 
@@ -1302,26 +1440,177 @@ export default function AdminTeachersPage() {
     setSortMode('NEWEST')
   }
 
-  const handleDelete = (
+  const downloadStoredImage = async (
     record: AdminRecord,
-  ) => {
-    const accepted =
-      window.confirm(
-        `Xóa phiếu của học viên "${record.studentName}" do giáo viên "${record.teacherName}" nhập?`,
+  ): Promise<boolean> => {
+    if (!record.reportImageUrl) {
+      return false
+    }
+
+    try {
+      const response = await fetch(
+        record.reportImageUrl,
       )
 
-    if (!accepted) {
+      if (!response.ok) {
+        return false
+      }
+
+      const blob = await response.blob()
+
+      const fileName =
+        `${sanitizeFileName(
+          record.studentName,
+        )}-${record.evaluationDate}.png`
+
+      triggerBlobDownload(
+        blob,
+        fileName,
+      )
+
+      return true
+    } catch (error) {
+      console.warn(
+        'Không tải được ảnh đã lưu, chuyển sang dựng lại từ dữ liệu:',
+        error,
+      )
+
+      return false
+    }
+  }
+
+  const downloadHistoricalReport = async (
+    record: AdminRecord,
+  ) => {
+    if (exportingRecordId) {
       return
     }
 
-    deleteEvaluationAdminRecord(
-      record.id,
-    )
+    setExportingRecordId(record.id)
 
-    setSelectedRecord(null)
-    setSelectedTeacher(null)
+    try {
+      const downloadedOriginal =
+        await downloadStoredImage(
+          record,
+        )
 
-    refreshRecords()
+      if (downloadedOriginal) {
+        return
+      }
+
+      const historical =
+        createHistoricalState(record)
+
+      if (!historical) {
+        throw new Error(
+          'Phiếu này chưa lưu evaluationData nên không thể dựng lại ảnh cũ.',
+        )
+      }
+
+      setHistoricalState(
+        historical,
+      )
+
+      await nextPaint()
+
+      if (
+        'fonts' in document
+      ) {
+        await document.fonts.ready
+      }
+
+      const host =
+        reportRenderHostRef.current
+
+      const reportElement =
+        host?.querySelector<HTMLElement>(
+          '.report-page',
+        )
+
+      if (!reportElement) {
+        throw new Error(
+          'Không tìm thấy nội dung phiếu để tạo ảnh.',
+        )
+      }
+
+      await waitForImages(
+        reportElement,
+      )
+
+      reportElement.classList.add(
+        'report-export-flat',
+      )
+
+      await nextPaint()
+
+      const canvas = await html2canvas(
+        reportElement,
+        {
+          backgroundColor: '#ffffff',
+          scale: 1,
+          useCORS: true,
+          allowTaint: false,
+          logging: false,
+          width: 1080,
+          height: 1920,
+          windowWidth: 1080,
+          windowHeight: 1920,
+          scrollX: 0,
+          scrollY: 0,
+        },
+      )
+
+      const blob =
+        await new Promise<Blob>(
+          (resolve, reject) => {
+            canvas.toBlob(
+              (result) => {
+                if (!result) {
+                  reject(
+                    new Error(
+                      'Không thể tạo file ảnh PNG.',
+                    ),
+                  )
+
+                  return
+                }
+
+                resolve(result)
+              },
+              'image/png',
+              1,
+            )
+          },
+        )
+
+      const fileName =
+        `${sanitizeFileName(
+          record.studentName,
+        )}-${sanitizeFileName(
+          TRAINING_LABELS[
+            record.trainingType
+          ],
+        )}-${record.evaluationDate}.png`
+
+      triggerBlobDownload(
+        blob,
+        fileName,
+      )
+    } catch (error) {
+      console.error(
+        'Không thể tải lại ảnh phiếu:',
+        error,
+      )
+
+      window.alert(
+        error instanceof Error
+          ? error.message
+          : 'Không thể tải lại ảnh phiếu.',
+      )
+    } finally {
+      setHistoricalState(null)
+      setExportingRecordId(null)
+    }
   }
 
   const selectedItems =
@@ -1370,32 +1659,31 @@ export default function AdminTeachersPage() {
           </h1>
 
           <p>
-            Theo dõi toàn bộ phiếu
-            đã đánh giá, lọc theo
-            ngày, nội dung và từng
-            hạng xe trên một giao
-            diện quản trị duy nhất.
+            Theo dõi toàn bộ phiếu đã
+            đánh giá, lọc theo ngày,
+            nội dung, hạng xe và tải lại
+            ảnh phiếu đã điền từ mọi thiết bị.
           </p>
         </div>
 
         <div className="admin-pro-hero-actions">
           <button
             type="button"
-            onClick={
-              refreshRecords
-            }
+            onClick={refreshRecords}
+            disabled={loadingRecords}
           >
             <RefreshIcon />
 
-            Làm mới
+            {loadingRecords
+              ? 'Đang tải...'
+              : 'Làm mới'}
           </button>
 
           <button
             type="button"
             className="is-primary"
             disabled={
-              filteredRecords.length ===
-              0
+              filteredRecords.length === 0
             }
             onClick={() =>
               exportRecordsToCsv(
@@ -1411,6 +1699,12 @@ export default function AdminTeachersPage() {
       </section>
 
       <section className="admin-pro-content">
+        {recordsError ? (
+          <div className="admin-pro-error-banner">
+            {recordsError}
+          </div>
+        ) : null}
+
         <div className="admin-pro-kpis">
           <article>
             <div className="admin-pro-kpi-icon">
@@ -1513,9 +1807,7 @@ export default function AdminTeachersPage() {
             {hasActiveFilters ? (
               <button
                 type="button"
-                onClick={
-                  clearFilters
-                }
+                onClick={clearFilters}
               >
                 Xóa toàn bộ lọc
               </button>
@@ -1542,10 +1834,7 @@ export default function AdminTeachersPage() {
                   'Tháng này',
                 ],
               ] as Array<
-                [
-                  DatePreset,
-                  string,
-                ]
+                [DatePreset, string]
               >
             ).map(
               ([value, label]) => (
@@ -1553,8 +1842,7 @@ export default function AdminTeachersPage() {
                   type="button"
                   key={value}
                   className={
-                    datePreset ===
-                    value
+                    datePreset === value
                       ? 'is-selected'
                       : ''
                   }
@@ -1572,24 +1860,17 @@ export default function AdminTeachersPage() {
 
           <div className="admin-pro-filter-grid">
             <label className="admin-pro-search">
-              <span>
-                Tìm kiếm
-              </span>
+              <span>Tìm kiếm</span>
 
               <div>
                 <SearchIcon />
 
                 <input
                   type="search"
-                  value={
-                    searchText
-                  }
-                  onChange={(
-                    event,
-                  ) =>
+                  value={searchText}
+                  onChange={(event) =>
                     setSearchText(
-                      event.target
-                        .value,
+                      event.target.value,
                     )
                   }
                   placeholder="Tên giáo viên, học viên, số xe, kết quả..."
@@ -1598,21 +1879,14 @@ export default function AdminTeachersPage() {
             </label>
 
             <label>
-              <span>
-                Từ ngày
-              </span>
+              <span>Từ ngày</span>
 
               <input
                 type="date"
-                value={
-                  startDate
-                }
-                onChange={(
-                  event,
-                ) => {
+                value={startDate}
+                onChange={(event) => {
                   setStartDate(
-                    event.target
-                      .value,
+                    event.target.value,
                   )
 
                   setDatePreset(
@@ -1623,21 +1897,14 @@ export default function AdminTeachersPage() {
             </label>
 
             <label>
-              <span>
-                Đến ngày
-              </span>
+              <span>Đến ngày</span>
 
               <input
                 type="date"
-                value={
-                  endDate
-                }
-                onChange={(
-                  event,
-                ) => {
+                value={endDate}
+                onChange={(event) => {
                   setEndDate(
-                    event.target
-                      .value,
+                    event.target.value,
                   )
 
                   setDatePreset(
@@ -1648,20 +1915,13 @@ export default function AdminTeachersPage() {
             </label>
 
             <label>
-              <span>
-                Loại đánh giá
-              </span>
+              <span>Loại đánh giá</span>
 
               <select
-                value={
-                  trainingFilter
-                }
-                onChange={(
-                  event,
-                ) =>
+                value={trainingFilter}
+                onChange={(event) =>
                   setTrainingFilter(
-                    event.target
-                      .value as
+                    event.target.value as
                       TrainingFilter,
                   )
                 }
@@ -1685,20 +1945,13 @@ export default function AdminTeachersPage() {
             </label>
 
             <label>
-              <span>
-                Hạng xe
-              </span>
+              <span>Hạng xe</span>
 
               <select
-                value={
-                  vehicleFilter
-                }
-                onChange={(
-                  event,
-                ) =>
+                value={vehicleFilter}
+                onChange={(event) =>
                   setVehicleFilter(
-                    event.target
-                      .value,
+                    event.target.value,
                   )
                 }
               >
@@ -1709,12 +1962,8 @@ export default function AdminTeachersPage() {
                 {vehicleOptions.map(
                   (category) => (
                     <option
-                      key={
-                        category
-                      }
-                      value={
-                        category
-                      }
+                      key={category}
+                      value={category}
                     >
                       {category}
                     </option>
@@ -1724,20 +1973,13 @@ export default function AdminTeachersPage() {
             </label>
 
             <label>
-              <span>
-                Sắp xếp
-              </span>
+              <span>Sắp xếp</span>
 
               <select
-                value={
-                  sortMode
-                }
-                onChange={(
-                  event,
-                ) =>
+                value={sortMode}
+                onChange={(event) =>
                   setSortMode(
-                    event.target
-                      .value as
+                    event.target.value as
                       SortMode,
                   )
                 }
@@ -1770,14 +2012,10 @@ export default function AdminTeachersPage() {
           </div>
 
           <div className="admin-pro-filter-result">
-            <span>
-              Đang hiển thị
-            </span>
+            <span>Đang hiển thị</span>
 
             <strong>
-              {
-                filteredRecords.length
-              }
+              {filteredRecords.length}
             </strong>
 
             <span>
@@ -1792,8 +2030,7 @@ export default function AdminTeachersPage() {
               </em>
             ) : null}
 
-            {startDate ||
-            endDate ? (
+            {startDate || endDate ? (
               <em>
                 Ngày:{' '}
                 {startDate
@@ -1875,26 +2112,18 @@ export default function AdminTeachersPage() {
                     <th>Số xe</th>
                     <th>Ngày đánh giá</th>
                     <th>Kết quả</th>
-                    <th />
+                    <th>Thao tác</th>
                   </tr>
                 </thead>
 
                 <tbody>
                   {filteredRecords.map(
-                    (
-                      record,
-                      index,
-                    ) => (
-                      <tr
-                        key={
-                          record.id
-                        }
-                      >
+                    (record, index) => (
+                      <tr key={record.id}>
                         <td>
                           <span className="admin-pro-index">
                             {String(
-                              index +
-                                1,
+                              index + 1,
                             ).padStart(
                               2,
                               '0',
@@ -1906,25 +2135,19 @@ export default function AdminTeachersPage() {
                           <div className="admin-pro-person">
                             <span>
                               {record.teacherName
-                                .charAt(
-                                  0,
-                                )
+                                .charAt(0)
                                 .toUpperCase()}
                             </span>
 
                             <strong>
-                              {
-                                record.teacherName
-                              }
+                              {record.teacherName}
                             </strong>
                           </div>
                         </td>
 
                         <td>
                           <strong>
-                            {
-                              record.studentName
-                            }
+                            {record.studentName}
                           </strong>
                         </td>
 
@@ -1934,8 +2157,7 @@ export default function AdminTeachersPage() {
                           >
                             {
                               TRAINING_LABELS[
-                                record
-                                  .trainingType
+                                record.trainingType
                               ]
                             }
                           </span>
@@ -1943,9 +2165,7 @@ export default function AdminTeachersPage() {
 
                         <td>
                           <span className="admin-pro-vehicle">
-                            {
-                              record.vehicleCategory
-                            }
+                            {record.vehicleCategory}
                           </span>
                         </td>
 
@@ -1984,14 +2204,23 @@ export default function AdminTeachersPage() {
 
                             <button
                               type="button"
-                              className="admin-pro-delete"
-                              onClick={() =>
-                                handleDelete(
+                              className="admin-pro-download-report"
+                              disabled={
+                                exportingRecordId !==
+                                null
+                              }
+                              onClick={() => {
+                                void downloadHistoricalReport(
                                   record,
                                 )
-                              }
+                              }}
                             >
-                              Xóa
+                              <DownloadIcon />
+
+                              {exportingRecordId ===
+                              record.id
+                                ? 'Đang tạo ảnh...'
+                                : 'Tải lại ảnh'}
                             </button>
                           </div>
                         </td>
@@ -2001,8 +2230,24 @@ export default function AdminTeachersPage() {
                 </tbody>
               </table>
 
-              {filteredRecords.length ===
-              0 ? (
+              {loadingRecords ? (
+                <div className="admin-pro-empty">
+                  <RefreshIcon />
+
+                  <h3>
+                    Đang tải dữ liệu
+                  </h3>
+
+                  <p>
+                    Hệ thống đang kết nối
+                    với Firebase.
+                  </p>
+                </div>
+              ) : null}
+
+              {!loadingRecords &&
+              filteredRecords.length ===
+                0 ? (
                 <div className="admin-pro-empty">
                   <FileIcon />
 
@@ -2011,16 +2256,13 @@ export default function AdminTeachersPage() {
                   </h3>
 
                   <p>
-                    Thay đổi ngày,
-                    hạng xe hoặc từ
-                    khóa tìm kiếm.
+                    Thay đổi ngày, hạng xe
+                    hoặc từ khóa tìm kiếm.
                   </p>
 
                   <button
                     type="button"
-                    onClick={
-                      clearFilters
-                    }
+                    onClick={clearFilters}
                   >
                     Đặt lại bộ lọc
                   </button>
@@ -2044,35 +2286,23 @@ export default function AdminTeachersPage() {
 
                 <tbody>
                   {teacherSummaries.map(
-                    (
-                      teacher,
-                    ) => (
-                      <tr
-                        key={
-                          teacher.key
-                        }
-                      >
+                    (teacher) => (
+                      <tr key={teacher.key}>
                         <td>
                           <div className="admin-pro-person">
                             <span>
                               {teacher.teacherName
-                                .charAt(
-                                  0,
-                                )
+                                .charAt(0)
                                 .toUpperCase()}
                             </span>
 
                             <div>
                               <strong>
-                                {
-                                  teacher.teacherName
-                                }
+                                {teacher.teacherName}
                               </strong>
 
                               <small>
-                                {
-                                  teacher.totalEvaluations
-                                }{' '}
+                                {teacher.totalEvaluations}{' '}
                                 phiếu đã nhập
                               </small>
                             </div>
@@ -2081,29 +2311,19 @@ export default function AdminTeachersPage() {
 
                         <td>
                           <strong className="admin-pro-count">
-                            {
-                              teacher.totalEvaluations
-                            }
+                            {teacher.totalEvaluations}
                           </strong>
                         </td>
 
                         <td>
-                          {
-                            teacher.totalStudents
-                          }
+                          {teacher.totalStudents}
                         </td>
 
                         <td>
                           <div className="admin-pro-tags">
                             {teacher.trainingTypes.map(
-                              (
-                                type,
-                              ) => (
-                                <span
-                                  key={
-                                    type
-                                  }
-                                >
+                              (type) => (
+                                <span key={type}>
                                   {
                                     TRAINING_LABELS[
                                       type
@@ -2118,17 +2338,9 @@ export default function AdminTeachersPage() {
                         <td>
                           <div className="admin-pro-tags is-muted">
                             {teacher.vehicleCategories.map(
-                              (
-                                category,
-                              ) => (
-                                <span
-                                  key={
-                                    category
-                                  }
-                                >
-                                  {
-                                    category
-                                  }
+                              (category) => (
+                                <span key={category}>
+                                  {category}
                                 </span>
                               ),
                             )}
@@ -2176,16 +2388,12 @@ export default function AdminTeachersPage() {
         <div
           className="admin-pro-overlay"
           onMouseDown={() =>
-            setSelectedTeacher(
-              null,
-            )
+            setSelectedTeacher(null)
           }
         >
           <aside
             className="admin-pro-drawer"
-            onMouseDown={(
-              event,
-            ) =>
+            onMouseDown={(event) =>
               event.stopPropagation()
             }
           >
@@ -2198,14 +2406,10 @@ export default function AdminTeachersPage() {
                 </span>
 
                 <div>
-                  <small>
-                    GIÁO VIÊN
-                  </small>
+                  <small>GIÁO VIÊN</small>
 
                   <h2>
-                    {
-                      selectedTeacher.teacherName
-                    }
+                    {selectedTeacher.teacherName}
                   </h2>
                 </div>
               </div>
@@ -2213,9 +2417,7 @@ export default function AdminTeachersPage() {
               <button
                 type="button"
                 onClick={() =>
-                  setSelectedTeacher(
-                    null,
-                  )
+                  setSelectedTeacher(null)
                 }
               >
                 ×
@@ -2224,33 +2426,23 @@ export default function AdminTeachersPage() {
 
             <div className="admin-pro-drawer-stats">
               <div>
-                <span>
-                  Số phiếu
-                </span>
+                <span>Số phiếu</span>
 
                 <strong>
-                  {
-                    selectedTeacher.totalEvaluations
-                  }
+                  {selectedTeacher.totalEvaluations}
                 </strong>
               </div>
 
               <div>
-                <span>
-                  Học viên
-                </span>
+                <span>Học viên</span>
 
                 <strong>
-                  {
-                    selectedTeacher.totalStudents
-                  }
+                  {selectedTeacher.totalStudents}
                 </strong>
               </div>
 
               <div>
-                <span>
-                  Hạng xe
-                </span>
+                <span>Hạng xe</span>
 
                 <strong>
                   {
@@ -2265,11 +2457,7 @@ export default function AdminTeachersPage() {
             <div className="admin-pro-drawer-list">
               {selectedTeacher.records.map(
                 (record) => (
-                  <article
-                    key={
-                      record.id
-                    }
-                  >
+                  <article key={record.id}>
                     <div>
                       <span
                         className={`admin-pro-type admin-pro-type--${record.trainingType.toLocaleLowerCase()}`}
@@ -2282,23 +2470,17 @@ export default function AdminTeachersPage() {
                       </span>
 
                       <b className="admin-pro-vehicle">
-                        {
-                          record.vehicleCategory
-                        }
+                        {record.vehicleCategory}
                       </b>
                     </div>
 
                     <h3>
-                      {
-                        record.studentName
-                      }
+                      {record.studentName}
                     </h3>
 
                     <dl>
                       <div>
-                        <dt>
-                          Ngày đánh giá
-                        </dt>
+                        <dt>Ngày đánh giá</dt>
 
                         <dd>
                           {formatDate(
@@ -2308,9 +2490,7 @@ export default function AdminTeachersPage() {
                       </div>
 
                       <div>
-                        <dt>
-                          Số xe
-                        </dt>
+                        <dt>Số xe</dt>
 
                         <dd>
                           {record.vehicleNumber ||
@@ -2319,9 +2499,7 @@ export default function AdminTeachersPage() {
                       </div>
 
                       <div>
-                        <dt>
-                          Kết quả
-                        </dt>
+                        <dt>Kết quả</dt>
 
                         <dd>
                           {getDisplayResult(
@@ -2336,13 +2514,8 @@ export default function AdminTeachersPage() {
                         type="button"
                         className="primary"
                         onClick={() => {
-                          setSelectedTeacher(
-                            null,
-                          )
-
-                          setSelectedRecord(
-                            record,
-                          )
+                          setSelectedTeacher(null)
+                          setSelectedRecord(record)
                         }}
                       >
                         Xem đầy đủ
@@ -2350,13 +2523,20 @@ export default function AdminTeachersPage() {
 
                       <button
                         type="button"
-                        onClick={() =>
-                          handleDelete(
+                        disabled={
+                          exportingRecordId !==
+                          null
+                        }
+                        onClick={() => {
+                          void downloadHistoricalReport(
                             record,
                           )
-                        }
+                        }}
                       >
-                        Xóa phiếu
+                        {exportingRecordId ===
+                        record.id
+                          ? 'Đang tạo ảnh...'
+                          : 'Tải lại ảnh PNG'}
                       </button>
                     </div>
                   </article>
@@ -2371,9 +2551,7 @@ export default function AdminTeachersPage() {
         <div
           className="admin-detail-overlay"
           onMouseDown={() =>
-            setSelectedRecord(
-              null,
-            )
+            setSelectedRecord(null)
           }
         >
           <section
@@ -2381,9 +2559,7 @@ export default function AdminTeachersPage() {
             role="dialog"
             aria-modal="true"
             aria-label={`Chi tiết phiếu của học viên ${selectedRecord.studentName}`}
-            onMouseDown={(
-              event,
-            ) =>
+            onMouseDown={(event) =>
               event.stopPropagation()
             }
           >
@@ -2394,16 +2570,12 @@ export default function AdminTeachersPage() {
                 </span>
 
                 <h2>
-                  {
-                    selectedRecord.studentName
-                  }
+                  {selectedRecord.studentName}
                 </h2>
 
                 <p>
                   Mã phiếu:{' '}
-                  {
-                    selectedRecord.id
-                  }
+                  {selectedRecord.id}
                 </p>
               </div>
 
@@ -2411,9 +2583,7 @@ export default function AdminTeachersPage() {
                 type="button"
                 aria-label="Đóng chi tiết"
                 onClick={() =>
-                  setSelectedRecord(
-                    null,
-                  )
+                  setSelectedRecord(null)
                 }
               >
                 ×
@@ -2422,48 +2592,35 @@ export default function AdminTeachersPage() {
 
             <div className="admin-detail-summary">
               <article>
-                <small>
-                  GIÁO VIÊN
-                </small>
+                <small>GIÁO VIÊN</small>
 
                 <strong>
-                  {
-                    selectedRecord.teacherName
-                  }
+                  {selectedRecord.teacherName}
                 </strong>
               </article>
 
               <article>
-                <small>
-                  LOẠI PHIẾU
-                </small>
+                <small>LOẠI PHIẾU</small>
 
                 <strong>
                   {
                     TRAINING_LABELS[
-                      selectedRecord
-                        .trainingType
+                      selectedRecord.trainingType
                     ]
                   }
                 </strong>
               </article>
 
               <article>
-                <small>
-                  HẠNG XE
-                </small>
+                <small>HẠNG XE</small>
 
                 <strong>
-                  {
-                    selectedRecord.vehicleCategory
-                  }
+                  {selectedRecord.vehicleCategory}
                 </strong>
               </article>
 
               <article>
-                <small>
-                  NGÀY ĐÁNH GIÁ
-                </small>
+                <small>NGÀY ĐÁNH GIÁ</small>
 
                 <strong>
                   {formatDate(
@@ -2481,34 +2638,21 @@ export default function AdminTeachersPage() {
 
                 <dl>
                   <div>
-                    <dt>
-                      Học viên
-                    </dt>
-
+                    <dt>Học viên</dt>
                     <dd>
-                      {
-                        selectedRecord.studentName
-                      }
+                      {selectedRecord.studentName}
                     </dd>
                   </div>
 
                   <div>
-                    <dt>
-                      Giáo viên
-                    </dt>
-
+                    <dt>Giáo viên</dt>
                     <dd>
-                      {
-                        selectedRecord.teacherName
-                      }
+                      {selectedRecord.teacherName}
                     </dd>
                   </div>
 
                   <div>
-                    <dt>
-                      Số xe
-                    </dt>
-
+                    <dt>Số xe</dt>
                     <dd>
                       {selectedRecord.vehicleNumber ||
                         'Chưa nhập'}
@@ -2516,22 +2660,14 @@ export default function AdminTeachersPage() {
                   </div>
 
                   <div>
-                    <dt>
-                      Hạng xe
-                    </dt>
-
+                    <dt>Hạng xe</dt>
                     <dd>
-                      {
-                        selectedRecord.vehicleCategory
-                      }
+                      {selectedRecord.vehicleCategory}
                     </dd>
                   </div>
 
                   <div>
-                    <dt>
-                      Khóa học
-                    </dt>
-
+                    <dt>Khóa học</dt>
                     <dd>
                       {selectedRecord.trainingCourse ||
                         'Chưa nhập'}
@@ -2539,10 +2675,7 @@ export default function AdminTeachersPage() {
                   </div>
 
                   <div>
-                    <dt>
-                      Lần tập
-                    </dt>
-
+                    <dt>Lần tập</dt>
                     <dd>
                       {selectedRecord.practiceAttempt ||
                         'Chưa nhập'}
@@ -2550,10 +2683,7 @@ export default function AdminTeachersPage() {
                   </div>
 
                   <div>
-                    <dt>
-                      Thời gian tạo
-                    </dt>
-
+                    <dt>Thời gian tạo</dt>
                     <dd>
                       {formatDateTime(
                         selectedRecord.createdAt,
@@ -2562,15 +2692,10 @@ export default function AdminTeachersPage() {
                   </div>
 
                   <div>
-                    <dt>
-                      Cập nhật cuối
-                    </dt>
-
+                    <dt>Cập nhật cuối</dt>
                     <dd>
                       {formatDateTime(
-                        getUpdatedAt(
-                          selectedRecord,
-                        ),
+                        selectedRecord.updatedAt,
                       )}
                     </dd>
                   </div>
@@ -2578,9 +2703,7 @@ export default function AdminTeachersPage() {
               </section>
 
               <section className="admin-detail-card admin-detail-result-card">
-                <h3>
-                  Kết quả chung
-                </h3>
+                <h3>Kết quả chung</h3>
 
                 <strong>
                   {getDisplayResult(
@@ -2596,6 +2719,27 @@ export default function AdminTeachersPage() {
                   {selectedRecord.teacherComment ||
                     'Giáo viên chưa nhập nhận xét.'}
                 </p>
+
+                <button
+                  type="button"
+                  className="admin-detail-download"
+                  disabled={
+                    exportingRecordId !==
+                    null
+                  }
+                  onClick={() => {
+                    void downloadHistoricalReport(
+                      selectedRecord,
+                    )
+                  }}
+                >
+                  <DownloadIcon />
+
+                  {exportingRecordId ===
+                  selectedRecord.id
+                    ? 'Đang dựng lại ảnh phiếu...'
+                    : 'Tải lại ảnh phiếu PNG'}
+                </button>
               </section>
             </div>
 
@@ -2604,50 +2748,29 @@ export default function AdminTeachersPage() {
                 Nội dung đánh giá chi tiết
               </h3>
 
-              {selectedItems.length >
-              0 ? (
+              {selectedItems.length > 0 ? (
                 <div className="admin-detail-table-wrap">
                   <table className="admin-detail-table">
                     <thead>
                       <tr>
-                        <th>
-                          STT
-                        </th>
-
-                        <th>
-                          Nội dung
-                        </th>
-
-                        <th>
-                          Mô tả
-                        </th>
-
-                        <th>
-                          Kết quả
-                        </th>
+                        <th>STT</th>
+                        <th>Nội dung</th>
+                        <th>Mô tả</th>
+                        <th>Kết quả</th>
                       </tr>
                     </thead>
 
                     <tbody>
                       {selectedItems.map(
-                        (
-                          item,
-                          index,
-                        ) => (
+                        (item, index) => (
                           <tr
                             key={`${item.title}-${index}`}
                           >
-                            <td>
-                              {
-                                item.order
-                              }
-                            </td>
+                            <td>{item.order}</td>
 
                             <td>
                               <strong>
-                                {
-                                  item.title
-                                }
+                                {item.title}
                               </strong>
                             </td>
 
@@ -2658,9 +2781,7 @@ export default function AdminTeachersPage() {
 
                             <td>
                               <span>
-                                {
-                                  item.result
-                                }
+                                {item.result}
                               </span>
                             </td>
                           </tr>
@@ -2671,15 +2792,11 @@ export default function AdminTeachersPage() {
                 </div>
               ) : (
                 <div className="admin-detail-empty">
-                  Phiếu này chưa có dữ
-                  liệu chi tiết. Phiếu
-                  cũ được tạo trước khi
-                  bổ sung chức năng lưu
-                  toàn bộ nội dung sẽ
-                  chỉ hiển thị thông tin
-                  cơ bản. Hãy tạo phiếu
-                  mới hoặc mở phiếu cũ,
-                  sửa rồi lưu lại.
+                  Phiếu này chưa có dữ liệu
+                  chi tiết. Chỉ những phiếu
+                  được lưu với trường
+                  evaluationData mới có thể
+                  xem và tải lại ảnh đầy đủ.
                 </div>
               )}
             </section>
@@ -2687,23 +2804,27 @@ export default function AdminTeachersPage() {
             <footer className="admin-detail-footer">
               <button
                 type="button"
-                className="danger"
-                onClick={() =>
-                  handleDelete(
+                className="primary"
+                disabled={
+                  exportingRecordId !==
+                  null
+                }
+                onClick={() => {
+                  void downloadHistoricalReport(
                     selectedRecord,
                   )
-                }
+                }}
               >
-                Xóa phiếu
+                {exportingRecordId ===
+                selectedRecord.id
+                  ? 'Đang tạo ảnh...'
+                  : 'Tải ảnh PNG'}
               </button>
 
               <button
                 type="button"
-                className="primary"
                 onClick={() =>
-                  setSelectedRecord(
-                    null,
-                  )
+                  setSelectedRecord(null)
                 }
               >
                 Đóng chi tiết
@@ -2712,6 +2833,30 @@ export default function AdminTeachersPage() {
           </section>
         </div>
       ) : null}
+
+      <div
+        ref={reportRenderHostRef}
+        aria-hidden="true"
+        style={{
+          position: 'fixed',
+          left: '-20000px',
+          top: '0',
+          width: '1080px',
+          minHeight: '1920px',
+          zIndex: -9999,
+          pointerEvents: 'none',
+          background: '#ffffff',
+        }}
+      >
+        {historicalState ? (
+          <ReportPreviewPage
+            state={historicalState}
+            onChange={() => undefined}
+            onEdit={() => undefined}
+            onNew={() => undefined}
+          />
+        ) : null}
+      </div>
     </main>
   )
 }

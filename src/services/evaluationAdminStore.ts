@@ -1,3 +1,18 @@
+import {
+  addDoc,
+  collection,
+  onSnapshot,
+  orderBy,
+  query,
+  serverTimestamp,
+  Timestamp,
+  type DocumentData,
+} from 'firebase/firestore'
+
+import {
+  firestoreDatabase,
+} from '../lib/firebase'
+
 export type AdminTrainingType =
   | 'BASIC'
   | 'EXAM'
@@ -9,22 +24,22 @@ export interface EvaluationAdminRecord {
   teacherName: string
   studentName: string
 
-  trainingType: AdminTrainingType
+  trainingType:
+    AdminTrainingType
+
   vehicleCategory: string
+  vehicleNumber?: string
 
   evaluationDate: string
 
-  vehicleNumber?: string
   practiceAttempt?: string
   trainingCourse?: string
 
-  overallResult?: string | null
+  overallResult?:
+    string | null
+
   teacherComment?: string
 
-  /**
-   * Lưu toàn bộ dữ liệu phiếu để admin
-   * xem chi tiết từng nội dung đã đánh giá.
-   */
   evaluationData?: unknown
 
   createdAt: string
@@ -32,37 +47,36 @@ export interface EvaluationAdminRecord {
 }
 
 export interface SaveEvaluationAdminInput {
+  /**
+   * Vẫn giữ để App.tsx hiện tại
+   * không báo lỗi TypeScript.
+   *
+   * Chế độ không đăng nhập luôn tạo
+   * một document mới trên Firebase.
+   */
   id?: string
 
   teacherName: string
   studentName: string
 
-  trainingType: AdminTrainingType
+  trainingType:
+    AdminTrainingType
+
   vehicleCategory: string
+  vehicleNumber?: string
 
   evaluationDate?: string
 
-  vehicleNumber?: string
   practiceAttempt?: string
   trainingCourse?: string
 
-  overallResult?: string | null
+  overallResult?:
+    string | null
+
   teacherComment?: string
 
   evaluationData?: unknown
-
-  createdAt?: string
-  updatedAt?: string
 }
-
-const STORAGE_KEY =
-  'phu-giao:evaluation-records:v2'
-
-const OLD_STORAGE_KEY =
-  'phu-giao:evaluation-records:v1'
-
-const UPDATE_EVENT =
-  'phu-giao:evaluation-records-updated'
 
 function cleanText(
   value: unknown,
@@ -72,18 +86,26 @@ function cleanText(
     .replace(/\s+/g, ' ')
 }
 
-function createId(): string {
+function timestampToIso(
+  value: unknown,
+): string {
   if (
-    typeof crypto !== 'undefined' &&
-    typeof crypto.randomUUID ===
-      'function'
+    value instanceof Timestamp
   ) {
-    return crypto.randomUUID()
+    return value
+      .toDate()
+      .toISOString()
   }
 
-  return `evaluation-${Date.now()}-${Math.random()
-    .toString(36)
-    .slice(2, 10)}`
+  if (
+    typeof value === 'string' &&
+    value.trim()
+  ) {
+    return value
+  }
+
+  return new Date()
+    .toISOString()
 }
 
 function isTrainingType(
@@ -96,219 +118,94 @@ function isTrainingType(
   )
 }
 
-function normalizeRecord(
-  value: unknown,
-): EvaluationAdminRecord | null {
-  if (
-    !value ||
-    typeof value !== 'object'
-  ) {
-    return null
-  }
-
-  const record =
-    value as Partial<EvaluationAdminRecord>
-
-  const teacherName =
-    cleanText(record.teacherName)
-
-  const studentName =
-    cleanText(record.studentName)
-
-  const vehicleCategory =
-    cleanText(
-      record.vehicleCategory,
+function mapDocument(
+  id: string,
+  data: DocumentData,
+): EvaluationAdminRecord {
+  const trainingType =
+    isTrainingType(
+      data.trainingType,
     )
-
-  if (
-    !teacherName ||
-    !studentName ||
-    !vehicleCategory ||
-    !isTrainingType(
-      record.trainingType,
-    )
-  ) {
-    return null
-  }
-
-  const createdAt =
-    typeof record.createdAt ===
-      'string' &&
-    record.createdAt
-      ? record.createdAt
-      : new Date().toISOString()
+      ? data.trainingType
+      : 'BASIC'
 
   return {
-    id:
-      cleanText(record.id) ||
-      createId(),
+    id,
 
-    teacherName,
+    teacherName:
+      cleanText(
+        data.teacherName,
+      ),
 
-    studentName,
+    studentName:
+      cleanText(
+        data.studentName,
+      ),
 
-    trainingType:
-      record.trainingType,
+    trainingType,
 
-    vehicleCategory,
-
-    evaluationDate:
-      record.evaluationDate ||
-      createdAt.slice(0, 10),
+    vehicleCategory:
+      cleanText(
+        data.vehicleCategory,
+      ),
 
     vehicleNumber:
       cleanText(
-        record.vehicleNumber,
+        data.vehicleNumber,
       ) || undefined,
+
+    evaluationDate:
+      cleanText(
+        data.evaluationDate,
+      ),
 
     practiceAttempt:
       cleanText(
-        record.practiceAttempt,
+        data.practiceAttempt,
       ) || undefined,
 
     trainingCourse:
       cleanText(
-        record.trainingCourse,
+        data.trainingCourse,
       ) || undefined,
 
     overallResult:
       cleanText(
-        record.overallResult,
+        data.overallResult,
       ) || null,
 
     teacherComment:
       String(
-        record.teacherComment ??
+        data.teacherComment ??
           '',
       ).trim(),
 
     evaluationData:
-      record.evaluationData ??
+      data.evaluationData ??
       null,
 
-    createdAt,
+    createdAt:
+      timestampToIso(
+        data.createdAt,
+      ),
 
     updatedAt:
-      record.updatedAt ||
-      createdAt,
+      timestampToIso(
+        data.updatedAt,
+      ),
   }
 }
 
-function readStorage(
-  key: string,
-): EvaluationAdminRecord[] {
-  if (
-    typeof window ===
-    'undefined'
-  ) {
-    return []
-  }
-
-  try {
-    const raw =
-      window.localStorage.getItem(
-        key,
-      )
-
-    if (!raw) {
-      return []
-    }
-
-    const parsed: unknown =
-      JSON.parse(raw)
-
-    if (
-      !Array.isArray(parsed)
-    ) {
-      return []
-    }
-
-    return parsed
-      .map(normalizeRecord)
-      .filter(
-        (
-          record,
-        ): record is EvaluationAdminRecord =>
-          record !== null,
-      )
-  } catch (error) {
-    console.error(
-      'Không đọc được dữ liệu admin:',
-      error,
-    )
-
-    return []
-  }
-}
-
-function writeRecords(
-  records:
-    EvaluationAdminRecord[],
-): void {
-  if (
-    typeof window ===
-    'undefined'
-  ) {
-    return
-  }
-
-  window.localStorage.setItem(
-    STORAGE_KEY,
-    JSON.stringify(records),
-  )
-
-  window.dispatchEvent(
-    new CustomEvent(
-      UPDATE_EVENT,
-    ),
-  )
-}
-
-export function getEvaluationAdminRecords(): EvaluationAdminRecord[] {
-  if (
-    typeof window ===
-    'undefined'
-  ) {
-    return []
-  }
-
-  let records =
-    readStorage(STORAGE_KEY)
-
-  /**
-   * Tự chuyển dữ liệu cũ V1
-   * sang dữ liệu mới V2.
-   */
-  if (
-    records.length === 0
-  ) {
-    records =
-      readStorage(
-        OLD_STORAGE_KEY,
-      )
-
-    if (
-      records.length > 0
-    ) {
-      writeRecords(records)
-    }
-  }
-
-  return records.sort(
-    (left, right) =>
-      new Date(
-        right.updatedAt,
-      ).getTime() -
-      new Date(
-        left.updatedAt,
-      ).getTime(),
-  )
-}
-
-export function saveEvaluationAdminRecord(
+/**
+ * Lưu một phiếu mới lên Firebase.
+ *
+ * Không dùng localStorage.
+ * Không yêu cầu đăng nhập.
+ */
+export async function saveEvaluationAdminRecord(
   input:
     SaveEvaluationAdminInput,
-): EvaluationAdminRecord {
+): Promise<EvaluationAdminRecord> {
   const teacherName =
     cleanText(
       input.teacherName,
@@ -342,32 +239,24 @@ export function saveEvaluationAdminRecord(
     )
   }
 
-  const records =
-    getEvaluationAdminRecords()
+  if (
+    !isTrainingType(
+      input.trainingType,
+    )
+  ) {
+    throw new Error(
+      'Loại đánh giá không hợp lệ.',
+    )
+  }
 
-  const oldRecord =
-    input.id
-      ? records.find(
-          (record) =>
-            record.id ===
-            input.id,
-        )
-      : undefined
+  const evaluationDate =
+    input.evaluationDate ||
+    new Date()
+      .toISOString()
+      .slice(0, 10)
 
-  const createdAt =
-    input.createdAt ||
-    oldRecord?.createdAt ||
-    new Date().toISOString()
-
-  const record:
-    EvaluationAdminRecord = {
-    id:
-      input.id ||
-      oldRecord?.id ||
-      createId(),
-
+  const dataToSave = {
     teacherName,
-
     studentName,
 
     trainingType:
@@ -375,15 +264,77 @@ export function saveEvaluationAdminRecord(
 
     vehicleCategory,
 
-    evaluationDate:
-      input.evaluationDate ||
-      oldRecord?.evaluationDate ||
-      createdAt.slice(0, 10),
+    vehicleNumber:
+      cleanText(
+        input.vehicleNumber,
+      ),
+
+    evaluationDate,
+
+    practiceAttempt:
+      cleanText(
+        input.practiceAttempt,
+      ),
+
+    trainingCourse:
+      cleanText(
+        input.trainingCourse,
+      ),
+
+    overallResult:
+      cleanText(
+        input.overallResult,
+      ) || null,
+
+    teacherComment:
+      String(
+        input.teacherComment ??
+          '',
+      ).trim(),
+
+    evaluationData:
+      input.evaluationData ??
+      null,
+
+    createdAt:
+      serverTimestamp(),
+
+    updatedAt:
+      serverTimestamp(),
+  }
+
+  const reference =
+    await addDoc(
+      collection(
+        firestoreDatabase,
+        'evaluations',
+      ),
+
+      dataToSave,
+    )
+
+  const now =
+    new Date()
+      .toISOString()
+
+  return {
+    id:
+      reference.id,
+
+    teacherName,
+    studentName,
+
+    trainingType:
+      input.trainingType,
+
+    vehicleCategory,
 
     vehicleNumber:
       cleanText(
         input.vehicleNumber,
       ) || undefined,
+
+    evaluationDate,
 
     practiceAttempt:
       cleanText(
@@ -410,102 +361,75 @@ export function saveEvaluationAdminRecord(
       input.evaluationData ??
       null,
 
-    createdAt,
-
-    updatedAt:
-      input.updatedAt ||
-      new Date().toISOString(),
+    createdAt: now,
+    updatedAt: now,
   }
+}
 
-  const recordIndex =
-    records.findIndex(
-      (item) =>
-        item.id === record.id,
-    )
-
-  if (
-    recordIndex >= 0
-  ) {
-    records[recordIndex] =
-      record
-  } else {
-    records.unshift(record)
-  }
-
-  records.sort(
-    (left, right) =>
-      new Date(
-        right.updatedAt,
-      ).getTime() -
-      new Date(
-        left.updatedAt,
-      ).getTime(),
+/**
+ * Không cho xóa khi chưa có
+ * cơ chế xác thực admin.
+ */
+export async function deleteEvaluationAdminRecord(
+  _id: string,
+): Promise<void> {
+  throw new Error(
+    'Chức năng xóa đang bị khóa để bảo vệ dữ liệu. Hãy xóa trực tiếp trong Firebase Console.',
   )
-
-  writeRecords(records)
-
-  return record
 }
 
-export function deleteEvaluationAdminRecord(
-  id: string,
-): void {
-  const records =
-    getEvaluationAdminRecords().filter(
-      (record) =>
-        record.id !== id,
-    )
-
-  writeRecords(records)
-}
-
+/**
+ * Theo dõi toàn bộ dữ liệu theo thời gian thực.
+ *
+ * Điện thoại khác tạo phiếu mới thì trang
+ * admin đang mở sẽ tự nhận dữ liệu.
+ */
 export function subscribeEvaluationAdminRecords(
-  callback: () => void,
+  onRecords: (
+    records:
+      EvaluationAdminRecord[],
+  ) => void,
+
+  onError?: (
+    error: Error,
+  ) => void,
 ): () => void {
-  if (
-    typeof window ===
-    'undefined'
-  ) {
-    return () => undefined
-  }
+  const recordsQuery =
+    query(
+      collection(
+        firestoreDatabase,
+        'evaluations',
+      ),
 
-  const handleStorage = (
-    event: StorageEvent,
-  ) => {
-    if (
-      event.key ===
-        STORAGE_KEY ||
-      event.key ===
-        OLD_STORAGE_KEY
-    ) {
-      callback()
-    }
-  }
-
-  const handleUpdate =
-    () => {
-      callback()
-    }
-
-  window.addEventListener(
-    'storage',
-    handleStorage,
-  )
-
-  window.addEventListener(
-    UPDATE_EVENT,
-    handleUpdate,
-  )
-
-  return () => {
-    window.removeEventListener(
-      'storage',
-      handleStorage,
+      orderBy(
+        'createdAt',
+        'desc',
+      ),
     )
 
-    window.removeEventListener(
-      UPDATE_EVENT,
-      handleUpdate,
-    )
-  }
+  return onSnapshot(
+    recordsQuery,
+
+    (snapshot) => {
+      const records =
+        snapshot.docs.map(
+          (document) =>
+            mapDocument(
+              document.id,
+              document.data(),
+            ),
+        )
+
+      onRecords(records)
+    },
+
+    (error) => {
+      console.error(
+        'Không thể tải dữ liệu Firebase:',
+        error,
+      )
+
+      onError?.(error)
+    },
+  )
 }

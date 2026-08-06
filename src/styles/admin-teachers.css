@@ -1632,3 +1632,61 @@
     padding: 16px;
   }
 }
+/* Nút tải lại ảnh phiếu trong trang admin */
+.admin-pro-download-report,
+.admin-detail-download {
+  min-height: 36px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  padding: 0 12px;
+  color: #ffffff;
+  border: 1px solid #087a3e;
+  border-radius: 9px;
+  background: linear-gradient(135deg, #0b9650, #076635);
+  font-size: 10px;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.admin-pro-download-report svg,
+.admin-detail-download svg {
+  width: 15px;
+  height: 15px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.8;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.admin-pro-download-report:hover,
+.admin-detail-download:hover {
+  filter: brightness(1.05);
+  transform: translateY(-1px);
+}
+
+.admin-pro-download-report:disabled,
+.admin-detail-download:disabled {
+  opacity: 0.58;
+  cursor: wait;
+  transform: none;
+}
+
+.admin-detail-download {
+  width: 100%;
+  margin-top: 18px;
+  min-height: 44px;
+}
+
+.admin-pro-error-banner {
+  margin-bottom: 16px;
+  padding: 13px 16px;
+  color: #9c2831;
+  border: 1px solid #efc4c7;
+  border-radius: 12px;
+  background: #fff6f6;
+  font-size: 11px;
+  font-weight: 700;
+}

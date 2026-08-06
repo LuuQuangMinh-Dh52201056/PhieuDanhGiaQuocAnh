@@ -8,3 +8,6 @@ dist/
 .vscode/
 .vscode/
 .vscode/
+.env
+.env.local
+.env.*.local.vscode/

@@ -1,6 +1,5 @@
 import {
   useEffect,
-  useRef,
   useState,
 } from 'react'
 
@@ -64,76 +63,98 @@ type AppStep =
   | 'report'
 
 /**
- * Đường dẫn riêng dùng để mở trang quản trị.
+ * Đường dẫn quản trị hiện tại.
  *
- * Truy cập:
- * /admin/giaovien/A@7979
+ * Local:
+ * http://localhost:5173/admin/giaovien/A@7979
+ *
+ * Render:
+ * https://ten-web.onrender.com/admin/giaovien/A@7979
  */
 const ADMIN_PATH =
   '/admin/giaovien/A@7979'
 
 /**
- * Tạo trạng thái trống cho một phiếu mới.
+ * Tạo trạng thái ban đầu
+ * cho một phiếu đánh giá mới.
  */
-function emptyState(): EvaluationState {
+function createEmptyState(): EvaluationState {
   return {
     vehicleCategory: null,
+
     trainingType: null,
 
     studentName: '',
+
     evaluationDate:
       getTodayInputValue(),
 
     instructorName: '',
+
     vehicleNumber: '',
+
     practiceAttempt: '',
+
     trainingCourse: '',
 
     lessons: [],
+
     emergencyEvaluation: null,
 
     checklistItems: [],
+
     checklistOverall: null,
 
     teacherComment: '',
+
     finalConclusion: null,
   }
 }
 
 /**
- * Chuẩn hóa đường dẫn.
+ * Xóa dấu / ở cuối đường dẫn.
  *
- * Hai đường dẫn sau được xem là giống nhau:
+ * Ví dụ:
+ *
+ * /admin/giaovien/A@7979/
+ *
+ * được chuyển thành:
  *
  * /admin/giaovien/A@7979
- * /admin/giaovien/A@7979/
  */
 function normalizePathname(
   pathname: string,
 ): string {
   const normalized =
-    pathname.replace(/\/+$/, '')
+    pathname.replace(
+      /\/+$/,
+      '',
+    )
 
   return normalized || '/'
 }
 
 /**
- * Kiểm tra đường dẫn hiện tại có phải
- * đường dẫn quản trị hay không.
+ * Kiểm tra đường dẫn hiện tại
+ * có phải trang admin hay không.
  *
- * Hỗ trợ trường hợp trình duyệt chuyển
- * ký tự @ thành %40.
+ * Có hỗ trợ trường hợp trình duyệt
+ * mã hóa ký tự @ thành %40.
  */
 function isAdminPath(
   pathname: string,
 ): boolean {
-  let decodedPathname = pathname
+  let decodedPathname =
+    pathname
 
   try {
     decodedPathname =
-      decodeURIComponent(pathname)
+      decodeURIComponent(
+        pathname,
+      )
   } catch {
-    decodedPathname = pathname
+    decodedPathname =
+      pathname
   }
 
   return (
@@ -144,11 +165,14 @@ function isAdminPath(
 }
 
 /**
- * Chuyển loại đánh giá trong ứng dụng
- * sang loại lưu trong trang admin.
+ * Chuyển loại nội dung tập
+ * sang loại dữ liệu admin.
  *
- * COURSE là phiếu sát hạch sa hình,
- * nên lưu thành EXAM.
+ * COURSE:
+ * Phiếu sát hạch sa hình.
+ *
+ * EXAM:
+ * Tên loại lưu trên Firebase.
  */
 function mapTrainingTypeForAdmin(
   trainingType: TrainingType,
@@ -163,8 +187,8 @@ function mapTrainingTypeForAdmin(
 }
 
 /**
- * Lấy kết quả chung để hiển thị
- * trong danh sách quản trị.
+ * Lấy kết quả chung
+ * của toàn bộ phiếu.
  */
 function getOverallResult(
   state: EvaluationState,
@@ -188,6 +212,9 @@ function getOverallResult(
 }
 
 export default function App() {
+  /**
+   * Bước hiện tại của quy trình.
+   */
   const [
     step,
     setStep,
@@ -196,28 +223,30 @@ export default function App() {
       'vehicle',
     )
 
+  /**
+   * Toàn bộ dữ liệu phiếu.
+   */
   const [
     state,
     setState,
   ] =
     useState<EvaluationState>(
-      emptyState,
+      createEmptyState,
     )
 
   /**
-   * ID của phiếu hiện tại.
-   *
-   * Khi giáo viên xem phiếu, quay lại sửa
-   * rồi xem lại, hệ thống cập nhật phiếu cũ
-   * thay vì tạo thêm một phiếu trùng.
+   * Tránh người dùng nhấn nút
+   * xem phiếu nhiều lần liên tục,
+   * làm tạo nhiều document Firebase.
    */
-  const evaluationRecordId =
-    useRef<string | null>(
-      null,
-    )
+  const [
+    isSaving,
+    setIsSaving,
+  ] = useState(false)
 
   /**
-   * Kiểm tra URL ngay khi ứng dụng khởi động.
+   * Kiểm tra URL ban đầu
+   * có phải trang admin.
    */
   const [
     showAdmin,
@@ -237,17 +266,18 @@ export default function App() {
     })
 
   /**
-   * Theo dõi nút Back và Forward
-   * của trình duyệt.
+   * Theo dõi nút quay lại
+   * và tiến tới của trình duyệt.
    */
   useEffect(() => {
-    const handlePopState = () => {
-      setShowAdmin(
-        isAdminPath(
-          window.location.pathname,
-        ),
-      )
-    }
+    const handlePopState =
+      () => {
+        setShowAdmin(
+          isAdminPath(
+            window.location.pathname,
+          ),
+        )
+      }
 
     window.addEventListener(
       'popstate',
@@ -263,16 +293,18 @@ export default function App() {
   }, [])
 
   /**
-   * Cập nhật một phần trạng thái phiếu.
+   * Cập nhật một phần dữ liệu phiếu.
    */
   const updateState = (
     updates:
       Partial<EvaluationState>,
   ) => {
-    setState((current) => ({
-      ...current,
-      ...updates,
-    }))
+    setState(
+      (current) => ({
+        ...current,
+        ...updates,
+      }),
+    )
   }
 
   /**
@@ -292,21 +324,21 @@ export default function App() {
   const selectVehicle = (
     category: VehicleCategory,
   ) => {
-    evaluationRecordId.current =
-      null
-
     setState({
-      ...emptyState(),
-      vehicleCategory: category,
+      ...createEmptyState(),
+
+      vehicleCategory:
+        category,
     })
 
     setStep('training')
+
     scrollToTop()
   }
 
   /**
    * Bước 2:
-   * Chọn nội dung đánh giá.
+   * Chọn loại nội dung tập.
    */
   const selectTraining = (
     trainingType: TrainingType,
@@ -317,53 +349,63 @@ export default function App() {
       return
     }
 
-    setState((current) => ({
-      ...current,
+    setState(
+      (current) => ({
+        ...current,
 
-      trainingType,
+        trainingType,
 
-      /**
-       * Phiếu sa hình.
-       */
-      lessons:
-        trainingType === 'COURSE'
-          ? createLessonEvaluations(
-              current
-                .vehicleCategory!,
-            )
-          : [],
+        /**
+         * Phiếu sát hạch sa hình.
+         */
+        lessons:
+          trainingType ===
+          'COURSE'
+            ? createLessonEvaluations(
+                current
+                  .vehicleCategory!,
+              )
+            : [],
 
-      emergencyEvaluation:
-        trainingType === 'COURSE'
-          ? createEmergencyEvaluation()
-          : null,
+        emergencyEvaluation:
+          trainingType ===
+          'COURSE'
+            ? createEmergencyEvaluation()
+            : null,
 
-      /**
-       * Phiếu tập cơ bản
-       * hoặc đường trường.
-       */
-      checklistItems:
-        trainingType === 'COURSE'
-          ? []
-          : createChecklistItems(
-              trainingType,
-              current
-                .vehicleCategory!,
-            ),
+        /**
+         * Phiếu làm quen xe cơ bản
+         * hoặc phiếu đường trường.
+         */
+        checklistItems:
+          trainingType ===
+          'COURSE'
+            ? []
+            : createChecklistItems(
+                trainingType,
 
-      checklistOverall: null,
-      teacherComment: '',
-      finalConclusion: null,
-    }))
+                current
+                  .vehicleCategory!,
+              ),
+
+        checklistOverall:
+          null,
+
+        teacherComment: '',
+
+        finalConclusion: null,
+      }),
+    )
 
     setStep('information')
+
     scrollToTop()
   }
 
   /**
    * Bước 3:
-   * Kiểm tra thông tin trước khi
-   * chuyển sang trang đánh giá.
+   * Kiểm tra thông tin học viên
+   * và giáo viên.
    */
   const continueToEvaluation =
     () => {
@@ -387,95 +429,119 @@ export default function App() {
         return
       }
 
+      if (
+        !state.evaluationDate
+      ) {
+        window.alert(
+          'Vui lòng chọn ngày đánh giá.',
+        )
+
+        return
+      }
+
       setStep('evaluation')
+
       scrollToTop()
     }
 
   /**
-   * Tính kết quả, lưu toàn bộ dữ liệu
-   * cho trang admin rồi mở trang xem phiếu.
+   * Lưu toàn bộ phiếu lên Firebase
+   * rồi mở trang xem phiếu.
    */
-  const openReport = () => {
-    if (
-      !state.vehicleCategory ||
-      !state.trainingType
-    ) {
-      window.alert(
-        'Thiếu thông tin hạng xe hoặc loại đánh giá.',
-      )
+  const openReport =
+    async () => {
+      /**
+       * Ngăn lưu trùng khi đang
+       * gửi dữ liệu lên Firebase.
+       */
+      if (isSaving) {
+        return
+      }
 
-      return
-    }
+      if (
+        !state.vehicleCategory ||
+        !state.trainingType
+      ) {
+        window.alert(
+          'Thiếu thông tin hạng xe hoặc loại đánh giá.',
+        )
 
-    if (
-      !state.studentName.trim()
-    ) {
-      window.alert(
-        'Vui lòng nhập họ và tên học viên.',
-      )
+        return
+      }
 
-      return
-    }
+      if (
+        !state.studentName.trim()
+      ) {
+        window.alert(
+          'Vui lòng nhập họ và tên học viên.',
+        )
 
-    if (
-      !state.instructorName.trim()
-    ) {
-      window.alert(
-        'Vui lòng nhập tên giáo viên hướng dẫn.',
-      )
+        return
+      }
 
-      return
-    }
+      if (
+        !state.instructorName.trim()
+      ) {
+        window.alert(
+          'Vui lòng nhập tên giáo viên hướng dẫn.',
+        )
 
-    /**
-     * Với phiếu sa hình:
-     * tự tính kết luận nếu chưa có.
-     */
-    const nextState:
-      EvaluationState = {
-      ...state,
+        return
+      }
 
-      finalConclusion:
-        state.trainingType ===
-        'COURSE'
-          ? state.finalConclusion ??
-            calculateConclusion(
-              state.lessons,
-            )
-          : null,
-    }
+      if (
+        !state.evaluationDate
+      ) {
+        window.alert(
+          'Vui lòng chọn ngày đánh giá.',
+        )
 
-    setState(nextState)
+        return
+      }
 
-    try {
-      const savedRecord =
-        saveEvaluationAdminRecord({
-          /**
-           * Có ID:
-           * cập nhật phiếu hiện tại.
-           *
-           * Không có ID:
-           * tạo một phiếu mới.
-           */
-          id:
-            evaluationRecordId
-              .current ??
-            undefined,
+      /**
+       * Tính kết luận cuối cùng
+       * cho phiếu sát hạch sa hình.
+       */
+      const nextState:
+        EvaluationState = {
+        ...state,
 
-          /**
-           * Giáo viên và học viên.
-           */
+        finalConclusion:
+          state.trainingType ===
+          'COURSE'
+            ? state
+                .finalConclusion ??
+              calculateConclusion(
+                state.lessons,
+              )
+            : null,
+      }
+
+      setState(nextState)
+
+      setIsSaving(true)
+
+      try {
+        /**
+         * Firebase hiện tại không
+         * yêu cầu người dùng đăng nhập.
+         *
+         * Mỗi lần hoàn tất phiếu,
+         * hệ thống tạo một document mới
+         * trong collection evaluations.
+         */
+        await saveEvaluationAdminRecord({
           teacherName:
             nextState
-              .instructorName,
+              .instructorName
+              .trim(),
 
           studentName:
             nextState
-              .studentName,
+              .studentName
+              .trim(),
 
-          /**
-           * Loại phiếu và hạng xe.
-           */
           trainingType:
             mapTrainingTypeForAdmin(
               nextState
@@ -488,106 +554,114 @@ export default function App() {
                 .vehicleCategory,
             ),
 
-          /**
-           * Ngày đánh giá.
-           */
+          vehicleNumber:
+            nextState
+              .vehicleNumber
+              .trim(),
+
           evaluationDate:
             nextState
               .evaluationDate,
 
-          /**
-           * Thông tin buổi học.
-           */
-          vehicleNumber:
-            nextState
-              .vehicleNumber,
-
           practiceAttempt:
             nextState
-              .practiceAttempt,
+              .practiceAttempt
+              .trim(),
 
           trainingCourse:
             nextState
-              .trainingCourse,
+              .trainingCourse
+              .trim(),
 
-          /**
-           * Kết quả chung.
-           */
           overallResult:
             getOverallResult(
               nextState,
             ),
 
-          /**
-           * Nhận xét của giáo viên.
-           */
           teacherComment:
             nextState
-              .teacherComment,
+              .teacherComment
+              .trim(),
 
           /**
-           * Lưu toàn bộ trạng thái phiếu.
+           * Lưu toàn bộ dữ liệu phiếu.
            *
-           * Trang admin có thể xem:
-           * - lessons
-           * - emergencyEvaluation
-           * - checklistItems
-           * - checklistOverall
-           * - teacherComment
-           * - finalConclusion
-           * - toàn bộ thông tin học viên
+           * Trang admin sẽ dùng phần này
+           * để xem chi tiết từng nội dung.
            */
           evaluationData:
             nextState,
         })
 
-      /**
-       * Giữ ID phiếu vừa lưu.
-       */
-      evaluationRecordId.current =
-        savedRecord.id
-    } catch (error) {
-      console.error(
-        'Không thể lưu dữ liệu cho trang admin:',
-        error,
-      )
+        setStep('report')
 
-      window.alert(
-        error instanceof Error
-          ? error.message
-          : 'Không thể lưu dữ liệu phiếu đánh giá.',
-      )
+        scrollToTop()
+      } catch (error) {
+        console.error(
+          'Không thể lưu dữ liệu lên Firebase:',
+          error,
+        )
 
-      return
+        let message =
+          'Không thể lưu phiếu đánh giá lên Firebase.'
+
+        if (
+          error instanceof Error
+        ) {
+          message =
+            error.message
+        }
+
+        /**
+         * Một số lỗi Firebase thường gặp.
+         */
+        if (
+          message.includes(
+            'permission-denied',
+          ) ||
+          message.includes(
+            'Missing or insufficient permissions',
+          )
+        ) {
+          message =
+            'Firebase đang từ chối quyền lưu dữ liệu. Hãy kiểm tra Firestore Rules đã Publish hay chưa.'
+        }
+
+        if (
+          message.includes(
+            'unavailable',
+          )
+        ) {
+          message =
+            'Không thể kết nối Firebase. Hãy kiểm tra Internet rồi thử lại.'
+        }
+
+        window.alert(message)
+      } finally {
+        setIsSaving(false)
+      }
     }
 
-    setStep('report')
-    scrollToTop()
-  }
-
   /**
-   * Tạo một phiếu đánh giá mới.
+   * Tạo phiếu đánh giá mới.
    */
   const newEvaluation = () => {
-    evaluationRecordId.current =
-      null
-
     setState(
-      emptyState(),
+      createEmptyState(),
     )
 
     setStep('vehicle')
+
+    setIsSaving(false)
+
     scrollToTop()
   }
 
   /**
-   * Trang quản trị riêng.
+   * Trang admin hiện tại.
    *
-   * Mở bằng:
-   * http://localhost:5173/admin/giaovien/A@7979
-   *
-   * Trình duyệt cũng có thể hiển thị:
-   * /admin/giaovien/A%407979
+   * Trang admin đọc toàn bộ dữ liệu
+   * từ collection evaluations.
    */
   if (showAdmin) {
     return (
@@ -624,9 +698,11 @@ export default function App() {
         vehicleCategory={
           state.vehicleCategory
         }
+
         onSelect={
           selectTraining
         }
+
         onBack={
           newEvaluation
         }
@@ -644,9 +720,11 @@ export default function App() {
     return (
       <StudentInformationPage
         state={state}
+
         onChange={
           updateState
         }
+
         onBack={() => {
           setStep(
             'training',
@@ -654,6 +732,7 @@ export default function App() {
 
           scrollToTop()
         }}
+
         onContinue={
           continueToEvaluation
         }
@@ -663,7 +742,7 @@ export default function App() {
 
   /**
    * Bước 4:
-   * Đánh giá.
+   * Thực hiện đánh giá.
    */
   if (
     step === 'evaluation'
@@ -681,9 +760,11 @@ export default function App() {
       return (
         <ChecklistEvaluationPage
           state={state}
+
           onChange={
             updateState
           }
+
           onBack={() => {
             setStep(
               'information',
@@ -691,9 +772,10 @@ export default function App() {
 
             scrollToTop()
           }}
-          onPreview={
-            openReport
-          }
+
+          onPreview={() => {
+            void openReport()
+          }}
         />
       )
     }
@@ -704,9 +786,11 @@ export default function App() {
     return (
       <EvaluationPage
         state={state}
+
         onChange={
           updateState
         }
+
         onBack={() => {
           setStep(
             'information',
@@ -714,23 +798,26 @@ export default function App() {
 
           scrollToTop()
         }}
-        onPreview={
-          openReport
-        }
+
+        onPreview={() => {
+          void openReport()
+        }}
       />
     )
   }
 
   /**
    * Bước 5:
-   * Xem và tải phiếu.
+   * Xem và tải phiếu đánh giá.
    */
   return (
     <ReportPreviewPage
       state={state}
+
       onChange={
         updateState
       }
+
       onEdit={() => {
         setStep(
           'evaluation',
@@ -738,6 +825,7 @@ export default function App() {
 
         scrollToTop()
       }}
+
       onNew={
         newEvaluation
       }
