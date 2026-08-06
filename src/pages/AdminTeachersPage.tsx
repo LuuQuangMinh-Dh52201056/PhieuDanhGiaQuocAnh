@@ -12,6 +12,7 @@ import {
 } from './ReportPreviewPage'
 
 import {
+  deleteEvaluationAdminRecord,
   subscribeEvaluationAdminRecords,
   type AdminTrainingType,
   type EvaluationAdminRecord,
@@ -77,6 +78,43 @@ const TRAINING_LABELS: Record<
   BASIC: 'Tập cơ bản',
   EXAM: 'Sa hình',
   ROAD: 'Đường trường',
+}
+
+/**
+ * Tên hạng xe dùng để hiển thị trong trang quản trị.
+ * Firebase vẫn giữ mã gốc B_MANUAL/B_AUTOMATIC
+ * để phần dựng lại phiếu hoạt động chính xác.
+ */
+function getVehicleLabel(
+  value: string,
+): string {
+  const normalized = normalizeText(
+    value,
+  )
+    .replace(/đ/g, 'd')
+    .replace(/[^a-z0-9]/g, '')
+
+  if (
+    normalized === 'bautomatic' ||
+    normalized === 'btd' ||
+    normalized === 'bsotudong'
+  ) {
+    return 'BTĐ'
+  }
+
+  if (
+    normalized === 'bmanual' ||
+    normalized === 'bss' ||
+    normalized === 'bsosan'
+  ) {
+    return 'BSS'
+  }
+
+  if (normalized === 'c1') {
+    return 'C1'
+  }
+
+  return value.trim() || 'Chưa xác định'
 }
 
 const RESULT_LABELS: Record<
@@ -356,7 +394,9 @@ function exportRecordsToCsv(
         record.trainingType
       ],
 
-      record.vehicleCategory,
+      getVehicleLabel(
+        record.vehicleCategory,
+      ),
       record.vehicleNumber || '',
       record.practiceAttempt || '',
       record.trainingCourse || '',
@@ -950,6 +990,17 @@ function RefreshIcon() {
   )
 }
 
+function TrashIcon() {
+  return (
+    <svg viewBox="0 0 24 24">
+      <path d="M4 7h16" />
+      <path d="M9 7V4h6v3" />
+      <path d="m7 7 1 13h8l1-13" />
+      <path d="M10 11v5M14 11v5" />
+    </svg>
+  )
+}
+
 function AdminBrand() {
   const [
     imageError,
@@ -993,8 +1044,24 @@ export default function AdminTeachersPage() {
   const [activeView, setActiveView] =
     useState<AdminView>('RECORDS')
 
-  const [searchText, setSearchText] =
-    useState('')
+  /**
+   * Ba ô tìm kiếm riêng biệt giúp quản trị viên
+   * lọc chính xác theo từng nhóm dữ liệu.
+   */
+  const [
+    teacherSearch,
+    setTeacherSearch,
+  ] = useState('')
+
+  const [
+    studentSearch,
+    setStudentSearch,
+  ] = useState('')
+
+  const [
+    courseSearch,
+    setCourseSearch,
+  ] = useState('')
 
   const [
     trainingFilter,
@@ -1059,6 +1126,11 @@ export default function AdminTeachersPage() {
     setExportingRecordId,
   ] = useState<string | null>(null)
 
+  const [
+    deletingRecordId,
+    setDeletingRecordId,
+  ] = useState<string | null>(null)
+
   const reportRenderHostRef =
     useRef<HTMLDivElement | null>(
       null,
@@ -1105,7 +1177,9 @@ export default function AdminTeachersPage() {
         new Set(
           records
             .map((record) =>
-              record.vehicleCategory.trim(),
+              getVehicleLabel(
+                record.vehicleCategory,
+              ),
             )
             .filter(Boolean),
         ),
@@ -1183,8 +1257,14 @@ export default function AdminTeachersPage() {
 
   const filteredRecords = useMemo(
     () => {
-      const search =
-        normalizeText(searchText)
+      const normalizedTeacherSearch =
+        normalizeText(teacherSearch)
+
+      const normalizedStudentSearch =
+        normalizeText(studentSearch)
+
+      const normalizedCourseSearch =
+        normalizeText(courseSearch)
 
       const result = records.filter(
         (record) => {
@@ -1197,8 +1277,9 @@ export default function AdminTeachersPage() {
           const matchesVehicle =
             vehicleFilter ===
               'ALL' ||
-            record.vehicleCategory ===
-              vehicleFilter
+            getVehicleLabel(
+              record.vehicleCategory,
+            ) === vehicleFilter
 
           const matchesDate =
             isRecordInDateRange(
@@ -1207,36 +1288,37 @@ export default function AdminTeachersPage() {
               endDate,
             )
 
-          const matchesSearch =
-            !search ||
-            [
+          const matchesTeacher =
+            !normalizedTeacherSearch ||
+            normalizeText(
               record.teacherName,
+            ).includes(
+              normalizedTeacherSearch,
+            )
+
+          const matchesStudent =
+            !normalizedStudentSearch ||
+            normalizeText(
               record.studentName,
-              record.vehicleCategory,
-              record.vehicleNumber || '',
+            ).includes(
+              normalizedStudentSearch,
+            )
+
+          const matchesCourse =
+            !normalizedCourseSearch ||
+            normalizeText(
               record.trainingCourse || '',
-              record.practiceAttempt || '',
-
-              TRAINING_LABELS[
-                record.trainingType
-              ],
-
-              getDisplayResult(
-                record.overallResult,
-              ),
-
-              record.teacherComment || '',
-            ].some((value) =>
-              normalizeText(
-                value,
-              ).includes(search),
+            ).includes(
+              normalizedCourseSearch,
             )
 
           return (
             matchesTraining &&
             matchesVehicle &&
             matchesDate &&
-            matchesSearch
+            matchesTeacher &&
+            matchesStudent &&
+            matchesCourse
           )
         },
       )
@@ -1309,7 +1391,9 @@ export default function AdminTeachersPage() {
     },
     [
       records,
-      searchText,
+      teacherSearch,
+      studentSearch,
+      courseSearch,
       trainingFilter,
       vehicleFilter,
       startDate,
@@ -1395,7 +1479,9 @@ export default function AdminTeachersPage() {
               new Set(
                 sorted.map(
                   (item) =>
-                    item.vehicleCategory,
+                    getVehicleLabel(
+                      item.vehicleCategory,
+                    ),
                 ),
               ),
             ),
@@ -1424,20 +1510,88 @@ export default function AdminTeachersPage() {
   ).length
 
   const hasActiveFilters =
-    Boolean(searchText.trim()) ||
+    Boolean(teacherSearch.trim()) ||
+    Boolean(studentSearch.trim()) ||
+    Boolean(courseSearch.trim()) ||
     trainingFilter !== 'ALL' ||
     vehicleFilter !== 'ALL' ||
     Boolean(startDate) ||
     Boolean(endDate)
 
   const clearFilters = () => {
-    setSearchText('')
+    setTeacherSearch('')
+    setStudentSearch('')
+    setCourseSearch('')
     setTrainingFilter('ALL')
     setVehicleFilter('ALL')
     setDatePreset('ALL')
     setStartDate('')
     setEndDate('')
     setSortMode('NEWEST')
+  }
+
+  const handleDeleteRecord = async (
+    record: AdminRecord,
+  ): Promise<void> => {
+    if (
+      deletingRecordId ||
+      exportingRecordId
+    ) {
+      return
+    }
+
+    const confirmed = window.confirm(
+      `Xóa vĩnh viễn phiếu của học viên "${record.studentName}"?\n\nThao tác này không thể khôi phục.`,
+    )
+
+    if (!confirmed) {
+      return
+    }
+
+    setDeletingRecordId(record.id)
+
+    try {
+      await deleteEvaluationAdminRecord(
+        record.id,
+      )
+
+      if (
+        selectedRecord?.id ===
+        record.id
+      ) {
+        setSelectedRecord(null)
+      }
+
+      setSelectedTeacher(null)
+
+    } catch (error) {
+      console.error(
+        'Không thể xóa phiếu:',
+        error,
+      )
+
+      const message =
+        error instanceof Error
+          ? error.message
+          : 'Không thể xóa phiếu đánh giá.'
+
+      if (
+        message.includes(
+          'permission-denied',
+        ) ||
+        message.includes(
+          'Missing or insufficient permissions',
+        )
+      ) {
+        window.alert(
+          'Firebase chưa cho phép xóa. Hãy cập nhật Firestore Rules rồi bấm Publish.',
+        )
+      } else {
+        window.alert(message)
+      }
+    } finally {
+      setDeletingRecordId(null)
+    }
   }
 
   const downloadStoredImage = async (
@@ -1622,6 +1776,76 @@ export default function AdminTeachersPage() {
 
   return (
     <main className="admin-pro-page">
+      <style>{`
+        .admin-pro-delete-icon {
+          width: 38px;
+          min-width: 38px;
+          height: 38px;
+          padding: 0;
+          display: inline-flex;
+          align-items: center;
+          justify-content: center;
+          border: 1px solid #dc2626;
+          border-radius: 9px;
+          background: #ffffff;
+          color: #dc2626;
+          cursor: pointer;
+          flex: 0 0 38px;
+          transition: background 0.18s ease, color 0.18s ease, transform 0.18s ease;
+        }
+
+        .admin-pro-delete-icon:hover:not(:disabled) {
+          background: #dc2626;
+          color: #ffffff;
+          transform: translateY(-1px);
+        }
+
+        .admin-pro-delete-icon:disabled {
+          cursor: not-allowed;
+          opacity: 0.5;
+        }
+
+        .admin-pro-delete-icon svg {
+          width: 18px;
+          height: 18px;
+          fill: none;
+          stroke: currentColor;
+          stroke-width: 2;
+          stroke-linecap: round;
+          stroke-linejoin: round;
+          pointer-events: none;
+        }
+
+        .admin-pro-delete-icon.is-deleting {
+          animation: admin-delete-pulse 0.8s ease-in-out infinite alternate;
+        }
+
+        @keyframes admin-delete-pulse {
+          from { opacity: 0.42; }
+          to { opacity: 1; }
+        }
+
+        .admin-pro-row-actions {
+          display: flex;
+          align-items: center;
+          gap: 8px;
+          flex-wrap: nowrap;
+        }
+
+        .admin-pro-drawer-actions .admin-pro-delete-icon,
+        .admin-detail-footer .admin-pro-delete-icon {
+          width: 42px;
+          min-width: 42px;
+          height: 42px;
+          flex-basis: 42px;
+        }
+
+        @media (max-width: 720px) {
+          .admin-pro-row-actions {
+            flex-wrap: wrap;
+          }
+        }
+      `}</style>
       <header className="admin-pro-header">
         <AdminBrand />
 
@@ -1660,9 +1884,9 @@ export default function AdminTeachersPage() {
 
           <p>
             Theo dõi toàn bộ phiếu đã
-            đánh giá, lọc theo ngày,
-            nội dung, hạng xe và tải lại
-            ảnh phiếu đã điền từ mọi thiết bị.
+            đánh giá, tìm theo giáo viên,
+            học viên, khóa học, hạng xe
+            và tải lại ảnh từ mọi thiết bị.
           </p>
         </div>
 
@@ -1798,8 +2022,8 @@ export default function AdminTeachersPage() {
                 </strong>
 
                 <small>
-                  Lọc theo ngày, loại
-                  phiếu và từng hạng xe
+                  Tìm riêng giáo viên, học viên,
+                  khóa học và lọc theo ngày
                 </small>
               </div>
             </div>
@@ -1860,20 +2084,61 @@ export default function AdminTeachersPage() {
 
           <div className="admin-pro-filter-grid">
             <label className="admin-pro-search">
-              <span>Tìm kiếm</span>
+              <span>Tìm giáo viên</span>
 
               <div>
                 <SearchIcon />
 
                 <input
                   type="search"
-                  value={searchText}
+                  value={teacherSearch}
                   onChange={(event) =>
-                    setSearchText(
+                    setTeacherSearch(
                       event.target.value,
                     )
                   }
-                  placeholder="Tên giáo viên, học viên, số xe, kết quả..."
+                  placeholder="Nhập tên giáo viên..."
+                  autoComplete="off"
+                />
+              </div>
+            </label>
+
+            <label className="admin-pro-search">
+              <span>Tìm học viên</span>
+
+              <div>
+                <SearchIcon />
+
+                <input
+                  type="search"
+                  value={studentSearch}
+                  onChange={(event) =>
+                    setStudentSearch(
+                      event.target.value,
+                    )
+                  }
+                  placeholder="Nhập tên học viên..."
+                  autoComplete="off"
+                />
+              </div>
+            </label>
+
+            <label className="admin-pro-search">
+              <span>Tìm khóa học</span>
+
+              <div>
+                <SearchIcon />
+
+                <input
+                  type="search"
+                  value={courseSearch}
+                  onChange={(event) =>
+                    setCourseSearch(
+                      event.target.value,
+                    )
+                  }
+                  placeholder="Nhập tên hoặc mã khóa học..."
+                  autoComplete="off"
                 />
               </div>
             </label>
@@ -2022,6 +2287,27 @@ export default function AdminTeachersPage() {
               / {records.length} phiếu
             </span>
 
+            {teacherSearch.trim() ? (
+              <em>
+                Giáo viên:{' '}
+                {teacherSearch.trim()}
+              </em>
+            ) : null}
+
+            {studentSearch.trim() ? (
+              <em>
+                Học viên:{' '}
+                {studentSearch.trim()}
+              </em>
+            ) : null}
+
+            {courseSearch.trim() ? (
+              <em>
+                Khóa học:{' '}
+                {courseSearch.trim()}
+              </em>
+            ) : null}
+
             {vehicleFilter !==
             'ALL' ? (
               <em>
@@ -2165,7 +2451,9 @@ export default function AdminTeachersPage() {
 
                         <td>
                           <span className="admin-pro-vehicle">
-                            {record.vehicleCategory}
+                            {getVehicleLabel(
+                              record.vehicleCategory,
+                            )}
                           </span>
                         </td>
 
@@ -2222,6 +2510,36 @@ export default function AdminTeachersPage() {
                                 ? 'Đang tạo ảnh...'
                                 : 'Tải lại ảnh'}
                             </button>
+
+                            <button
+                              type="button"
+                              className={`admin-pro-delete-icon${
+                                deletingRecordId ===
+                                record.id
+                                  ? ' is-deleting'
+                                  : ''
+                              }`}
+                              aria-label={`Xóa phiếu của ${record.studentName}`}
+                              title={
+                                deletingRecordId ===
+                                record.id
+                                  ? 'Đang xóa phiếu...'
+                                  : 'Xóa phiếu'
+                              }
+                              disabled={
+                                deletingRecordId !==
+                                  null ||
+                                exportingRecordId !==
+                                  null
+                              }
+                              onClick={() => {
+                                void handleDeleteRecord(
+                                  record,
+                                )
+                              }}
+                            >
+                              <TrashIcon />
+                            </button>
                           </div>
                         </td>
                       </tr>
@@ -2256,8 +2574,8 @@ export default function AdminTeachersPage() {
                   </h3>
 
                   <p>
-                    Thay đổi ngày, hạng xe
-                    hoặc từ khóa tìm kiếm.
+                    Thay đổi tên giáo viên, học viên,
+                    khóa học, ngày hoặc hạng xe.
                   </p>
 
                   <button
@@ -2470,7 +2788,9 @@ export default function AdminTeachersPage() {
                       </span>
 
                       <b className="admin-pro-vehicle">
-                        {record.vehicleCategory}
+                        {getVehicleLabel(
+                              record.vehicleCategory,
+                            )}
                       </b>
                     </div>
 
@@ -2537,6 +2857,37 @@ export default function AdminTeachersPage() {
                         record.id
                           ? 'Đang tạo ảnh...'
                           : 'Tải lại ảnh PNG'}
+                      </button>
+
+
+                      <button
+                        type="button"
+                        className={`admin-pro-delete-icon${
+                          deletingRecordId ===
+                          record.id
+                            ? ' is-deleting'
+                            : ''
+                        }`}
+                        aria-label={`Xóa phiếu của ${record.studentName}`}
+                        title={
+                          deletingRecordId ===
+                          record.id
+                            ? 'Đang xóa phiếu...'
+                            : 'Xóa phiếu'
+                        }
+                        disabled={
+                          deletingRecordId !==
+                            null ||
+                          exportingRecordId !==
+                            null
+                        }
+                        onClick={() => {
+                          void handleDeleteRecord(
+                            record,
+                          )
+                        }}
+                      >
+                        <TrashIcon />
                       </button>
                     </div>
                   </article>
@@ -2615,7 +2966,9 @@ export default function AdminTeachersPage() {
                 <small>HẠNG XE</small>
 
                 <strong>
-                  {selectedRecord.vehicleCategory}
+                  {getVehicleLabel(
+                    selectedRecord.vehicleCategory,
+                  )}
                 </strong>
               </article>
 
@@ -2662,7 +3015,9 @@ export default function AdminTeachersPage() {
                   <div>
                     <dt>Hạng xe</dt>
                     <dd>
-                      {selectedRecord.vehicleCategory}
+                      {getVehicleLabel(
+                    selectedRecord.vehicleCategory,
+                  )}
                     </dd>
                   </div>
 
@@ -2819,6 +3174,36 @@ export default function AdminTeachersPage() {
                 selectedRecord.id
                   ? 'Đang tạo ảnh...'
                   : 'Tải ảnh PNG'}
+              </button>
+
+              <button
+                type="button"
+                className={`admin-pro-delete-icon${
+                  deletingRecordId ===
+                  selectedRecord.id
+                    ? ' is-deleting'
+                    : ''
+                }`}
+                aria-label={`Xóa phiếu của ${selectedRecord.studentName}`}
+                title={
+                  deletingRecordId ===
+                  selectedRecord.id
+                    ? 'Đang xóa phiếu...'
+                    : 'Xóa phiếu'
+                }
+                disabled={
+                  deletingRecordId !==
+                    null ||
+                  exportingRecordId !==
+                    null
+                }
+                onClick={() => {
+                  void handleDeleteRecord(
+                    selectedRecord,
+                  )
+                }}
+              >
+                <TrashIcon />
               </button>
 
               <button

@@ -6,6 +6,6 @@ git add src/styles.css
 git add src/pages/ReportPreviewPage.tsx
 git add scripts/e2e.mjs
 git status
-git commit -m "Cap nhathoanthienadmin"
+git commit -m "Cap nhathoanthienadminn"
 git pull --rebase origin main
 git push origin main

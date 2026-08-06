@@ -1,12 +1,15 @@
 import {
   addDoc,
   collection,
+  deleteDoc,
+  doc,
   onSnapshot,
   orderBy,
   query,
   serverTimestamp,
   Timestamp,
   type DocumentData,
+  type Firestore,
 } from 'firebase/firestore'
 
 import {
@@ -44,6 +47,16 @@ export interface EvaluationAdminRecord {
 
   createdAt: string
   updatedAt: string
+}
+
+function requireFirestoreDatabase(): Firestore {
+  if (!firestoreDatabase) {
+    throw new Error(
+      'Firebase chưa được cấu hình hoặc chưa khởi tạo.',
+    )
+  }
+
+  return firestoreDatabase
 }
 
 export interface SaveEvaluationAdminInput {
@@ -306,7 +319,7 @@ export async function saveEvaluationAdminRecord(
   const reference =
     await addDoc(
       collection(
-        firestoreDatabase,
+        requireFirestoreDatabase(),
         'evaluations',
       ),
 
@@ -367,14 +380,28 @@ export async function saveEvaluationAdminRecord(
 }
 
 /**
- * Không cho xóa khi chưa có
- * cơ chế xác thực admin.
+ * Xóa vĩnh viễn một phiếu khỏi Firestore.
+ *
+ * Lưu ý: quyền xóa thực tế vẫn do Firestore Rules quyết định.
  */
 export async function deleteEvaluationAdminRecord(
-  _id: string,
+  id: string,
 ): Promise<void> {
-  throw new Error(
-    'Chức năng xóa đang bị khóa để bảo vệ dữ liệu. Hãy xóa trực tiếp trong Firebase Console.',
+  const normalizedId =
+    cleanText(id)
+
+  if (!normalizedId) {
+    throw new Error(
+      'Mã phiếu không hợp lệ.',
+    )
+  }
+
+  await deleteDoc(
+    doc(
+      requireFirestoreDatabase(),
+      'evaluations',
+      normalizedId,
+    ),
   )
 }
 
@@ -394,42 +421,62 @@ export function subscribeEvaluationAdminRecords(
     error: Error,
   ) => void,
 ): () => void {
-  const recordsQuery =
-    query(
-      collection(
-        firestoreDatabase,
-        'evaluations',
-      ),
+  try {
+    const recordsQuery =
+      query(
+        collection(
+          requireFirestoreDatabase(),
+          'evaluations',
+        ),
 
-      orderBy(
-        'createdAt',
-        'desc',
-      ),
-    )
-
-  return onSnapshot(
-    recordsQuery,
-
-    (snapshot) => {
-      const records =
-        snapshot.docs.map(
-          (document) =>
-            mapDocument(
-              document.id,
-              document.data(),
-            ),
-        )
-
-      onRecords(records)
-    },
-
-    (error) => {
-      console.error(
-        'Không thể tải dữ liệu Firebase:',
-        error,
+        orderBy(
+          'createdAt',
+          'desc',
+        ),
       )
 
-      onError?.(error)
-    },
-  )
+    return onSnapshot(
+      recordsQuery,
+
+      (snapshot) => {
+        const records =
+          snapshot.docs.map(
+            (document) =>
+              mapDocument(
+                document.id,
+                document.data(),
+              ),
+          )
+
+        onRecords(records)
+      },
+
+      (error) => {
+        console.error(
+          'Không thể tải dữ liệu Firebase:',
+          error,
+        )
+
+        onError?.(error)
+      },
+    )
+  } catch (error) {
+    const normalizedError =
+      error instanceof Error
+        ? error
+        : new Error(
+            'Không thể khởi tạo Firebase.',
+          )
+
+    console.error(
+      'Không thể khởi tạo Firebase:',
+      normalizedError,
+    )
+
+    queueMicrotask(() => {
+      onError?.(normalizedError)
+    })
+
+    return () => undefined
+  }
 }
