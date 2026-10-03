@@ -29,7 +29,7 @@ export function TrainingSelectionPage({ vehicleCategory, onSelect, onBack }: Tra
         <section className="training-option-grid" aria-label="Chọn nội dung tập">
           <button className="training-option training-option--basic" type="button" data-testid="training-basic" onClick={() => onSelect('BASIC')}>
             <span className="training-option__icon"><BookOpenCheck size={31} /></span>
-            <span className="training-option__tag">16 NỘI DUNG</span>
+            <span className="training-option__tag">13 NỘI DUNG</span>
             <strong>Tập cơ bản</strong>
             <small>Đánh giá buổi học làm quen xe và sa hình cơ bản bằng bảng tích nhanh.</small>
             <span className="training-option__action">Bắt đầu đánh giá <ArrowRight size={18} /></span>

@@ -1,11 +1,10 @@
-import { useEffect, useRef, useState } from 'react'
-import { toCanvas } from 'html-to-image'
-import { ArrowLeft, CheckCircle2, Download, FilePenLine, Images, LoaderCircle, RefreshCcw, ScanLine, Share2 } from 'lucide-react'
+import { useEffect, useLayoutEffect, useRef, useState } from 'react'
+import { ArrowLeft, CheckCircle2, Download, FilePenLine, Images, LoaderCircle, RefreshCcw, Share2 } from 'lucide-react'
 import { AppHeader } from '../components/AppHeader'
 import { AppFooter } from '../components/AppFooter'
 import { ChecklistReport } from '../components/ChecklistReport'
 import { EvaluationReport } from '../components/EvaluationReport'
-import { PHU_GIAO_LOGO_DATA_URL } from '../components/TrainingCenterBrand'
+import { LINH_XUAN_LOGO_DATA_URL } from '../components/TrainingCenterBrand'
 import type { EvaluationState } from '../types/evaluation'
 import { CONCLUSION_META, COURSE_CONCLUSIONS, generateFileName } from '../utils/evaluation'
 
@@ -54,6 +53,28 @@ export function ReportPreviewPage({ state, onChange, onEdit, onNew }: ReportPrev
     || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1)
   const isCompactDevice = isAppleMobile || window.matchMedia('(max-width: 768px)').matches
   const isChecklist = state.trainingType === 'BASIC' || state.trainingType === 'ROAD'
+
+  useLayoutEffect(() => {
+    const resetScroll = () => {
+      window.scrollTo({ top: 0, left: 0, behavior: 'auto' })
+    }
+
+    const startedAt = window.performance.now()
+    let frame = 0
+    const keepPreviewAtTopWhileItSettles = () => {
+      resetScroll()
+      if (window.performance.now() - startedAt < 500) {
+        frame = window.requestAnimationFrame(keepPreviewAtTopWhileItSettles)
+      }
+    }
+
+    resetScroll()
+    frame = window.requestAnimationFrame(keepPreviewAtTopWhileItSettles)
+
+    return () => {
+      window.cancelAnimationFrame(frame)
+    }
+  }, [])
 
   useEffect(() => {
     const stage = stageRef.current
@@ -113,6 +134,7 @@ export function ReportPreviewPage({ state, onChange, onEdit, onNew }: ReportPrev
   }
 
   const renderReportCanvas = async () => {
+    const { toCanvas } = await import('html-to-image')
     const { node, restore } = await prepareNode()
     let canvas: HTMLCanvasElement | null = null
     let logoRects: ExportLogoRect[] = []
@@ -130,8 +152,8 @@ export function ReportPreviewPage({ state, onChange, onEdit, onNew }: ReportPrev
       })
       const renderOptions = {
         cacheBust: true,
-        backgroundColor: '#f8fbf9',
-        imagePlaceholder: PHU_GIAO_LOGO_DATA_URL,
+        backgroundColor: '#f8fbff',
+        imagePlaceholder: LINH_XUAN_LOGO_DATA_URL,
         skipAutoScale: true,
       }
       try {
@@ -151,8 +173,8 @@ export function ReportPreviewPage({ state, onChange, onEdit, onNew }: ReportPrev
     const logo = new Image()
     await new Promise<void>((resolve, reject) => {
       logo.addEventListener('load', () => resolve(), { once: true })
-      logo.addEventListener('error', () => reject(new Error('Không thể nạp logo Phú Giáo')), { once: true })
-      logo.src = PHU_GIAO_LOGO_DATA_URL
+      logo.addEventListener('error', () => reject(new Error('Không thể nạp logo Linh Xuân')), { once: true })
+      logo.src = LINH_XUAN_LOGO_DATA_URL
     })
     const context = canvas.getContext('2d')
     if (!context) throw new Error('Không thể hoàn thiện logo trên ảnh')
@@ -168,12 +190,7 @@ export function ReportPreviewPage({ state, onChange, onEdit, onNew }: ReportPrev
       const imageScale = Math.min(width / logo.naturalWidth, height / logo.naturalHeight)
       const drawWidth = logo.naturalWidth * imageScale
       const drawHeight = logo.naturalHeight * imageScale
-      context.save()
-      context.beginPath()
-      context.ellipse(x + width / 2, y + height / 2, width / 2, height / 2, 0, 0, Math.PI * 2)
-      context.clip()
       context.drawImage(logo, x + (width - drawWidth) / 2, y + (height - drawHeight) / 2, drawWidth, drawHeight)
-      context.restore()
     })
     return canvas
   }

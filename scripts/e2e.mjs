@@ -23,6 +23,18 @@ function assert(condition, message) {
   if (!condition) throw new Error(message)
 }
 
+async function assertNoHorizontalOverflow(page, label) {
+  const width = await page.evaluate(() => ({
+    viewport: document.documentElement.clientWidth,
+    document: document.documentElement.scrollWidth,
+    body: document.body.scrollWidth,
+  }))
+  assert(
+    width.document <= width.viewport && width.body <= width.viewport,
+    `${label} bị tràn ngang: ${JSON.stringify(width)}`,
+  )
+}
+
 async function assertExportedLogos(page, png, reportName) {
   const exportedWidth = png.readUInt32BE(16)
   const exportedHeight = png.readUInt32BE(20)
@@ -42,9 +54,9 @@ async function assertExportedLogos(page, png, reportName) {
       }
     })
   })
-  assert(logoSlots.length === 2, `${reportName} phải có logo Phú Giáo ở đầu và chân phiếu`)
+  assert(logoSlots.length === 2, `${reportName} phải có logo Linh Xuân ở đầu và chân phiếu`)
 
-  const greenRatios = await page.evaluate(async ({ base64, slots }) => {
+  const blueRatios = await page.evaluate(async ({ base64, slots }) => {
     const image = new Image()
     image.src = `data:image/png;base64,${base64}`
     await image.decode()
@@ -60,20 +72,20 @@ async function assertExportedLogos(page, png, reportName) {
       const width = Math.max(1, Math.min(canvas.width - x, Math.ceil(slot.width * canvas.width)))
       const height = Math.max(1, Math.min(canvas.height - y, Math.ceil(slot.height * canvas.height)))
       const pixels = context.getImageData(x, y, width, height).data
-      let greenPixels = 0
+      let bluePixels = 0
       for (let index = 0; index < pixels.length; index += 4) {
         const red = pixels[index]
         const green = pixels[index + 1]
         const blue = pixels[index + 2]
-        if (green > 65 && green > red + 14 && green > blue + 8) greenPixels += 1
+        if (blue > 70 && blue > red + 25 && blue > green + 8) bluePixels += 1
       }
-      return greenPixels / (pixels.length / 4)
+      return bluePixels / (pixels.length / 4)
     })
   }, { base64: png.toString('base64'), slots: logoSlots })
 
   assert(
-    greenRatios.length === 2 && greenRatios.every((ratio) => ratio > 0.01),
-    `${reportName} bị thiếu hình logo trong ảnh PNG: ${greenRatios.join(', ')}`,
+    blueRatios.length === 2 && blueRatios.every((ratio) => ratio > 0.01),
+    `${reportName} bị thiếu hình logo trong ảnh PNG: ${blueRatios.join(', ')}`,
   )
 }
 
@@ -81,10 +93,10 @@ async function assertReportFooterBrand(page, reportName) {
   const report = page.getByTestId('evaluation-report')
   const headerBrand = report.locator('.report-header, .checklist-report-header').locator('.training-brand').first()
   assert(
-    await headerBrand.locator('small').innerText() === 'TRUNG TÂM GIÁO DỤC NGHỀ NGHIỆP',
+    await headerBrand.locator('small').innerText() === 'TRUNG TÂM ĐÀO TẠO LÁI XE',
     `${reportName} phải ghi đầy đủ tên Trung tâm ở đầu phiếu`,
   )
-  assert(await headerBrand.locator('strong').innerText() === 'PHÚ GIÁO', `${reportName} phải ghi PHÚ GIÁO ở đầu phiếu`)
+  assert(await headerBrand.locator('strong').innerText() === 'LINH XUÂN', `${reportName} phải ghi LINH XUÂN ở đầu phiếu`)
   assert(
     await headerBrand.locator('small').evaluate((element) => getComputedStyle(element).whiteSpace) === 'nowrap',
     `${reportName} phải giữ tên Trung tâm trên một dòng ở đầu phiếu`,
@@ -92,12 +104,12 @@ async function assertReportFooterBrand(page, reportName) {
   const footer = report.locator('.report-footer, .checklist-report-footer')
   assert(await footer.count() === 1, `${reportName} phải có chân phiếu`)
   assert(
-    await footer.locator('.training-brand__copy small').innerText() === 'TRUNG TÂM GIÁO DỤC NGHỀ NGHIỆP',
+    await footer.locator('.training-brand__copy small').innerText() === 'TRUNG TÂM ĐÀO TẠO LÁI XE',
     `${reportName} phải ghi đầy đủ tên Trung tâm ở chân phiếu`,
   )
   assert(
-    await footer.locator('.training-brand__copy strong').innerText() === 'PHÚ GIÁO',
-    `${reportName} phải ghi PHÚ GIÁO ở chân phiếu`,
+    await footer.locator('.training-brand__copy strong').innerText() === 'LINH XUÂN',
+    `${reportName} phải ghi LINH XUÂN ở chân phiếu`,
   )
   assert(
     await footer.locator('.report-footer__tagline').innerText() === 'AN TOÀN — TRÁCH NHIỆM — VỮNG TAY LÁI',
@@ -148,11 +160,11 @@ try {
   assert(dimensions.scrollWidth <= dimensions.viewport, `Trang chọn hạng bị tràn ngang: ${JSON.stringify(dimensions)}`)
   assert(await page.getByText('QUỐC ANH', { exact: true }).count() === 0, 'Không được còn thương hiệu Quốc Anh')
   const mobileHeaderBrand = page.locator('.app-header .training-brand').first()
-  assert(await mobileHeaderBrand.locator('small').isVisible(), 'Điện thoại phải hiện dòng TRUNG TÂM GIÁO DỤC NGHỀ NGHIỆP')
-  assert(await mobileHeaderBrand.locator('small').innerText() === 'TRUNG TÂM GIÁO DỤC NGHỀ NGHIỆP', 'Tên Trung tâm trên điện thoại phải đầy đủ')
-  assert(await mobileHeaderBrand.locator('strong').innerText() === 'PHÚ GIÁO', 'Điện thoại phải hiện đầy đủ PHÚ GIÁO')
+  assert(await mobileHeaderBrand.locator('small').isVisible(), 'Điện thoại phải hiện dòng TRUNG TÂM ĐÀO TẠO LÁI XE')
+  assert(await mobileHeaderBrand.locator('small').innerText() === 'TRUNG TÂM ĐÀO TẠO LÁI XE', 'Tên trung tâm trên điện thoại phải đầy đủ')
+  assert(await mobileHeaderBrand.locator('strong').innerText() === 'LINH XUÂN', 'Điện thoại phải hiện đầy đủ LINH XUÂN')
   const logoSource = await page.locator('.training-brand__mark img').first().getAttribute('src')
-  assert(logoSource?.startsWith('data:image/png;base64,'), 'Logo Phú Giáo phải là PNG nhúng trực tiếp để không mất khi Safari xuất ảnh')
+  assert(logoSource?.startsWith('data:image/png;base64,'), 'Logo Linh Xuân phải là PNG nhúng trực tiếp để không mất khi Safari xuất ảnh')
 
   await page.getByRole('button', { name: 'HẠNG XE B SỐ SÀN' }).click()
   await page.screenshot({ path: path.join(artifactDir, 'training-selection-mobile.png'), fullPage: true })
@@ -169,13 +181,14 @@ try {
   )
   await page.screenshot({ path: path.join(artifactDir, 'student-info-mobile.png'), fullPage: false })
   const basicDate = await enterStudent(page, 'Học viên Cơ Bản')
-  assert(await page.locator('.checklist-item-card').count() === 13, 'Tập cơ bản phải có đúng 16 nội dung')
+  assert(await page.locator('.checklist-item-card').count() === 13, 'Tập cơ bản phải có đúng 13 nội dung')
   assert(await page.getByText('Mở cửa xe và lên xe an toàn', { exact: true }).count() === 1, 'Phiếu cơ bản phải đúng nội dung mẫu')
   assert(await page.getByTestId('check-basic-pedals-UNDERSTOOD').count() === 1, 'Mỗi nội dung cơ bản phải có ô Đã hiểu')
   assert(await page.getByTestId('check-basic-pedals-NEEDS_WORK').count() === 1, 'Mỗi nội dung cơ bản phải có ô Còn yếu')
   assert(await page.getByTestId('check-basic-pedals-UNCLEAR').count() === 1, 'Mỗi nội dung cơ bản phải có ô Chưa rõ')
   await page.getByRole('button', { name: 'Đánh dấu tất cả là Đã hiểu' }).click()
   await page.getByTestId('overall-BASIC_UNDERSTOOD').click()
+  await assertNoHorizontalOverflow(page, 'Phiếu tập cơ bản trên điện thoại')
   await page.screenshot({ path: path.join(artifactDir, 'basic-checklist-mobile.png'), fullPage: false })
   await page.getByRole('button', { name: 'Xem phiếu đánh giá' }).click()
   const basicReportText = await page.getByTestId('evaluation-report').innerText()
@@ -236,17 +249,21 @@ try {
   await page.getByTestId('status-right-angle-NOTICE').click()
   await page.getByTestId('status-emergency-NOTICE').click()
   await page.getByRole('button', { name: 'Cần luyện dốc cầu' }).click()
+  await assertNoHorizontalOverflow(page, 'Phiếu sa hình trên điện thoại')
   await page.locator('#lesson-hill').screenshot({ path: path.join(artifactDir, 'evaluation-mobile.png') })
   await page.getByRole('button', { name: 'Xem phiếu đánh giá' }).click()
 
   await page.getByTestId('evaluation-report').waitFor({ state: 'visible' })
+  await page.waitForTimeout(250)
+  const reportScrollY = await page.evaluate(() => window.scrollY)
+  assert(reportScrollY <= 80, `Trang xem phiếu phải mở ở khu vực đầu trang trên điện thoại, thực tế ${reportScrollY}px`)
   const reportText = await page.getByTestId('evaluation-report').innerText()
   assert(reportText.includes('9 bài'), 'Tổng số bài Tốt phải là 9')
   assert(reportText.includes('1 bài'), 'Phiếu phải hiển thị các tổng kết một bài')
   assert(reportText.includes('CẦN TIẾP TỤC LUYỆN TẬP'), 'Lỗi tuột dốc phải tạo kết luận cần tiếp tục luyện tập')
   assert(reportText.includes('Tuột dốc'), 'Phiếu phải hiển thị lỗi đã chọn')
   assert(reportText.includes('SỐ SÀN'), 'Huy hiệu phiếu sa hình phải ghi rõ loại xe SỐ SÀN')
-  assert(reportText.includes('AN TOÀN — TRÁCH NHIỆM — VỮNG TAY LÁI'), 'Phiếu sa hình phải dùng đúng phương châm Phú Giáo')
+  assert(reportText.includes('AN TOÀN — TRÁCH NHIỆM — VỮNG TAY LÁI'), 'Phiếu sa hình phải dùng đúng phương châm Linh Xuân')
   await assertReportFooterBrand(page, 'Phiếu sa hình')
   const reportTail = [
     'Ghép xe dọc vào nơi đỗ',
@@ -305,25 +322,38 @@ try {
   await page.goto(baseUrl)
   await chooseVehicle(page, 'HẠNG XE HẠNG C1', 'TẬP CƠ BẢN')
   await enterStudent(page, 'Học viên C1 Cơ Bản')
-  assert(await page.locator('.checklist-item-card').count() === 13, 'Tập cơ bản C1 phải có đúng 16 nội dung')
+  assert(await page.locator('.checklist-item-card').count() === 13, 'Tập cơ bản C1 phải có đúng 13 nội dung')
   assert(await page.getByText('Phân biệt được các bàn đạp Côn – Phanh – Ga', { exact: true }).count() === 1, 'C1 cơ bản phải có nội dung bàn đạp xe số sàn')
 
   await page.goto(baseUrl)
   await chooseVehicle(page, 'HẠNG XE B SỐ TỰ ĐỘNG', 'TẬP CƠ BẢN')
   await enterStudent(page, 'Học viên BTĐ Cơ Bản')
-  assert(await page.locator('.checklist-item-card').count() === 13, 'Tập cơ bản BTĐ phải có đúng 16 nội dung')
+  assert(await page.locator('.checklist-item-card').count() === 13, 'Tập cơ bản BTĐ phải có đúng 13 nội dung')
   assert(await page.getByText('Phân biệt và sử dụng đúng bàn đạp Phanh – Ga', { exact: true }).count() === 1, 'BTĐ cơ bản phải có nội dung bàn đạp riêng')
   assert(await page.getByText('Phân biệt được các bàn đạp Côn – Phanh – Ga', { exact: true }).count() === 0, 'BTĐ cơ bản không được có nội dung bàn đạp côn')
+
+  await page.setViewportSize({ width: 973, height: 650 })
+  await page.goto(baseUrl)
+  await chooseVehicle(page, 'HẠNG XE B SỐ SÀN', 'TẬP CƠ BẢN')
+  await enterStudent(page, 'Kiểm thử giao diện 973px')
+  await assertNoHorizontalOverflow(page, 'Phiếu tập cơ bản ở màn hình 973px')
+  await page.screenshot({ path: path.join(artifactDir, 'basic-checklist-973.png'), fullPage: false })
   await mobile.close()
 
   const desktop = await browser.newContext({ viewport: { width: 1440, height: 1000 }, deviceScaleFactor: 1 })
   const desktopPage = await desktop.newPage()
   await desktopPage.goto(baseUrl)
   const desktopHeaderBrand = desktopPage.locator('.app-header .training-brand').first()
-  assert(await desktopHeaderBrand.locator('small').isVisible(), 'Máy tính phải hiện dòng TRUNG TÂM GIÁO DỤC NGHỀ NGHIỆP')
-  assert(await desktopHeaderBrand.locator('small').innerText() === 'TRUNG TÂM GIÁO DỤC NGHỀ NGHIỆP', 'Tên Trung tâm trên máy tính phải đầy đủ')
-  assert(await desktopHeaderBrand.locator('strong').innerText() === 'PHÚ GIÁO', 'Máy tính phải hiện đầy đủ PHÚ GIÁO')
+  assert(await desktopHeaderBrand.locator('small').isVisible(), 'Máy tính phải hiện dòng TRUNG TÂM ĐÀO TẠO LÁI XE')
+  assert(await desktopHeaderBrand.locator('small').innerText() === 'TRUNG TÂM ĐÀO TẠO LÁI XE', 'Tên trung tâm trên máy tính phải đầy đủ')
+  assert(await desktopHeaderBrand.locator('strong').innerText() === 'LINH XUÂN', 'Máy tính phải hiện đầy đủ LINH XUÂN')
   await desktopPage.screenshot({ path: path.join(artifactDir, 'home-desktop.png'), fullPage: false })
+
+  await desktopPage.goto(`${baseUrl}/admin/giaovien/A@7979`)
+  await desktopPage.locator('.admin-pro-page').waitFor({ state: 'visible' })
+  assert(await desktopPage.getByText('LINH XUÂN', { exact: true }).count() >= 1, 'Trang quản trị phải dùng thương hiệu Linh Xuân')
+  await assertNoHorizontalOverflow(desktopPage, 'Trang quản trị trên máy tính')
+  await desktopPage.screenshot({ path: path.join(artifactDir, 'admin-desktop.png'), fullPage: false })
   await desktop.close()
 
   const iphone = await browser.newContext({
@@ -338,11 +368,17 @@ try {
   await iphonePage.getByRole('button', { name: 'Đánh dấu bài còn lại là Tốt' }).click()
   await iphonePage.getByTestId('status-emergency-GOOD').click()
   await iphonePage.getByRole('button', { name: 'Xem phiếu đánh giá' }).click()
+  await iphonePage.getByTestId('evaluation-report').waitFor({ state: 'visible' })
   assert(await iphonePage.getByRole('button', { name: 'Lưu Ảnh' }).count() === 1, 'Safari iPhone phải hiển thị nút Lưu Ảnh')
   assert(await iphonePage.getByText('Lưu trên iPhone:', { exact: true }).count() === 1, 'Safari iPhone phải hiển thị hướng dẫn lưu hình ảnh')
+
+  await iphonePage.goto(`${baseUrl}/admin/giaovien/A@7979`)
+  await iphonePage.locator('.admin-pro-page').waitFor({ state: 'visible' })
+  await assertNoHorizontalOverflow(iphonePage, 'Trang quản trị trên iPhone')
+  await iphonePage.screenshot({ path: path.join(artifactDir, 'admin-mobile.png'), fullPage: false })
   await iphone.close()
 
-  console.log('E2E_OK: Phu Giao branding, tick forms, vehicle variants, PNG export and iPhone Photos flow verified')
+console.log('E2E_OK: Linh Xuan branding, tick forms, vehicle variants, PNG export and iPhone Photos flow verified')
 } finally {
   await browser.close()
 }

@@ -5,10 +5,6 @@ import {
 } from 'firebase/app'
 
 import {
-  getAuth,
-} from 'firebase/auth'
-
-import {
   getFirestore,
 } from 'firebase/firestore'
 
@@ -70,39 +66,31 @@ const missingVariables =
       ([key]) => key,
     )
 
-if (
-  missingVariables.length > 0
-) {
-  throw new Error(
-    `Thiếu cấu hình Firebase: ${missingVariables.join(
-      ', ',
-    )}`,
-  )
-}
+// Firebase là tính năng bổ sung cho trang quản trị. Không chặn giáo viên
+// sử dụng phiếu và xuất ảnh khi tạo một bản Render mới chưa cấu hình Firebase.
+const firebaseEnabled =
+  missingVariables.length === 0
 
 /**
  * Tránh khởi tạo Firebase nhiều lần
  * khi Vite tự tải lại trang trong chế độ dev.
  */
 export const firebaseApp =
-  getApps().length > 0
-    ? getApp()
-    : initializeApp(
-        firebaseConfig,
-      )
-
-/**
- * Firebase Authentication:
- * dùng để đăng nhập giáo viên và admin.
- */
-export const firebaseAuth =
-  getAuth(firebaseApp)
+  firebaseEnabled
+    ? getApps().length > 0
+      ? getApp()
+      : initializeApp(
+          firebaseConfig,
+        )
+    : null
 
 /**
  * Cloud Firestore:
  * dùng để lưu toàn bộ phiếu đánh giá.
  */
 export const firestoreDatabase =
-  getFirestore(
-    firebaseApp,
-  )
+  firebaseApp
+    ? getFirestore(
+        firebaseApp,
+      )
+    : null

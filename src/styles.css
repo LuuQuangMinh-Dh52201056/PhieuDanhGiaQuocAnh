@@ -22,7 +22,7 @@
 
 * { box-sizing: border-box; }
 
-html { scroll-behavior: smooth; }
+html { scroll-behavior: auto; }
 
 body {
   margin: 0;
@@ -558,7 +558,7 @@ button.training-option:hover { transform: translateY(-5px); box-shadow: 0 22px 4
 .report-page--basic .report-signature > strong { color: #087a3e; }
 .report-page--basic .report-footer { color: #d9f4e2; border-top-color: #79cc96; background: linear-gradient(90deg, #034526, #087a3e, #034526); }
 
-/* Exported tick-only reports based on the Phú Giáo paper forms */
+/* Exported tick-only training reports */
 .checklist-report { min-height: 0; color: #173629; background: #f8fbf9; }
 .checklist-report-header { min-height: 225px; display: grid; grid-template-columns: 310px 1fr 310px; align-items: center; gap: 18px; position: relative; overflow: hidden; padding: 24px 34px 31px; border-top: 13px solid #075b31; border-bottom: 5px solid #58b67a; background: linear-gradient(135deg, #f8fff9, #e7f6ec); }
 .checklist-report-header::after { content: ''; position: absolute; width: 380px; height: 380px; right: 80px; top: -300px; border: 1px solid rgba(8,122,62,.1); border-radius: 50%; box-shadow: 0 0 0 55px rgba(8,122,62,.025), 0 0 0 105px rgba(8,122,62,.018); }
@@ -765,7 +765,7 @@ button.training-option:hover { transform: translateY(-5px); box-shadow: 0 22px 4
   .app-header .training-brand--compact .training-brand__copy strong { font-size: 10px; }
 }
 
-/* 2026 Phú Giáo white & green redesign */
+/* Legacy white layout foundation */
 :root {
   --green-950: #033b22;
   --green-900: #05532d;
@@ -804,7 +804,7 @@ textarea:focus-visible { outline-color: rgba(10, 138, 72, .28); }
 .button--outline { color: var(--green-800); border-color: #8ec8a6; background: #fff; }
 .button--ghost { color: #315d48; border-color: #cfe1d6; }
 
-/* Actual Phú Giáo logo */
+/* Training-center logo */
 .training-brand { gap: 12px; color: var(--green-800); }
 .training-brand__mark {
   display: grid;
@@ -1417,6 +1417,196 @@ textarea:focus-visible { outline-color: rgba(10, 138, 72, .28); }
 }
 
 /* =========================================================
+   LINH XUÂN — BLUE & WHITE VISUAL SYSTEM
+   A clean theme layer placed last so legacy green styles never leak.
+   ========================================================= */
+:root {
+  --lx-blue-950: #052d75;
+  --lx-blue-800: #064ba9;
+  --lx-blue-700: #0868d9;
+  --lx-blue-500: #1687ff;
+  --lx-blue-100: #eaf4ff;
+  --lx-blue-050: #f5f9ff;
+  --navy-950: #052d75;
+  --navy-900: #063f96;
+  --navy-800: #075bc8;
+  --navy-700: #087cf0;
+  --gold: #1687ff;
+  --gold-light: #d9efff;
+  --green: #119a55;
+  --ink: #102a54;
+  background: var(--lx-blue-050);
+}
+
+body { background: var(--lx-blue-050) !important; color: #102a54 !important; }
+.app-shell { min-height: 100vh; background: linear-gradient(180deg, #fafdff 0, #eef6ff 100%) !important; }
+.button--primary { background: linear-gradient(135deg, #087cf0, #064ba9) !important; box-shadow: 0 12px 24px rgba(6, 75, 169, .25) !important; }
+.button--outline { color: #075bc8 !important; border-color: #78b8ff !important; background: #fff !important; }
+.button--ghost { color: #075bc8 !important; border-color: #a7d0ff !important; background: #fff !important; }
+
+/* Brand, header and footer */
+.training-brand { color: var(--lx-blue-800) !important; }
+.training-brand__mark { display: grid; place-items: center; overflow: visible !important; border: 0 !important; border-radius: 0 !important; background: transparent !important; box-shadow: none !important; }
+.training-brand__mark img { display: block !important; width: 100% !important; height: 100% !important; object-fit: contain !important; border-radius: 0 !important; }
+.training-brand__copy small { color: #075bc8 !important; font-weight: 800 !important; }
+.training-brand__copy strong { color: #063f96 !important; }
+.training-brand--light .training-brand__copy small { color: #dceeff !important; }
+.training-brand--light .training-brand__copy strong { color: #fff !important; }
+.app-header { height: auto !important; min-height: 100px !important; color: #063f96 !important; border-bottom: 1px solid #b8d9ff !important; background: rgba(255,255,255,.97) !important; box-shadow: 0 6px 20px rgba(7, 80, 170, .08) !important; backdrop-filter: blur(14px); }
+.app-header__inner { min-height: 100px !important; flex-direction: column !important; align-items: stretch !important; }
+.app-header__top { min-height: 58px; display: flex !important; align-items: center; justify-content: space-between; }
+.app-header .training-brand--compact .training-brand__copy small { color: #075bc8 !important; }
+.app-header .training-brand--compact .training-brand__copy strong { color: #063f96 !important; }
+.app-privacy { color: #075bc8 !important; border: 1px solid #cce4ff !important; border-radius: 999px !important; background: #f2f8ff !important; }
+.stepper { min-height: 42px; padding-bottom: 10px; }
+.stepper__item { color: #6281ac !important; }
+.stepper__item::before { border-color: #b7d7ff !important; }
+.stepper__number { color: #326baf !important; border-color: #b8d8ff !important; background: #fff !important; }
+.stepper__item.is-done .stepper__number, .stepper__item.is-active .stepper__number { color: #fff !important; border-color: #087cf0 !important; background: #087cf0 !important; box-shadow: 0 0 0 4px rgba(8,124,240,.12) !important; }
+.stepper__item.is-active .stepper__label, .stepper__item.is-done .stepper__label { color: #064ba9 !important; }
+.site-footer { color: #fff !important; border-top: 3px solid #4aa0ff !important; background: linear-gradient(100deg, #052d75, #087cf0 52%, #05357f) !important; }
+.site-footer .training-brand__copy strong, .site-footer .training-brand__copy small { color: #fff !important; }
+.site-footer__values span { color: #fff !important; border-color: rgba(255,255,255,.3) !important; }
+
+/* Vehicle choice */
+.vehicle-page { position: relative; overflow: hidden; background: #edf6ff url('./hinhanh/linh-xuan-road-bg.png') center top / cover no-repeat !important; }
+.vehicle-page::before { background: linear-gradient(100deg, rgba(246,251,255,.98) 0%, rgba(247,252,255,.88) 50%, rgba(237,247,255,.7) 100%) !important; }
+.vehicle-hero { width: min(1240px, calc(100% - 40px)) !important; min-height: 690px !important; padding: 72px 0 58px !important; display: grid !important; grid-template-columns: .94fr 1.06fr !important; align-items: center !important; gap: 42px !important; }
+.vehicle-hero__copy { color: #123765 !important; }
+.vehicle-hero__eyebrow { display: inline-block; margin-bottom: 14px; color: #087cf0; font-size: 12px; font-weight: 900; letter-spacing: 2.2px; }
+.vehicle-hero__copy h1 { color: #063f96 !important; font-size: clamp(34px, 4vw, 62px) !important; line-height: 1.07 !important; text-shadow: none !important; }
+.vehicle-hero__copy p { max-width: 580px; color: #466995 !important; font-size: 17px !important; line-height: 1.65 !important; }
+.hero-points { color: #175494 !important; }
+.hero-points span { border: 1px solid #d1e6ff; background: rgba(255,255,255,.84); }
+.hero-points svg { color: #087cf0 !important; }
+.vehicle-selector-panel { border: 1px solid #bddcff !important; border-radius: 26px !important; background: rgba(255,255,255,.92) !important; box-shadow: 0 24px 55px rgba(5,72,160,.14) !important; }
+.panel-heading { color: #063f96 !important; }
+.panel-heading__number { color: #fff !important; border-color: #fff !important; background: linear-gradient(135deg,#1687ff,#064ba9) !important; box-shadow: 0 0 0 5px #d9ecff !important; }
+.panel-heading small { color: #087cf0 !important; }
+.vehicle-card-grid { gap: 12px !important; }
+.vehicle-card { min-height: 280px !important; display: flex !important; flex-direction: column !important; gap: 0 !important; padding: 15px 15px 51px !important; color: #123765 !important; border: 1.5px solid #9bcaff !important; border-radius: 18px !important; background: linear-gradient(180deg,#fff 0,#f4f9ff 100%) !important; box-shadow: 0 10px 20px rgba(25,91,181,.1) !important; }
+.vehicle-card::after { border-color: rgba(8,124,240,.18) !important; box-shadow: 0 0 0 22px rgba(8,124,240,.03) !important; }
+.vehicle-card:hover { transform: translateY(-5px) !important; border-color: #087cf0 !important; box-shadow: 0 18px 30px rgba(7,91,200,.18) !important; }
+.vehicle-card__popular { color: #fff !important; background: #087cf0 !important; }
+.vehicle-card__photos { height: 100px; position: relative; display: flex; align-items: center; justify-content: center; }
+.vehicle-card__photo { position: relative; z-index: 2; width: 100%; max-width: 175px; height: 96px; object-fit: contain; filter: drop-shadow(0 8px 8px rgba(5,54,126,.18)); }
+.vehicle-card__photo--rear { position: absolute; z-index: 1; transform: translate(-35px,-5px) scale(.78); opacity: .45; }
+.vehicle-card__badge--illustration { width: 96px !important; height: 96px !important; margin: 4px auto 7px; color: #087cf0 !important; border: 1px solid #aed5ff !important; border-radius: 25px !important; background: #eef7ff !important; box-shadow: inset 0 0 0 7px #f8fcff !important; }
+.vehicle-card__content { width: 100%; text-align: center !important; }
+.vehicle-card__content small { color: #4b84c8 !important; }
+.vehicle-card__content h3 { color: #075bc8 !important; font-size: 18px !important; }
+.vehicle-card__content p { color: #60799b !important; font-size: 10px !important; }
+.vehicle-card__content span { color: #075bc8 !important; }
+.vehicle-card__arrow { right: 14px !important; bottom: 13px !important; color: #fff !important; background: #087cf0 !important; }
+
+/* Shared content cards */
+.content-page { color: #102a54; }
+.page-heading__number { color: #087cf0 !important; border-color: #87c2ff !important; background: #fff !important; box-shadow: 0 0 0 6px #e9f4ff !important; }
+.page-heading span { color: #087cf0 !important; }
+.page-heading h1 { color: #063f96 !important; }
+.page-heading p { color: #6c829f !important; }
+.training-option { color: #123765 !important; border: 1.5px solid #9ccaff !important; background: linear-gradient(135deg,#fff,#eff7ff) !important; box-shadow: 0 14px 31px rgba(14,84,175,.1) !important; }
+.training-option:hover { border-color: #087cf0 !important; box-shadow: 0 20px 40px rgba(7,91,200,.18) !important; }
+.training-option::after { color: #087cf0 !important; }
+.training-option__icon { color: #087cf0 !important; border: 1px solid #a7d1ff !important; background: #eaf4ff !important; }
+.training-option__tag { color: #087cf0 !important; border: 1px solid #a7d1ff !important; background: #f7fbff !important; }
+.training-option > strong { color: #063f96 !important; }
+.training-option > small { color: #5d7595 !important; }
+.training-option__action { color: #087cf0 !important; }
+.training-selection-actions { border-top-color: #b9dcff !important; }
+.training-selection-actions p { color: #5a7193 !important; }
+
+/* Form and evaluation */
+.info-card, .teacher-comment-card, .lesson-card, .checklist-item-card, .checklist-overall-card, .report-preview-heading, .conclusion-control { border-color: #badbff !important; background: #fff !important; box-shadow: 0 12px 28px rgba(9,79,164,.08) !important; }
+.vehicle-summary { background: linear-gradient(120deg,#064ba9,#087cf0) !important; border-bottom-color: #77b9ff !important; }
+.vehicle-summary__icon { color: #fff !important; border-color: rgba(255,255,255,.55) !important; }
+.vehicle-summary button { color: #fff !important; border-color: rgba(255,255,255,.65) !important; }
+.field > span { color: #075bc8 !important; }
+.field > span svg { color: #087cf0 !important; }
+.field input, .date-input-control { color: #16365f !important; border-color: #b4d7ff !important; background: #fbfdff !important; }
+.field input:focus { border-color: #087cf0 !important; box-shadow: 0 0 0 3px rgba(8,124,240,.12) !important; }
+.form-note { color: #16518c !important; border-color: #b9dcff !important; background: #f2f8ff !important; }
+.form-note svg { color: #087cf0 !important; }
+.evaluation-page, .checklist-shell { background: linear-gradient(180deg,#eaf4ff 0 430px,#f8fbff 430px) !important; }
+.evaluation-intro, .checklist-intro { color: #063f96 !important; }
+.lesson-card__header { color: #063f96 !important; background: #f5faff !important; }
+.lesson-card__header::after { background: linear-gradient(90deg,#087cf0,transparent) !important; }
+.lesson-index { color: #fff !important; border-color: #fff !important; background: #087cf0 !important; box-shadow: 0 0 0 4px #dceeff !important; }
+.lesson-symbol { color: #087cf0 !important; background: #eaf4ff !important; }
+.lesson-card { border-color: #badbff !important; }
+.lesson-card__focus, .lesson-card__errors { border-color: #d5e8ff !important; }
+.comment-icon { color: #fff !important; background: #087cf0 !important; }
+.teacher-comment-card__heading h2, .evaluation-actions__note strong { color: #063f96 !important; }
+.checklist-progress { color: #fff !important; border-color: #80bcff !important; background: linear-gradient(120deg,#064ba9,#087cf0) !important; box-shadow: 0 14px 34px rgba(3,67,150,.17) !important; }
+.checklist-progress .progress-bar span { background: #fff !important; }
+.checklist-column-guide { color: #fff !important; background: linear-gradient(90deg,#064ba9,#087cf0) !important; }
+.checklist-item-number { color: #087cf0 !important; border-color: #a9d3ff !important; background: #edf6ff !important; }
+.checklist-item-copy strong { color: #183c6b !important; }
+.checklist-rating-grid button:hover { color: #087cf0 !important; background: #eff7ff !important; }
+.checklist-rating-grid button.is-selected { color: #075bc8 !important; background: #eaf4ff !important; box-shadow: inset 0 -3px #087cf0 !important; }
+.checklist-rating-grid button.is-selected > span, .checklist-overall-options button.is-selected > span { border-color: #087cf0 !important; background: #087cf0 !important; }
+.checklist-overall-card > div:first-child small, .checklist-comment-card .teacher-comment-card__heading small { color: #087cf0 !important; }
+.checklist-overall-card h2 { color: #063f96 !important; }
+.checklist-overall-options button.is-selected { color: #075bc8 !important; border-color: #76b7ff !important; background: #edf6ff !important; }
+
+/* Blue print sheets. Keep export flat to protect iPhone image colors. */
+.report-page, .checklist-report { color: #173865 !important; background: #fbfdff !important; }
+.report-header { border-top-color: #064ba9 !important; border-bottom-color: #7dbaff !important; background: linear-gradient(135deg,#fafdff,#e8f4ff) !important; }
+.report-header .training-brand__copy small, .report-header .training-brand__copy strong { color: #064ba9 !important; }
+.report-title > small, .report-title h1 { color: #063f96 !important; }
+.report-title > div span { color: #087cf0 !important; }
+.report-title > div i { background: linear-gradient(90deg,transparent,#087cf0) !important; }
+.report-title > div i:last-child { background: linear-gradient(90deg,#087cf0,transparent) !important; }
+.vehicle-category-badge, .checklist-report-header__vehicle { border-color: #77b9ff !important; background: linear-gradient(145deg,#087cf0,#064ba9) !important; }
+.report-section-title, .checklist-report-heading { color: #064ba9 !important; }
+.report-section-title > span, .checklist-report-heading span { border-color: #a7d2ff !important; background: #087cf0 !important; }
+.report-info-grid, .checklist-report-info, .report-comment-signature, .checklist-report-comment { border-color: #badbff !important; box-shadow: 0 7px 15px rgba(8,84,185,.06) !important; }
+.report-info-item b.is-strong, .checklist-report-info b.is-strong { color: #064ba9 !important; }
+.report-table, .checklist-report-table { border-color: #5798df !important; }
+.report-table__header, .checklist-report-table__header { background: linear-gradient(90deg,#064ba9,#087cf0) !important; }
+.report-table__row, .checklist-report-table__row { border-color: #c8e0fb !important; }
+.report-order, .checklist-report-table__row > span:first-child { color: #064ba9 !important; background: #edf6ff !important; }
+.report-lesson-name i { color: #087cf0 !important; border-color: #b8dbff !important; background: #f1f8ff !important; }
+.checklist-report-table__content strong, .report-lesson-name strong { color: #173865 !important; }
+.checklist-report-check i, .checklist-report-overall i { color: #087cf0 !important; border-color: #5e8ec1 !important; }
+.checklist-report-check:has(svg), .checklist-report-overall > div.is-selected { background: #eaf4ff !important; }
+.checklist-report-overall > div.is-selected { color: #064ba9 !important; border-color: #81bbf7 !important; }
+.checklist-report-overall > div.is-selected i { border-color: #087cf0 !important; background: #087cf0 !important; }
+.report-conclusion { border-color: #71b3ff !important; background: linear-gradient(135deg,#052d75,#087cf0) !important; }
+.report-conclusion__content > strong { color: #fff !important; }
+.report-footer, .checklist-report-footer { border-top-color: #69adff !important; background: linear-gradient(90deg,#052d75,#087cf0,#052d75) !important; }
+.report-footer__tagline { color: #fff !important; }
+.report-page.report-export-flat, .report-page.report-export-flat .report-header, .report-page.report-export-flat .checklist-report-header { background: #f8fbff !important; }
+.report-page.report-export-flat .report-header, .report-page.report-export-flat .checklist-report-header { border-top-color: #064ba9 !important; border-bottom-color: #7dbaff !important; }
+.report-page.report-export-flat .report-table__header, .report-page.report-export-flat .checklist-report-table__header { background: #064ba9 !important; }
+.report-page.report-export-flat .report-conclusion, .report-page.report-export-flat .report-footer, .report-page.report-export-flat .checklist-report-footer { background: #064ba9 !important; }
+
+@media (max-width: 760px) {
+  .app-header { min-height: 90px !important; }
+  .app-header__inner { min-height: 90px !important; width: min(100% - 22px, var(--page-max)) !important; }
+  .app-header__top { min-height: 53px !important; }
+  .app-header .training-brand--compact .training-brand__mark { width: 43px !important; height: 43px !important; }
+  .app-privacy { width: 38px; height: 38px; overflow: hidden; font-size: 0 !important; padding: 0 !important; justify-content: center; }
+  .app-privacy svg { width: 19px; height: 19px; }
+  .stepper__label { font-size: 8px !important; }
+  .vehicle-hero { width: min(100% - 24px, 560px) !important; min-height: auto !important; grid-template-columns: 1fr !important; gap: 25px !important; padding: 34px 0 30px !important; }
+  .vehicle-hero__copy { text-align: center; }
+  .vehicle-hero__copy h1 { font-size: 32px !important; }
+  .vehicle-hero__copy p { font-size: 14px !important; }
+  .hero-points { justify-content: center; }
+  .vehicle-selector-panel { padding: 16px !important; }
+  .vehicle-card-grid { grid-template-columns: 1fr !important; }
+  .vehicle-card { min-height: 210px !important; }
+  .training-option-grid { grid-template-columns: 1fr !important; }
+  .training-option { min-height: 205px !important; }
+  .training-option > strong { font-size: 22px !important; }
+  .info-card { border-radius: 18px !important; }
+  .field input, .date-input-control { min-height: 54px !important; font-size: 16px !important; }
+  .checklist-shell { background: #f6faff !important; }
+  .checklist-progress { border-radius: 14px !important; }
+}
+
+/* =========================================================
    BẢN CHỈNH PHIẾU ĐÁNH GIÁ – 04/08/2026
    - Giữ nguyên logo và bộ nhận diện
    - Thu gọn phần đầu và phần ký tên
@@ -1602,7 +1792,7 @@ textarea:focus-visible { outline-color: rgba(10, 138, 72, .28); }
 /* =========================================================
    BẢN CHỈNH V2 – CHỮ LỚN KHI XUẤT PNG
    Áp dụng cho phiếu sát hạch sa hình 1080 x 1920
-   Giữ nguyên logo Phú Giáo
+   Giữ nguyên logo trung tâm
    ========================================================= */
 
 /* Giữ đúng kích thước ảnh xuất */
@@ -2303,7 +2493,7 @@ textarea:focus-visible { outline-color: rgba(10, 138, 72, .28); }
 }
 
 /* =========================================================
-   V6 — FOOTER TRẮNG PHÚ GIÁO HOÀN CHỈNH
+   V6 — NỀN TẢNG FOOTER PHIẾU
    Logo + AN TOÀN + TRÁCH NHIỆM + VỮNG TAY LÁI
    ========================================================= */
 
@@ -6392,3 +6582,346 @@ textarea:focus-visible { outline-color: rgba(10, 138, 72, .28); }
     max-height: 270px !important;
   }
 }
+
+/* LINH XUÂN final cascade — deliberately last, including report export. */
+:root { --navy-950:#052d75; --navy-900:#063f96; --navy-800:#075bc8; --navy-700:#087cf0; --gold:#1687ff; --gold-light:#d9efff; --green:#119a55; --ink:#102a54; }
+body, .app-shell { color:#102a54 !important; background:#f5f9ff !important; }
+.app-header { color:#063f96 !important; border-bottom:1px solid #b8d9ff !important; background:rgba(255,255,255,.98) !important; }
+.app-header .training-brand__copy small, .training-brand__copy small { color:#075bc8 !important; }
+.app-header .training-brand__copy strong, .training-brand__copy strong { color:#063f96 !important; }
+.training-brand__mark { overflow:visible !important; border:0 !important; border-radius:0 !important; background:transparent !important; box-shadow:none !important; }
+.training-brand__mark img { width:100% !important; height:100% !important; object-fit:contain !important; border-radius:0 !important; }
+.app-privacy { color:#075bc8 !important; border-color:#cce4ff !important; background:#f2f8ff !important; }
+.stepper__item { color:#6281ac !important; }.stepper__item::before { border-color:#b7d7ff !important; }.stepper__number { color:#326baf !important; border-color:#b8d8ff !important; background:#fff !important; }.stepper__item.is-done .stepper__number,.stepper__item.is-active .stepper__number { color:#fff !important;border-color:#087cf0 !important;background:#087cf0 !important; }.stepper__item.is-active .stepper__label,.stepper__item.is-done .stepper__label {color:#064ba9 !important;}
+.site-footer { border-top-color:#4aa0ff !important; background:linear-gradient(100deg,#052d75,#087cf0,#05357f) !important; }.site-footer .training-brand__copy strong,.site-footer .training-brand__copy small,.site-footer__values span {color:#fff !important;}
+.vehicle-page { background:#edf6ff url('./hinhanh/linh-xuan-road-bg.png') center / cover no-repeat !important; }.vehicle-page::before {background:linear-gradient(100deg,rgba(246,251,255,.98),rgba(247,252,255,.85),rgba(237,247,255,.68)) !important;}.vehicle-hero__copy h1,.page-heading h1 {color:#063f96 !important;}.vehicle-hero__eyebrow,.page-heading span {color:#087cf0 !important;}.vehicle-hero__copy p,.page-heading p {color:#466995 !important;}.hero-points svg {color:#087cf0 !important;}.hero-points span {border-color:#d1e6ff !important;background:rgba(255,255,255,.85) !important;}
+.vehicle-selector-panel,.info-card,.teacher-comment-card,.lesson-card,.checklist-item-card,.checklist-overall-card,.report-preview-heading,.conclusion-control {border-color:#badbff !important;background:#fff !important;box-shadow:0 12px 28px rgba(9,79,164,.08) !important;}.panel-heading,.panel-heading small {color:#087cf0 !important;}.panel-heading__number {color:#fff !important;border-color:#fff !important;background:#087cf0 !important;box-shadow:0 0 0 5px #d9ecff !important;}
+.vehicle-card {color:#123765 !important;border-color:#9bcaff !important;background:linear-gradient(180deg,#fff,#f4f9ff) !important;box-shadow:0 10px 20px rgba(25,91,181,.1) !important;}.vehicle-card:hover {border-color:#087cf0 !important;box-shadow:0 18px 30px rgba(7,91,200,.18) !important;}.vehicle-card__popular,.vehicle-card__arrow {color:#fff !important;background:#087cf0 !important;}.vehicle-card__badge--illustration {color:#087cf0 !important;border-color:#aed5ff !important;background:#eef7ff !important;}.vehicle-card__content small,.vehicle-card__content span {color:#4b84c8 !important;}.vehicle-card__content h3 {color:#075bc8 !important;}.vehicle-card__content p {color:#60799b !important;}
+.training-option {color:#123765 !important;border-color:#9ccaff !important;background:linear-gradient(135deg,#fff,#eff7ff) !important;box-shadow:0 14px 31px rgba(14,84,175,.1) !important;}.training-option__icon {color:#087cf0 !important;border-color:#a7d1ff !important;background:#eaf4ff !important;}.training-option__tag {color:#087cf0 !important;border-color:#a7d1ff !important;background:#f7fbff !important;}.training-option>strong {color:#063f96 !important;}.training-option>small {color:#5d7595 !important;}.training-option__action {color:#087cf0 !important;}
+.button--primary {background:linear-gradient(135deg,#087cf0,#064ba9) !important;box-shadow:0 12px 24px rgba(6,75,169,.25) !important;}.button--ghost,.button--outline {color:#075bc8 !important;border-color:#a7d0ff !important;background:#fff !important;}.vehicle-summary,.checklist-progress,.checklist-column-guide {background:linear-gradient(120deg,#064ba9,#087cf0) !important;}.vehicle-summary {border-bottom-color:#77b9ff !important;}.field>span,.field>span svg {color:#087cf0 !important;}.field input,.date-input-control {border-color:#b4d7ff !important;background:#fbfdff !important;}.field input:focus {border-color:#087cf0 !important;box-shadow:0 0 0 3px rgba(8,124,240,.12) !important;}.form-note {color:#16518c !important;border-color:#b9dcff !important;background:#f2f8ff !important;}.form-note svg {color:#087cf0 !important;}
+.evaluation-page,.checklist-shell {background:linear-gradient(180deg,#eaf4ff 0 430px,#f8fbff 430px) !important;}.lesson-card__header {color:#063f96 !important;background:#f5faff !important;}.lesson-index {color:#fff !important;border-color:#fff !important;background:#087cf0 !important;box-shadow:0 0 0 4px #dceeff !important;}.lesson-symbol,.checklist-item-number {color:#087cf0 !important;border-color:#a9d3ff !important;background:#edf6ff !important;}.comment-icon {color:#fff !important;background:#087cf0 !important;}.teacher-comment-card__heading h2,.evaluation-actions__note strong,.checklist-overall-card h2 {color:#063f96 !important;}.checklist-rating-grid button.is-selected {color:#075bc8 !important;background:#eaf4ff !important;box-shadow:inset 0 -3px #087cf0 !important;}.checklist-rating-grid button.is-selected>span,.checklist-overall-options button.is-selected>span {border-color:#087cf0 !important;background:#087cf0 !important;}
+.report-page,.checklist-report {color:#173865 !important;background:#fbfdff !important;}.report-header,.checklist-report-header {border-top-color:#064ba9 !important;border-bottom-color:#7dbaff !important;background:linear-gradient(135deg,#fafdff,#e8f4ff) !important;}.report-header .training-brand__copy small,.report-header .training-brand__copy strong {color:#064ba9 !important;}.report-title>small,.report-title h1,.checklist-report-header__title small,.checklist-report-header__title h1 {color:#063f96 !important;}.report-title>div span {color:#087cf0 !important;}.vehicle-category-badge,.checklist-report-header__vehicle {border-color:#77b9ff !important;background:linear-gradient(145deg,#087cf0,#064ba9) !important;}.report-section-title,.checklist-report-heading {color:#064ba9 !important;}.report-section-title>span,.checklist-report-heading span {border-color:#a7d2ff !important;background:#087cf0 !important;}.report-info-grid,.checklist-report-info,.report-comment-signature,.checklist-report-comment {border-color:#badbff !important;}.report-info-item b.is-strong,.checklist-report-info b.is-strong {color:#064ba9 !important;}.report-table,.checklist-report-table {border-color:#5798df !important;}.report-table__header,.checklist-report-table__header {background:linear-gradient(90deg,#064ba9,#087cf0) !important;}.report-table__row,.checklist-report-table__row {border-color:#c8e0fb !important;}.report-order,.checklist-report-table__row>span:first-child {color:#064ba9 !important;background:#edf6ff !important;}.report-lesson-name i {color:#087cf0 !important;border-color:#b8dbff !important;background:#f1f8ff !important;}.checklist-report-check i,.checklist-report-overall i {color:#087cf0 !important;}.report-conclusion {border-color:#71b3ff !important;background:linear-gradient(135deg,#052d75,#087cf0) !important;}.report-footer,.checklist-report-footer {border-top-color:#69adff !important;background:linear-gradient(90deg,#052d75,#087cf0,#052d75) !important;}.report-footer__tagline {color:#fff !important;}.report-page.report-export-flat,.report-page.report-export-flat .report-header,.report-page.report-export-flat .checklist-report-header {background:#f8fbff !important;}.report-page.report-export-flat .report-table__header,.report-page.report-export-flat .checklist-report-table__header,.report-page.report-export-flat .report-conclusion,.report-page.report-export-flat .report-footer,.report-page.report-export-flat .checklist-report-footer {background:#064ba9 !important;}
+@media (max-width:760px){.app-header .training-brand--compact .training-brand__mark{width:43px!important;height:43px!important}.app-privacy{width:38px!important;height:38px!important;overflow:hidden!important;font-size:0!important;padding:0!important;justify-content:center!important}.vehicle-hero{grid-template-columns:1fr!important;padding:34px 0 30px!important}.vehicle-hero__copy{text-align:center}.vehicle-hero__copy h1{font-size:32px!important}.vehicle-card-grid,.training-option-grid{grid-template-columns:1fr!important}.vehicle-card{min-height:210px!important}.field input,.date-input-control{min-height:54px!important;font-size:16px!important}.checklist-shell{background:#f6faff!important}}
+
+.report-page:not(.checklist-report) .report-section-title { color:#fff !important; background:linear-gradient(90deg,#064ba9,#087cf0) !important; }
+.report-page:not(.checklist-report) .report-section-title > span { color:#fff !important; border-color:#b8dcff !important; background:#087cf0 !important; box-shadow:0 0 0 3px #f5faff !important; }
+.report-page:not(.checklist-report) .report-teacher-comment > svg,
+.report-page:not(.checklist-report) .report-teacher-comment strong,
+.report-page:not(.checklist-report) .report-signature > strong { color:#064ba9 !important; }
+.report-page.report-export-flat:not(.checklist-report) .report-section-title { background:#064ba9 !important; }
+.report-page:not(.checklist-report) .report-vehicle-badge,
+.report-page.checklist-report .checklist-report-header__vehicle { color:#fff !important; border-color:#77b9ff !important; background:#064ba9 !important; box-shadow:inset 0 0 0 3px rgba(255,255,255,.14),0 10px 20px rgba(5,82,160,.18) !important; }
+.report-page:not(.checklist-report) .report-info-grid,
+.report-page:not(.checklist-report) .report-comment-signature { background:#fff !important; }
+
+/* =========================================================
+   LINH XUÂN ENTERPRISE UI — responsive assessment workspace
+   ========================================================= */
+html, body, #root { width:100%; max-width:100%; overflow-x:clip; }
+*, *::before, *::after { box-sizing:border-box; }
+.content-page { width:min(1240px, calc(100% - 32px)) !important; min-width:0 !important; }
+.evaluation-shell,
+.checklist-shell { background:linear-gradient(180deg,#f1f7ff 0,#f8fbff 390px,#f8fbff 100%) !important; }
+.evaluation-page,
+.checklist-page { min-width:0 !important; padding-top:28px !important; }
+
+/* Premium blue intro banner */
+.evaluation-shell .evaluation-intro,
+.checklist-shell .checklist-intro {
+  position:relative !important;
+  overflow:hidden !important;
+  margin:0 0 22px !important;
+  padding:25px 28px 24px !important;
+  color:#fff !important;
+  border:1px solid rgba(255,255,255,.32) !important;
+  border-radius:24px !important;
+  background:linear-gradient(120deg,#063d99 0%,#087cf0 58%,#33a2ff 100%) !important;
+  box-shadow:0 18px 42px rgba(5,76,170,.22) !important;
+}
+.evaluation-shell .evaluation-intro::after,
+.checklist-shell .checklist-intro::after {
+  content:'';
+  position:absolute;
+  width:330px;
+  height:330px;
+  right:-165px;
+  top:-220px;
+  border:1px solid rgba(255,255,255,.27);
+  border-radius:50%;
+  box-shadow:0 0 0 42px rgba(255,255,255,.055),0 0 0 82px rgba(255,255,255,.035);
+  pointer-events:none;
+}
+.evaluation-shell .evaluation-intro .page-heading,
+.checklist-shell .checklist-intro .page-heading { position:relative !important; z-index:1 !important; min-height:86px !important; margin:0 0 18px !important; gap:16px !important; }
+.evaluation-shell .evaluation-intro .page-heading span,
+.checklist-shell .checklist-intro .page-heading span { color:#dcedff !important; font-size:11px !important; letter-spacing:1.8px !important; text-shadow:none !important; }
+.evaluation-shell .evaluation-intro .page-heading h1,
+.checklist-shell .checklist-intro .page-heading h1 { margin:4px 0 5px !important; color:#fff !important; font-size:32px !important; line-height:1.16 !important; text-shadow:0 2px 10px rgba(0,38,100,.2) !important; }
+.evaluation-shell .evaluation-intro .page-heading p,
+.checklist-shell .checklist-intro .page-heading p { color:rgba(255,255,255,.88) !important; font-size:13px !important; text-shadow:none !important; }
+.evaluation-shell .evaluation-intro .page-heading__number,
+.checklist-shell .checklist-intro .page-heading__number { width:62px !important; height:62px !important; color:#075bc8 !important; border:4px solid rgba(255,255,255,.75) !important; background:#fff !important; box-shadow:0 0 0 6px rgba(255,255,255,.16),0 9px 22px rgba(1,51,128,.22) !important; }
+
+/* Progress cards */
+.evaluation-shell .evaluation-progress-card,
+.checklist-shell .checklist-progress { position:relative !important; z-index:1 !important; min-width:0 !important; margin:0 !important; color:#153a69 !important; border:1px solid rgba(255,255,255,.72) !important; border-radius:18px !important; background:rgba(255,255,255,.96) !important; box-shadow:0 10px 25px rgba(3,55,125,.12) !important; }
+.checklist-shell .checklist-progress { min-height:92px !important; grid-template-columns:160px minmax(90px,1fr) auto !important; gap:20px !important; padding:17px 20px !important; }
+.checklist-shell .checklist-progress > div:first-child strong { color:#075bc8 !important; }
+.checklist-shell .checklist-progress > div:first-child span { color:#637a99 !important; }
+.checklist-shell .checklist-progress .progress-bar,
+.evaluation-shell .progress-bar { background:#dcecff !important; }
+.checklist-shell .checklist-progress .progress-bar span,
+.evaluation-shell .progress-bar span { background:linear-gradient(90deg,#087cf0,#5cb3ff) !important; }
+.checklist-shell .checklist-progress > button,
+.evaluation-shell .evaluation-progress-card > button { color:#075bc8 !important; border-color:#8bc4ff !important; background:linear-gradient(180deg,#fff,#edf6ff) !important; box-shadow:0 5px 13px rgba(7,91,200,.1) !important; }
+.checklist-shell .checklist-progress > button:hover,
+.evaluation-shell .evaluation-progress-card > button:hover { color:#fff !important; border-color:#087cf0 !important; background:linear-gradient(135deg,#1687ff,#065ec7) !important; }
+.evaluation-shell .progress-ring { background:conic-gradient(#087cf0 var(--progress),#dcecff 0) !important; }
+.evaluation-shell .progress-ring > div { color:#075bc8 !important; background:#fff !important; }
+.evaluation-shell .progress-copy small { color:#087cf0 !important; }
+.evaluation-shell .progress-copy strong { color:#153a69 !important; }
+
+/* Checklist workspace */
+.checklist-shell .checklist-column-guide { color:#fff !important; border-color:#68adff !important; background:linear-gradient(90deg,#064ba9,#087cf0) !important; box-shadow:0 8px 20px rgba(6,75,169,.16) !important; }
+.checklist-shell .checklist-column-guide > span { color:#fff !important; text-shadow:none !important; }
+.checklist-shell .checklist-item-card { min-width:0 !important; border-color:#b7d8fb !important; background:#fff !important; box-shadow:0 7px 20px rgba(10,78,158,.075) !important; }
+.checklist-shell .checklist-item-card:hover { border-color:#6eb2fa !important; box-shadow:0 12px 27px rgba(10,78,158,.12) !important; }
+.checklist-shell .checklist-item-copy { min-width:0 !important; background:linear-gradient(90deg,#fff,#f8fbff) !important; }
+.checklist-shell .checklist-item-number { color:#075bc8 !important; border-color:#9bcaff !important; background:linear-gradient(145deg,#fff,#eaf4ff) !important; box-shadow:0 4px 10px rgba(7,91,200,.1) !important; }
+.checklist-shell .checklist-item-copy strong { color:#153a69 !important; }
+.checklist-shell .checklist-item-copy small { color:#6b7e99 !important; }
+.checklist-shell .checklist-rating-grid { min-width:0 !important; max-width:100% !important; }
+.checklist-shell .checklist-rating-grid button { color:#617792 !important; border-color:#d1e4fa !important; background:#fbfdff !important; }
+.checklist-shell .checklist-rating-grid button:hover { color:#075bc8 !important; background:#eff7ff !important; }
+.checklist-shell .checklist-rating-grid button > span { border-color:#88a5c2 !important; background:#fff !important; }
+.checklist-shell .checklist-rating-grid button.tone-green.is-selected { color:#08713b !important; background:#e9f8ee !important; box-shadow:inset 0 -3px #109650 !important; }
+.checklist-shell .checklist-rating-grid button.tone-green.is-selected > span { color:#fff !important; border-color:#109650 !important; background:#109650 !important; }
+.checklist-shell .checklist-rating-grid button.tone-orange.is-selected { color:#bd6509 !important; background:#fff6e9 !important; box-shadow:inset 0 -3px #ef8a14 !important; }
+.checklist-shell .checklist-rating-grid button.tone-orange.is-selected > span { color:#fff !important; border-color:#ef8a14 !important; background:#ef8a14 !important; }
+.checklist-shell .checklist-rating-grid button.tone-red.is-selected { color:#bd2930 !important; background:#fff1f2 !important; box-shadow:inset 0 -3px #e2383e !important; }
+.checklist-shell .checklist-rating-grid button.tone-red.is-selected > span { color:#fff !important; border-color:#e2383e !important; background:#e2383e !important; }
+
+/* Overall and comments */
+.checklist-shell .checklist-overall-card,
+.checklist-shell .checklist-comment-card,
+.evaluation-shell .teacher-comment-card { border-color:#b8d9fb !important; background:#fff !important; box-shadow:0 10px 27px rgba(9,76,155,.08) !important; }
+.checklist-shell .checklist-overall-card > div:first-child small,
+.checklist-shell .checklist-comment-card .teacher-comment-card__heading small,
+.evaluation-shell .teacher-comment-card__heading small { color:#087cf0 !important; }
+.checklist-shell .checklist-overall-card h2,
+.checklist-shell .checklist-comment-card .teacher-comment-card__heading h2,
+.evaluation-shell .teacher-comment-card__heading h2 { color:#153a69 !important; }
+.checklist-shell .checklist-overall-options button { color:#526c8b !important; border-color:#ccdef3 !important; background:#fbfdff !important; }
+.checklist-shell .checklist-overall-options button.is-selected { border-color:#087cf0 !important; box-shadow:0 0 0 2px rgba(8,124,240,.1) !important; }
+.checklist-shell .checklist-comment-card textarea,
+.evaluation-shell .teacher-comment-card textarea { color:#284a74 !important; border-color:#c3dcf8 !important; background:#fbfdff !important; }
+.checklist-shell .checklist-comment-card textarea:focus,
+.evaluation-shell .teacher-comment-card textarea:focus { border-color:#087cf0 !important; box-shadow:0 0 0 3px rgba(8,124,240,.1) !important; }
+.quick-comments button { color:#2c609c !important; border-color:#c5ddf7 !important; background:#f6faff !important; }
+.quick-comments button:hover,.quick-comments button.is-added { color:#fff !important; border-color:#087cf0 !important; background:#087cf0 !important; }
+
+/* Course lesson detail cards */
+.evaluation-shell .lesson-card { border-color:#b8d9fb !important; box-shadow:0 9px 25px rgba(9,76,155,.075) !important; }
+.evaluation-shell .lesson-card__header { border-color:#d0e6ff !important; background:linear-gradient(90deg,#f4f9ff,#fff) !important; }
+.evaluation-shell .lesson-title span { color:#087cf0 !important; }
+.evaluation-shell .lesson-title h3 { color:#153a69 !important; }
+.evaluation-shell .focus-line { color:#30597f !important; border-color:#bedcf9 !important; background:#f3f8ff !important; }
+.evaluation-shell .focus-line svg,.evaluation-shell .focus-line strong,
+.evaluation-shell .section-mini-title svg,.evaluation-shell .section-mini-title span,
+.evaluation-shell .lesson-note > svg,.evaluation-shell .lesson-note > span { color:#087cf0 !important; }
+.evaluation-shell .error-option { color:#496784 !important; border-color:#d2e3f5 !important; background:#fff !important; }
+.evaluation-shell .lesson-note input { border-color:#c6dcf4 !important; background:#fbfdff !important; }
+.evaluation-shell .section-divider span { color:#075bc8 !important; border-color:#a8d2ff !important; background:#eaf4ff !important; }
+
+/* Sticky action bar and primary CTA */
+.evaluation-actions,
+.checklist-shell .evaluation-actions { width:100% !important; max-width:100% !important; min-width:0 !important; border-color:#b6d7fa !important; background:rgba(255,255,255,.97) !important; box-shadow:0 16px 38px rgba(6,63,145,.16) !important; backdrop-filter:blur(16px) !important; }
+.checklist-shell .evaluation-actions__note,
+.evaluation-shell .evaluation-actions__note { color:#6b7e98 !important; }
+.checklist-shell .evaluation-actions__note strong,
+.evaluation-shell .evaluation-actions__note strong { color:#075bc8 !important; }
+.checklist-shell .button--green { color:#fff !important; border-color:#087cf0 !important; background:linear-gradient(135deg,#1687ff,#065ec7) !important; box-shadow:0 10px 22px rgba(6,94,199,.24) !important; }
+
+/* Corporate footer with road-like blue waves */
+.site-footer { width:100% !important; max-width:100% !important; min-width:0 !important; position:relative !important; overflow:hidden !important; color:#fff !important; border-top:3px solid #7fc0ff !important; background:linear-gradient(120deg,#063b91,#087cf0 52%,#0644a3) !important; }
+.site-footer::before { content:''; position:absolute; width:70%; height:140px; right:-10%; top:-95px; border:2px solid rgba(255,255,255,.5); border-radius:50%; box-shadow:0 0 0 18px rgba(255,255,255,.045),0 0 0 45px rgba(255,255,255,.025); pointer-events:none; }
+.site-footer .training-brand { min-width:0 !important; position:relative; z-index:1; }
+.site-footer__values { min-width:0 !important; flex:1 1 auto !important; position:relative; z-index:1; }
+.site-footer__values span,.site-footer__values strong,.site-footer__values svg { color:#fff !important; }
+
+@media (max-width:1100px) {
+  .site-footer { align-items:center !important; flex-direction:column !important; gap:18px !important; }
+  .site-footer__values { width:100% !important; }
+}
+
+@media (max-width:768px) {
+  .content-page { width:calc(100% - 20px) !important; padding:18px 0 92px !important; }
+  .evaluation-page,.checklist-page { overflow:visible !important; }
+  .evaluation-shell .evaluation-intro,.checklist-shell .checklist-intro { margin-bottom:14px !important; padding:18px 15px 16px !important; border-radius:19px !important; }
+  .evaluation-shell .evaluation-intro .page-heading,.checklist-shell .checklist-intro .page-heading { min-height:70px !important; margin-bottom:14px !important; gap:11px !important; }
+  .evaluation-shell .evaluation-intro .page-heading__number,.checklist-shell .checklist-intro .page-heading__number { width:48px !important; height:48px !important; flex:0 0 48px !important; border-width:3px !important; font-size:14px !important; }
+  .evaluation-shell .evaluation-intro .page-heading h1,.checklist-shell .checklist-intro .page-heading h1 { font-size:21px !important; line-height:1.2 !important; }
+  .evaluation-shell .evaluation-intro .page-heading span,.checklist-shell .checklist-intro .page-heading span { font-size:8px !important; letter-spacing:1.25px !important; }
+  .evaluation-shell .evaluation-intro .page-heading p,.checklist-shell .checklist-intro .page-heading p { font-size:10px !important; line-height:1.5 !important; }
+  .checklist-shell .checklist-progress { grid-template-columns:1fr !important; gap:11px !important; padding:14px !important; }
+  .checklist-shell .checklist-progress > div:first-child { justify-content:center !important; }
+  .checklist-shell .checklist-progress > button { width:100% !important; min-height:46px !important; justify-content:center !important; }
+  .checklist-shell .checklist-item-card { grid-template-columns:minmax(0,1fr) !important; border-radius:15px !important; }
+  .checklist-shell .checklist-item-copy { min-height:72px !important; padding:11px 12px !important; }
+  .checklist-shell .checklist-item-number { width:42px !important; height:42px !important; flex:0 0 42px !important; font-size:12px !important; }
+  .checklist-shell .checklist-item-copy strong { font-size:13px !important; line-height:1.35 !important; }
+  .checklist-shell .checklist-rating-grid--3,.checklist-shell .checklist-rating-grid--4 { width:100% !important; max-width:100% !important; grid-template-columns:repeat(var(--mobile-rating-count,3),minmax(0,1fr)) !important; }
+  .checklist-shell .checklist-rating-grid--4 { --mobile-rating-count:4; }
+  .checklist-shell .checklist-rating-grid button { min-width:0 !important; min-height:62px !important; padding:7px 2px !important; border-top:1px solid #d1e4fa !important; }
+  .checklist-shell .checklist-rating-grid button small { font-size:9px !important; line-height:1.2 !important; }
+  .checklist-shell .checklist-overall-card,.checklist-shell .checklist-comment-card,.evaluation-shell .teacher-comment-card { margin-top:14px !important; padding:17px !important; border-radius:17px !important; }
+  .checklist-shell .checklist-overall-card h2,.checklist-shell .checklist-comment-card .teacher-comment-card__heading h2 { font-size:19px !important; }
+  .checklist-shell .evaluation-actions,.evaluation-shell .evaluation-actions { bottom:8px !important; display:grid !important; grid-template-columns:minmax(0,.9fr) minmax(0,1.2fr) !important; gap:9px !important; padding:10px !important; border-radius:17px !important; }
+  .checklist-shell .evaluation-actions__note,.evaluation-shell .evaluation-actions__note { grid-column:1 / -1 !important; grid-row:1 !important; justify-content:center !important; min-height:28px !important; }
+  .checklist-shell .evaluation-actions button,.evaluation-shell .evaluation-actions button { width:100% !important; min-width:0 !important; min-height:50px !important; padding:0 9px !important; font-size:11px !important; }
+  .evaluation-shell .evaluation-progress-card { grid-template-columns:auto minmax(0,1fr) !important; gap:12px !important; padding:14px !important; }
+  .evaluation-shell .evaluation-progress-card > button { grid-column:1 / -1 !important; width:100% !important; justify-content:center !important; }
+  .site-footer { padding:20px 14px 17px !important; }
+  .site-footer__values { grid-template-columns:repeat(3,minmax(0,1fr)) !important; }
+  .site-footer__values > span { min-width:0 !important; }
+}
+
+/* ================================================================
+   LINH XUÂN FINAL POLISH — blue/white brand, accessible mobile flow
+   ================================================================ */
+
+/* Remove the last inherited green accents from the working screens. */
+.checklist-shell .checklist-intro .page-heading--light .page-heading__number {
+  color:#075bc8 !important;
+  border-color:rgba(255,255,255,.82) !important;
+  background:#fff !important;
+  box-shadow:0 0 0 6px rgba(255,255,255,.16),0 9px 22px rgba(1,51,128,.22) !important;
+}
+.evaluation-shell .progress-ring strong { color:#075bc8 !important; }
+.evaluation-shell .progress-ring span { color:#6b7e98 !important; }
+.quick-comments button > span { color:inherit !important; }
+.evaluation-shell .section-mini-title { color:#30597f !important; }
+.evaluation-shell .lesson-note { color:#496784 !important; }
+.checklist-shell .checklist-overall-options button > span {
+  border-color:#88a5c2 !important;
+  background:#fff !important;
+}
+.checklist-shell .checklist-overall-options button.is-selected > span { color:#fff !important; }
+.checklist-shell .checklist-overall-options button.tone-green.is-selected { color:#08713b !important; border-color:#74c592 !important; background:#eaf8ef !important; }
+.checklist-shell .checklist-overall-options button.tone-green.is-selected > span { border-color:#109650 !important; background:#109650 !important; }
+.checklist-shell .checklist-overall-options button.tone-orange.is-selected { color:#bd6509 !important; border-color:#efb363 !important; background:#fff6e9 !important; }
+.checklist-shell .checklist-overall-options button.tone-orange.is-selected > span { border-color:#ef8a14 !important; background:#ef8a14 !important; }
+.checklist-shell .checklist-overall-options button.tone-red.is-selected { color:#bd2930 !important; border-color:#eb8b91 !important; background:#fff1f2 !important; }
+.checklist-shell .checklist-overall-options button.tone-red.is-selected > span { border-color:#e2383e !important; background:#e2383e !important; }
+
+/* Preview workspace: one consistent enterprise-blue surface. */
+.report-preview-page { background:linear-gradient(180deg,#edf6ff 0,#f8fbff 360px) !important; }
+.report-preview-heading { border-color:#badbff !important; background:#fff !important; }
+.report-preview-heading span { color:#087cf0 !important; }
+.report-preview-heading h1 { color:#063f96 !important; }
+.report-preview-heading > button { color:#075bc8 !important; border-color:#9bcaff !important; background:#f7fbff !important; }
+.report-preview-heading > button:hover { color:#fff !important; border-color:#087cf0 !important; background:#087cf0 !important; }
+.conclusion-control { border-color:#badbff !important; background:#fff !important; }
+.conclusion-control > strong { color:#063f96 !important; }
+.conclusion-options button { color:#45688f !important; border-color:#c8def6 !important; background:#f9fcff !important; }
+.conclusion-options button.is-selected { color:#064ba9 !important; border-color:#75b9ff !important; background:#eaf4ff !important; box-shadow:0 0 0 2px rgba(8,124,240,.08) !important; }
+.report-preview-canvas { border-color:#a9d2ff !important; background:#f8fbff !important; box-shadow:0 25px 64px rgba(5,67,151,.15) !important; }
+.export-action-bar { border-color:#b9d8f8 !important; background:#fff !important; box-shadow:0 12px 30px rgba(5,67,151,.1) !important; }
+.ios-save-guide { color:#315f91 !important; border-color:#badbff !important; background:#eef7ff !important; }
+.ios-save-guide svg,.export-message svg { color:#087cf0 !important; }
+.export-message,.export-quality-banner { color:#305f91 !important; border-color:#badbff !important; background:#eef7ff !important; }
+
+/* Printed / downloaded report neutral branding. Status colors remain semantic. */
+.report-header::after,
+.report-page--basic .report-header::after {
+  background:#f8fbff !important;
+  border-top-color:#7dbaff !important;
+}
+.report-title > div i,
+.report-conclusion__content small i { background:linear-gradient(90deg,transparent,#78baff) !important; }
+.report-title > div i:last-child,
+.report-conclusion__content small i:last-child { background:linear-gradient(90deg,#78baff,transparent) !important; }
+.report-conclusion__medal { color:#075bc8 !important; border-color:#8bc4ff !important; background:linear-gradient(145deg,#fff,#cfe8ff) !important; }
+
+.checklist-report-header__title p { color:#3373b7 !important; }
+.checklist-report-info span { color:#627b99 !important; }
+.checklist-report-info b { color:#173865 !important; }
+.checklist-report-table__content strong { color:#173865 !important; }
+.checklist-report-table__content small { color:#6b7e98 !important; }
+.checklist-report-overall > div { color:#5d7290 !important; border-color:#c6dcf4 !important; background:#fff !important; }
+.checklist-report-comment > svg { color:#087cf0 !important; }
+.checklist-report-comment > p { color:#3f5d7e !important; }
+.checklist-report-comment > div { border-left-color:#b7d3ef !important; }
+.checklist-report-comment > div small { color:#075bc8 !important; }
+.checklist-report-comment > div strong { color:#173865 !important; border-bottom-color:#7899bd !important; }
+.report-page.checklist-report .checklist-report-header__title p { color:#3373b7 !important; }
+.report-page.checklist-report .checklist-report-info span { color:#627b99 !important; }
+.report-page.checklist-report .checklist-report-info b { color:#173865 !important; }
+.report-page.checklist-report .checklist-report-table__content strong { color:#173865 !important; }
+.report-page.checklist-report .checklist-report-table__content small { color:#6b7e98 !important; }
+.report-page.checklist-report .checklist-report-comment > svg { color:#087cf0 !important; }
+.report-page.checklist-report .checklist-report-comment > p { color:#3f5d7e !important; }
+.report-page.checklist-report .checklist-report-comment > div { border-left-color:#b7d3ef !important; }
+.report-page.checklist-report .checklist-report-comment > div small { color:#075bc8 !important; }
+.report-page.checklist-report .checklist-report-comment > div strong { color:#173865 !important; border-bottom-color:#7899bd !important; }
+
+.checklist-report-check.is-selected i,
+.checklist-report-overall > div.is-selected i { color:#fff !important; }
+.checklist-report-check.is-selected.tone-green { background:#eaf8ef !important; }
+.checklist-report-check.is-selected.tone-green i,
+.checklist-report-overall > div.is-selected.tone-green i { border-color:#109650 !important; background:#109650 !important; }
+.checklist-report-check.is-selected.tone-orange { background:#fff6e9 !important; }
+.checklist-report-check.is-selected.tone-orange i,
+.checklist-report-overall > div.is-selected.tone-orange i { border-color:#ef8a14 !important; background:#ef8a14 !important; }
+.checklist-report-check.is-selected.tone-red { background:#fff1f2 !important; }
+.checklist-report-check.is-selected.tone-red i,
+.checklist-report-overall > div.is-selected.tone-red i { border-color:#e2383e !important; background:#e2383e !important; }
+.checklist-report-overall > div.is-selected.tone-green { color:#08713b !important; border-color:#74c592 !important; background:#eaf8ef !important; }
+.checklist-report-overall > div.is-selected.tone-orange { color:#bd6509 !important; border-color:#efb363 !important; background:#fff6e9 !important; }
+.checklist-report-overall > div.is-selected.tone-red { color:#bd2930 !important; border-color:#eb8b91 !important; background:#fff1f2 !important; }
+
+.report-page.report-export-flat .report-header::after { background:#f8fbff !important; border-top-color:#7dbaff !important; }
+.report-page.report-export-flat .report-title > div i,
+.report-page.report-export-flat .report-conclusion__content small i { background:#78baff !important; }
+.report-page.report-export-flat .report-conclusion__medal { color:#075bc8 !important; border-color:#8bc4ff !important; background:#dceeff !important; }
+
+/* On phones and compact tablets, actions stay in document flow so no card is hidden. */
+@media (max-width:1100px) {
+  .evaluation-shell .evaluation-actions,
+  .checklist-shell .evaluation-actions {
+    position:static !important;
+    inset:auto !important;
+    margin-top:20px !important;
+    transform:none !important;
+  }
+}
+
+@media (max-width:360px) {
+  .report-preview-heading { align-items:flex-start !important; flex-direction:column !important; }
+  .report-preview-heading > button { width:100% !important; justify-content:center !important; }
+}
+
+.app-loading {
+  width:100%;
+  min-height:100vh;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  flex-direction:column;
+  gap:9px;
+  color:#064ba9;
+  background:radial-gradient(circle at 50% 38%,#fff 0,#edf6ff 58%,#ddecff 100%);
+  font-family:'Be Vietnam Pro',sans-serif;
+}
+.app-loading__mark {
+  width:54px;
+  height:54px;
+  border:5px solid #cce5ff;
+  border-top-color:#087cf0;
+  border-radius:50%;
+  animation:linh-xuan-loading .8s linear infinite;
+}
+.app-loading strong { font-family:'Montserrat',sans-serif; font-size:21px; letter-spacing:1px; }
+.app-loading small { color:#5e7898; font-size:12px; }
+@keyframes linh-xuan-loading { to { transform:rotate(360deg); } }
+@media (prefers-reduced-motion:reduce) { .app-loading__mark { animation-duration:1.6s; } }

@@ -75,7 +75,7 @@ export const ROAD_OVERALL_OPTIONS: ChecklistOption<ChecklistOverall>[] = [
  * Danh sách đánh giá:
  * LÀM QUEN XE & SA HÌNH CƠ BẢN
  *
- * Tổng cộng: 16 nội dung.
+ * Tổng cộng: 13 nội dung.
  */
 const basicItems: Omit<ChecklistItemEvaluation, 'rating'>[] = [
   {
@@ -143,21 +143,6 @@ const basicItems: Omit<ChecklistItemEvaluation, 'rating'>[] = [
     id: 'basic-signals',
     order: 13,
     title: 'Biết bật xi nhan, bấm còi đúng lúc',
-  },
-  {
-    id: 'basic-steering-control',
-    order: 14,
-    title: 'Thao tác vô lăng nhuần nhuyễn',
-  },
-  {
-    id: 'basic-reverse-parking',
-    order: 15,
-    title: 'Lùi được xe vào ô ghép',
-  },
-  {
-    id: 'basic-stop-vehicle',
-    order: 16,
-    title: 'Thao tác dừng xe',
   },
 ]
 

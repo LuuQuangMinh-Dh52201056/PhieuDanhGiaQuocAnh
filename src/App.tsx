@@ -1,5 +1,7 @@
 import {
+  lazy,
   useEffect,
+  useLayoutEffect,
   useState,
 } from 'react'
 
@@ -21,10 +23,6 @@ import {
 } from './pages/EvaluationPage'
 
 import {
-  ReportPreviewPage,
-} from './pages/ReportPreviewPage'
-
-import {
   StudentInformationPage,
 } from './pages/StudentInformationPage'
 
@@ -36,12 +34,8 @@ import {
   VehicleSelectionPage,
 } from './pages/VehicleSelectionPage'
 
-import AdminTeachersPage
-  from './pages/AdminTeachersPage'
-
-import {
-  saveEvaluationAdminRecord,
-  type AdminTrainingType,
+import type {
+  AdminTrainingType,
 } from './services/evaluationAdminStore'
 
 import type {
@@ -54,6 +48,27 @@ import {
   calculateConclusion,
   getTodayInputValue,
 } from './utils/evaluation'
+
+const AdminTeachersPage =
+  lazy(
+    () =>
+      import(
+        './pages/AdminTeachersPage'
+      ),
+  )
+
+const ReportPreviewPage =
+  lazy(
+    () =>
+      import(
+        './pages/ReportPreviewPage'
+      ).then(
+        (module) => ({
+          default:
+            module.ReportPreviewPage,
+        }),
+      ),
+  )
 
 type AppStep =
   | 'vehicle'
@@ -293,6 +308,19 @@ export default function App() {
   }, [])
 
   /**
+   * Chỉ cuộn sau khi màn hình mới đã được React gắn vào DOM.
+   * Cách này tránh Safari/Chrome giữ vị trí cuộn của phiếu dài trước đó,
+   * đặc biệt khi chuyển từ bước đánh giá sang màn hình xem phiếu.
+   */
+  useLayoutEffect(() => {
+    window.scrollTo({
+      top: 0,
+      left: 0,
+      behavior: 'auto',
+    })
+  }, [step, showAdmin])
+
+  /**
    * Cập nhật một phần dữ liệu phiếu.
    */
   const updateState = (
@@ -523,6 +551,12 @@ export default function App() {
       setIsSaving(true)
 
       try {
+        const {
+          saveEvaluationAdminRecord,
+        } = await import(
+          './services/evaluationAdminStore'
+        )
+
         /**
          * Firebase hiện tại không
          * yêu cầu người dùng đăng nhập.
@@ -636,7 +670,11 @@ export default function App() {
             'Không thể kết nối Firebase. Hãy kiểm tra Internet rồi thử lại.'
         }
 
-        window.alert(message)
+        // Bản phiếu vẫn dùng được khi website mới chưa cấu hình Firebase.
+        // Chỉ bỏ qua việc lưu lịch sử, không chặn giáo viên xem/lưu ảnh.
+        console.warn(message)
+        setStep('report')
+        scrollToTop()
       } finally {
         setIsSaving(false)
       }

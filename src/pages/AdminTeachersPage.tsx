@@ -5,7 +5,7 @@ import {
   useState,
 } from 'react'
 
-import html2canvas from 'html2canvas'
+import linhXuanLogo from '../hinhanh/linh-xuan-logo.png'
 
 import {
   ReportPreviewPage,
@@ -1012,25 +1012,25 @@ function AdminBrand() {
       <div className="admin-pro-brand-mark">
         {!imageError ? (
           <img
-            src="/assets/logo-phu-giao.png"
-            alt="Logo Trung tâm Giáo dục nghề nghiệp Phú Giáo"
+            src={linhXuanLogo}
+            alt="Logo Trung tâm Đào tạo Lái xe Linh Xuân"
             onError={() =>
               setImageError(true)
             }
           />
         ) : (
-          <span>PG</span>
+          <span>LX</span>
         )}
       </div>
 
       <div className="admin-pro-brand-copy">
         <small>
-          TRUNG TÂM GIÁO DỤC
-          NGHỀ NGHIỆP
+          TRUNG TÂM ĐÀO TẠO
+          LÁI XE
         </small>
 
         <strong>
-          PHÚ GIÁO
+          LINH XUÂN
         </strong>
       </div>
     </div>
@@ -1697,6 +1697,12 @@ export default function AdminTeachersPage() {
 
       await nextPaint()
 
+      const {
+        default: html2canvas,
+      } = await import(
+        'html2canvas'
+      )
+
       const canvas = await html2canvas(
         reportElement,
         {
@@ -1871,7 +1877,7 @@ export default function AdminTeachersPage() {
       <section className="admin-pro-hero">
         <div>
           <span className="admin-pro-eyebrow">
-            TRUNG TÂM ĐIỀU HÀNH
+            HỆ THỐNG QUẢN TRỊ LINH XUÂN
           </span>
 
           <h1>

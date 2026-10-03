@@ -1,7 +1,7 @@
 // PNG data URL tương thích ổn định với Safari và html-to-image.
-import embeddedLogoPhuGiao from '../hinhanh/logoPHUGIAO.png?inline'
+import embeddedLinhXuanLogo from '../hinhanh/linh-xuan-logo.png?inline'
 
-export const PHU_GIAO_LOGO_DATA_URL = embeddedLogoPhuGiao
+export const LINH_XUAN_LOGO_DATA_URL = embeddedLinhXuanLogo
 
 interface TrainingCenterBrandProps {
   compact?: boolean
@@ -15,13 +15,13 @@ export function TrainingCenterBrand({ compact = false, light = false }: Training
         className="training-brand__mark"
         aria-hidden="true"
         data-export-logo-slot
-        style={{ backgroundImage: `url(${PHU_GIAO_LOGO_DATA_URL})` }}
+        style={{ backgroundImage: `url(${LINH_XUAN_LOGO_DATA_URL})` }}
       >
-        <img src={PHU_GIAO_LOGO_DATA_URL} alt="" />
+        <img src={LINH_XUAN_LOGO_DATA_URL} alt="" />
       </div>
       <div className="training-brand__copy">
-        <small>TRUNG TÂM GIÁO DỤC NGHỀ NGHIỆP</small>
-        <strong>PHÚ GIÁO</strong>
+        <small>TRUNG TÂM ĐÀO TẠO LÁI XE</small>
+        <strong>LINH XUÂN</strong>
       </div>
     </div>
   )

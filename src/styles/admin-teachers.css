@@ -1,25 +1,25 @@
 
 :root {
-  --admin-green-950: #05371f;
-  --admin-green-900: #064b29;
-  --admin-green-800: #076635;
-  --admin-green-700: #087a3e;
-  --admin-green-600: #0b9650;
-  --admin-green-500: #16ad62;
-  --admin-green-200: #bfe3cc;
-  --admin-green-100: #e7f7ed;
-  --admin-green-50: #f3fbf6;
+  --admin-green-950: #052d75;
+  --admin-green-900: #063f96;
+  --admin-green-800: #064ba9;
+  --admin-green-700: #075bc8;
+  --admin-green-600: #087cf0;
+  --admin-green-500: #2b98ff;
+  --admin-green-200: #b9ddff;
+  --admin-green-100: #e8f4ff;
+  --admin-green-50: #f4f9ff;
   --admin-blue-100: #eaf4fb;
   --admin-blue-700: #155a8b;
   --admin-gold-100: #fff4d8;
   --admin-gold-700: #8a5b00;
-  --admin-text: #183b2a;
-  --admin-muted: #6b8074;
-  --admin-border: #d6e6dc;
+  --admin-text: #173865;
+  --admin-muted: #687f9b;
+  --admin-border: #d0e2f5;
   --admin-danger: #d53b44;
   --admin-danger-soft: #fff8f8;
   --admin-white: #ffffff;
-  --admin-shadow: 0 14px 36px rgba(7, 83, 45, 0.075);
+  --admin-shadow: 0 14px 36px rgba(5, 67, 151, 0.09);
 }
 
 /* =========================================================
@@ -1679,6 +1679,65 @@
   margin-top: 18px;
   min-height: 44px;
 }
+
+/* === LINH XUÂN ADMIN — FINAL BLUE / WHITE CASCADE === */
+.admin-pro-page {
+  --admin-green-950:#052a63;
+  --admin-green-900:#06408f;
+  --admin-green-800:#075bc8;
+  --admin-green-700:#087cf0;
+  --admin-green-600:#1687ff;
+  --admin-green-500:#45a3ff;
+  --admin-green-200:#b9dcff;
+  --admin-green-100:#e5f1ff;
+  --admin-green-50:#f4f9ff;
+  --admin-blue-100:#eaf4ff;
+  --admin-blue-700:#075bc8;
+  --admin-gold-100:#eef6ff;
+  --admin-gold-700:#075bc8;
+  --admin-text:#102a43;
+  --admin-muted:#64748b;
+  --admin-border:#d8e8f8;
+  --admin-shadow:0 14px 36px rgba(6,75,169,.09);
+  background:radial-gradient(circle at 94% 4%,rgba(8,124,240,.13),transparent 390px),radial-gradient(circle at 4% 72%,rgba(51,162,255,.08),transparent 430px),#f4f9ff;
+}
+.admin-pro-header { border-bottom-color:#d8e8f8; box-shadow:0 8px 28px rgba(6,75,169,.07); }
+.admin-pro-brand-mark { border-color:rgba(6,75,169,.12); box-shadow:0 0 0 6px rgba(8,124,240,.08),0 7px 19px rgba(6,75,169,.15); }
+.admin-pro-brand-mark span,.admin-pro-person > span { background:linear-gradient(145deg,#1687ff,#064ba9); box-shadow:0 5px 12px rgba(6,75,169,.18); }
+.admin-pro-online { color:#075bc8; border-color:#cce3fb; background:#f2f8ff; }
+.admin-pro-online i { background:#1687ff; box-shadow:0 0 0 5px rgba(8,124,240,.13); }
+.admin-pro-account { border-color:#d8e8f8; }
+.admin-pro-hero { background:radial-gradient(circle at 78% 15%,rgba(255,255,255,.14),transparent 270px),linear-gradient(122deg,#063d99,#087cf0 58%,#33a2ff); }
+.admin-pro-eyebrow,.admin-pro-hero h1 em,.admin-detail-header span { color:#d8ecff; }
+.admin-pro-hero-actions button.is-primary { box-shadow:0 9px 22px rgba(3,54,126,.22); }
+.admin-pro-hero-actions button.is-primary:hover:not(:disabled) { background:#edf6ff; }
+.admin-pro-kpis article,.admin-pro-filter-card,.admin-pro-data-card,.admin-pro-drawer-stats > div,.admin-pro-drawer-list article,.admin-detail-summary article,.admin-detail-card { border-color:#d8e8f8; box-shadow:0 10px 28px rgba(6,75,169,.075); }
+.admin-pro-kpi-icon { background:linear-gradient(145deg,#f4f9ff,#dceeff); }
+.admin-pro-date-presets button,.admin-pro-filter-grid input,.admin-pro-filter-grid select,.admin-pro-search > div,.admin-pro-view-switch,.admin-pro-detail,.admin-pro-vehicle,.admin-pro-tags span { border-color:#cfe2f5; background:#f8fbff; }
+.admin-pro-date-presets button:hover:not(.is-selected) { border-color:#9bcaff; background:#edf6ff; }
+.admin-pro-filter-grid input:focus,.admin-pro-filter-grid select:focus,.admin-pro-search > div:focus-within { box-shadow:0 0 0 4px rgba(8,124,240,.1); }
+.admin-pro-filter-result { color:#52677b; border-color:#d7e8f8; background:#f2f8ff; }
+.admin-pro-filter-result em { border-color:#b9dcff; }
+.admin-pro-data-heading { border-bottom-color:#e1edf8; }
+.admin-pro-date-presets button.is-selected,.admin-pro-view-switch button.is-selected,.admin-pro-detail:hover,.admin-detail-footer button.primary { box-shadow:0 6px 15px rgba(6,75,169,.18); }
+.admin-pro-table th,.admin-detail-table th { background:linear-gradient(90deg,#064ba9,#087cf0); }
+.admin-pro-table td,.admin-detail-table td { color:#40566c; border-bottom-color:#e1edf8; }
+.admin-pro-table tbody tr:hover,.admin-detail-table tbody tr:hover { background:#f5faff; }
+.admin-pro-type--basic,.admin-pro-vehicle,.admin-pro-tags span,.admin-detail-table td:last-child span { color:#075bc8; border-color:#b9d9f8; background:#eaf4ff; }
+.admin-pro-count { color:#075bc8; background:#e5f1ff; }
+.admin-pro-overlay { background:rgba(3,35,79,.44); }
+.admin-detail-overlay { background:rgba(3,35,79,.56); }
+.admin-pro-drawer,.admin-detail-modal { background:#f5f9ff; }
+.admin-pro-drawer { box-shadow:-20px 0 55px rgba(3,48,108,.22); }
+.admin-detail-modal { box-shadow:0 32px 100px rgba(3,48,108,.3); }
+.admin-detail-header { background:radial-gradient(circle at 90% 10%,rgba(255,255,255,.14),transparent 260px),linear-gradient(120deg,#063d99,#087cf0); }
+.admin-detail-summary strong,.admin-detail-card h3,.admin-detail-table td strong { color:#052a63; }
+.admin-detail-card h4,.admin-detail-card dd { color:#304b67; }
+.admin-detail-result-card { background:radial-gradient(circle at 50% 0,rgba(8,124,240,.11),transparent 230px),#fff; }
+.admin-detail-result-card > strong { color:#075bc8; border-color:#b9d9f8; background:#eaf4ff; }
+.admin-detail-full > h3 { border-bottom-color:#dceaf8; background:linear-gradient(90deg,#fbfdff,#edf6ff); }
+.admin-detail-footer { border-top-color:#d8e8f8; }
+.admin-pro-download-report,.admin-detail-download { border-color:#087cf0; background:linear-gradient(135deg,#1687ff,#064ba9); box-shadow:0 7px 16px rgba(6,75,169,.18); }
 
 .admin-pro-error-banner {
   margin-bottom: 16px;

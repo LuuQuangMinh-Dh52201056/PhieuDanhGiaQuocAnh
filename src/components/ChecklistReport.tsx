@@ -22,7 +22,7 @@ export function ChecklistReport({ state, reportRef }: ChecklistReportProps) {
       <header className="checklist-report-header">
         <div className="checklist-report-header__brand"><TrainingCenterBrand /></div>
         <div className="checklist-report-header__title">
-          <small>TRUNG TÂM GIÁO DỤC NGHỀ NGHIỆP PHÚ GIÁO</small>
+          <small>TRUNG TÂM ĐÀO TẠO LÁI XE LINH XUÂN</small>
           <h1>{isRoad ? 'PHIẾU ĐÁNH GIÁ ĐÀO TẠO HỌC VIÊN' : 'PHIẾU ĐÁNH GIÁ BUỔI HỌC'}</h1>
           <p>{isRoad ? 'ĐÁNH GIÁ THỰC HÀNH ĐƯỜNG TRƯỜNG' : 'LÀM QUEN XE & SA HÌNH CƠ BẢN'}</p>
         </div>

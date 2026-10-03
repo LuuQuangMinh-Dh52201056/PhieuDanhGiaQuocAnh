@@ -11,6 +11,16 @@ import './styles.css'
 
 ReactDOM.createRoot(document.getElementById('root')!).render(
   <React.StrictMode>
-    <App />
+    <React.Suspense
+      fallback={
+        <div className="app-loading" role="status" aria-live="polite">
+          <span className="app-loading__mark" aria-hidden="true" />
+          <strong>LINH XUÂN</strong>
+          <small>Đang chuẩn bị phiếu đánh giá...</small>
+        </div>
+      }
+    >
+      <App />
+    </React.Suspense>
   </React.StrictMode>,
 )
