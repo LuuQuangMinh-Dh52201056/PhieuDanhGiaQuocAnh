@@ -10,6 +10,8 @@ import App from './App'
 import './styles.css'
 import './styles/linh-xuan-premium.css'
 import './styles/linh-xuan-report-layout.css'
+import './styles/linh-xuan-form-polish.css'
+import './styles/linh-xuan-document-polish.css'
 
 ReactDOM.createRoot(document.getElementById('root')!).render(
   <React.StrictMode>

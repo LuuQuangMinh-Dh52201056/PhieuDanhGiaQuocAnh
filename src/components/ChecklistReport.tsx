@@ -1,6 +1,6 @@
 import { Check, MessageSquareText } from 'lucide-react'
 import { TrainingCenterBrand } from './TrainingCenterBrand'
-import { VehicleBadge } from './VehicleBadge'
+import { ReportHeader } from './ReportHeader'
 import { getChecklistOverallOptions, getChecklistRatingOptions, getChecklistTone } from '../data/checklistConfigs'
 import { VEHICLE_LABELS } from '../data/lessonConfigs'
 import type { EvaluationState } from '../types/evaluation'
@@ -23,15 +23,7 @@ export function ChecklistReport({ state, reportRef }: ChecklistReportProps) {
       ref={reportRef}
       data-testid="evaluation-report"
     >
-      <header className="checklist-report-header">
-        <div className="checklist-report-header__brand"><TrainingCenterBrand /></div>
-        <div className="checklist-report-header__title">
-          <small>VĂN PHÒNG ĐÀO TẠO LÁI XE LINH XUÂN</small>
-          <h1>{isRoad ? 'PHIẾU ĐÁNH GIÁ ĐÀO TẠO HỌC VIÊN' : 'PHIẾU ĐÁNH GIÁ BUỔI HỌC'}</h1>
-          <p>{isRoad ? 'ĐÁNH GIÁ THỰC HÀNH ĐƯỜNG TRƯỜNG' : 'LÀM QUEN XE & SA HÌNH CƠ BẢN'}</p>
-        </div>
-        <VehicleBadge category={state.vehicleCategory} className="checklist-report-header__vehicle" />
-      </header>
+      <ReportHeader category={state.vehicleCategory} trainingType={isRoad ? 'ROAD' : 'BASIC'} evaluationDate={state.evaluationDate} />
 
       <main className="checklist-report-body">
         <section className="checklist-report-info">

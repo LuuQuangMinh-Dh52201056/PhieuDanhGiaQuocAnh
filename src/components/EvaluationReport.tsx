@@ -1,6 +1,6 @@
 import { Award, Check, ClipboardPenLine, MessageSquareText, ShieldCheck, TriangleAlert } from 'lucide-react'
 import { TrainingCenterBrand } from './TrainingCenterBrand'
-import { VehicleBadge } from './VehicleBadge'
+import { ReportHeader } from './ReportHeader'
 import { LessonIcon } from './LessonEvaluationCard'
 import { VEHICLE_LABELS } from '../data/lessonConfigs'
 import type { EvaluationState } from '../types/evaluation'
@@ -20,17 +20,7 @@ export function EvaluationReport({ state, reportRef }: EvaluationReportProps) {
 
   return (
     <div className="report-page lx-report lx-report--course" ref={reportRef} data-testid="evaluation-report">
-      <header className="report-header">
-        <div className="report-header__flare report-header__flare--one" />
-        <div className="report-header__flare report-header__flare--two" />
-        <TrainingCenterBrand light />
-        <div className="report-title">
-          <small>PHIẾU ĐÁNH GIÁ</small>
-          <h1>KẾT QUẢ BÀI THI<br />SÁT HẠCH SA HÌNH</h1>
-          <div><i /> <span>AN TOÀN — TRÁCH NHIỆM — VỮNG TAY LÁI</span> <i /></div>
-        </div>
-        <VehicleBadge category={state.vehicleCategory} className="report-vehicle-badge" />
-      </header>
+      <ReportHeader category={state.vehicleCategory} trainingType="COURSE" evaluationDate={state.evaluationDate} />
 
       <div className="report-body">
         <ReportSectionTitle number="1" title="THÔNG TIN HỌC VIÊN" />

@@ -41,6 +41,153 @@ async function assertNoHorizontalOverflow(page, label) {
   )
 }
 
+async function assertReadableText(page, selectors, label) {
+  const samples = await page.evaluate((selectors) => {
+    const parseColor = (value) => {
+      const channels = value.match(/[\d.]+/g)?.map(Number)
+      return channels?.length >= 3 ? channels : null
+    }
+    const luminance = (color) => color.slice(0, 3).reduce((value, channel, index) => {
+      const normalized = channel / 255
+      return value + (normalized <= .04045 ? normalized / 12.92 : ((normalized + .055) / 1.055) ** 2.4) * [.2126, .7152, .0722][index]
+    }, 0)
+    const contrast = (foreground, background) => {
+      const values = [luminance(foreground), luminance(background)].sort((a, b) => b - a)
+      return (values[0] + .05) / (values[1] + .05)
+    }
+    return selectors.flatMap((selector) => [...document.querySelectorAll(selector)].map((element) => {
+      const style = getComputedStyle(element)
+      const foreground = parseColor(style.color)
+      let backgrounds = [[255, 255, 255]]
+      for (let parent = element; parent; parent = parent.parentElement) {
+        const parentStyle = getComputedStyle(parent)
+        const gradient = parentStyle.backgroundImage.match(/rgba?\([^)]+\)/g)?.map(parseColor).filter(Boolean)
+        if (gradient?.length && gradient.every((color) => color[3] === undefined || color[3] === 1)) {
+          backgrounds = gradient
+          break
+        }
+        const background = parseColor(parentStyle.backgroundColor)
+        if (background && (background[3] === undefined || background[3] === 1)) {
+          backgrounds = [background]
+          break
+        }
+      }
+      const large = parseFloat(style.fontSize) >= 24 || (parseFloat(style.fontSize) >= 18.66 && parseInt(style.fontWeight, 10) >= 700)
+      return {
+        selector,
+        text: element.textContent?.trim(),
+        color: style.color,
+        minimum: large ? 3 : 4.5,
+        contrast: foreground ? Math.min(...backgrounds.map((background) => contrast(foreground, background))) : 0,
+      }
+    }))
+  }, selectors)
+  assert(samples.length >= selectors.length, `${label} thiếu phần tử cần kiểm tra màu chữ`)
+  for (const sample of samples) {
+    assert(sample.text, `${label} bị mất chữ ở ${sample.selector}`)
+    assert(sample.contrast >= sample.minimum, `${label} màu chữ không đủ tương phản: ${JSON.stringify(sample)}`)
+  }
+  return samples
+}
+
+async function assertStudentForm(page, label) {
+  await page.locator('.info-card').waitFor({ state: 'visible' })
+  await assertNoHorizontalOverflow(page, label)
+  const gutters = await page.locator('.info-card').evaluate((form) => {
+    const rect = form.getBoundingClientRect()
+    return { viewport: document.documentElement.clientWidth, left: rect.left, right: document.documentElement.clientWidth - rect.right }
+  })
+  if (gutters.viewport <= 430) {
+    assert(gutters.left >= 15 && gutters.right >= 15, `${label} phải có khoảng thở 16px hai bên khung: ${JSON.stringify(gutters)}`)
+  }
+  const samples = await assertReadableText(page, [
+    '.vehicle-summary small',
+    '.vehicle-summary strong',
+    '.vehicle-summary button',
+    '.field > span',
+    '.date-input-control strong',
+  ], label)
+  const dateColor = await page.locator('.date-input-control > svg').evaluate((element) => getComputedStyle(element).color.match(/[\d.]+/g)?.map(Number))
+  assert(dateColor && dateColor[2] > dateColor[0] && dateColor[2] > dateColor[1], `${label} biểu tượng ngày phải đồng bộ xanh dương: ${dateColor}`)
+  const formElements = await page.locator('.info-card').evaluate((form) => {
+    const formRect = form.getBoundingClientRect()
+    return [...form.querySelectorAll('.vehicle-summary strong, .vehicle-summary button, .field, .form-actions .button')].map((element) => {
+      const rect = element.getBoundingClientRect()
+      let primaryTextLines = null
+      if (element.matches('.button--primary')) {
+        primaryTextLines = 0
+        const walker = document.createTreeWalker(element, NodeFilter.SHOW_TEXT)
+        while (walker.nextNode()) {
+          if (!walker.currentNode.textContent.trim()) continue
+          const range = document.createRange()
+          range.selectNodeContents(walker.currentNode)
+          primaryTextLines += range.getClientRects().length
+        }
+      }
+      return { text: element.textContent?.trim(), left: rect.left, right: rect.right, formLeft: formRect.left, formRight: formRect.right, primaryTextLines }
+    })
+  })
+  assert(formElements.every((element) => element.left >= element.formLeft - 1 && element.right <= element.formRight + 1), `${label} chữ hoặc nút nằm ngoài khung: ${JSON.stringify(formElements)}`)
+  assert(formElements.every((element) => element.primaryTextLines === null || element.primaryTextLines === 1), `${label} chữ nút chính phải gọn trên một dòng: ${JSON.stringify(formElements)}`)
+  console.log(`STUDENT_FORM_OK: ${label}; lowest contrast ${Math.min(...samples.map((sample) => sample.contrast)).toFixed(2)}:1`)
+}
+
+async function verifyStudentFormLayouts(browser) {
+  const context = await browser.newContext({ viewport: { width: 390, height: 844 }, deviceScaleFactor: 1 })
+  const page = await context.newPage()
+  try {
+    for (const training of ['TẬP CƠ BẢN', 'ĐƯỜNG TRƯỜNG', 'SA HÌNH']) {
+      await page.goto(baseUrl)
+      await chooseVehicle(page, 'HẠNG XE B SỐ TỰ ĐỘNG', training)
+      for (const width of [320, 390, 1440]) {
+        await page.setViewportSize({ width, height: width >= 1280 ? 1100 : 844 })
+        await assertStudentForm(page, `${training} ${width}px`)
+        if (training === 'TẬP CƠ BẢN' && width === 390) {
+          await page.screenshot({ path: path.join(artifactDir, 'student-info-refreshed-mobile.png'), fullPage: true })
+        }
+        if (width === 1440) {
+          const artifact = training === 'TẬP CƠ BẢN' ? 'basic' : training === 'ĐƯỜNG TRƯỜNG' ? 'road' : 'course'
+          await page.screenshot({ path: path.join(artifactDir, `student-info-${artifact}-desktop.png`), fullPage: true })
+        }
+      }
+    }
+  } finally {
+    await context.close()
+  }
+}
+
+async function assertReportHeaderLayout(page, label) {
+  const bounds = await page.getByTestId('evaluation-report').evaluate((report) => {
+    const header = report.querySelector('.report-header, .checklist-report-header')
+    if (!header) return null
+    const headerRect = header.getBoundingClientRect()
+    const elements = [...header.querySelectorAll('.training-brand, .training-brand__copy small, .training-brand__copy strong, .report-title, .checklist-report-header__title, h1, .vehicle-category-badge')]
+    return elements.map((element) => {
+      const rect = element.getBoundingClientRect()
+      return {
+        className: element.className,
+        text: element.textContent?.trim(),
+        left: rect.left - headerRect.left,
+        right: rect.right - headerRect.left,
+        top: rect.top - headerRect.top,
+        bottom: rect.bottom - headerRect.top,
+        headerWidth: headerRect.width,
+        headerHeight: headerRect.height,
+        clipped: element.scrollWidth > element.clientWidth + 1 || element.scrollHeight > element.clientHeight + 1,
+      }
+    })
+  })
+  assert(bounds?.length >= 6, `${label} thiếu cấu trúc tiêu đề phiếu`)
+  for (const element of bounds) {
+    assert(!element.clipped && element.left >= -1 && element.top >= -1 && element.right <= element.headerWidth + 1 && element.bottom <= element.headerHeight + 1, `${label} tiêu đề/thương hiệu bị cắt: ${JSON.stringify(element)}`)
+  }
+  await assertReadableText(page, [
+    '[data-testid="evaluation-report"] .training-brand__copy small',
+    '[data-testid="evaluation-report"] .training-brand__copy strong',
+    '[data-testid="evaluation-report"] h1',
+  ], `${label} màu chữ đầu phiếu`)
+}
+
 async function assertVehicleCardAlignment(page, label, sameRow = false) {
   const cards = await page.locator('.vehicle-card-grid .vehicle-card').evaluateAll((elements) => elements.map((element) => {
     const rect = element.getBoundingClientRect()
@@ -200,6 +347,20 @@ async function assertExportedLogos(page, png, reportName) {
   )
 }
 
+async function captureExportedHeader(browser, png) {
+  // Inspect the actual PNG's header at its authored 1080px width, rather than
+  // the mobile preview transform, so missing letters/colors remain visible.
+  const context = await browser.newContext({ viewport: { width: 1080, height: 264 }, deviceScaleFactor: 1 })
+  const page = await context.newPage()
+  try {
+    await page.setContent(`<body style="margin:0;background:white"><img alt="Đầu phiếu PNG đã xuất" src="data:image/png;base64,${png.toString('base64')}" style="display:block;width:1080px;height:auto"></body>`)
+    await page.locator('img').evaluate((image) => image.decode())
+    await page.screenshot({ path: path.join(artifactDir, 'report-header-refreshed.png'), fullPage: false })
+  } finally {
+    await context.close()
+  }
+}
+
 async function assertReportFooterBrand(page, reportName) {
   const report = page.getByTestId('evaluation-report')
   const headerBrand = report.locator('.report-header, .checklist-report-header').locator('.training-brand').first()
@@ -233,6 +394,7 @@ async function assertReportFooterBrand(page, reportName) {
     return Math.abs((taglineRect.left + taglineRect.width / 2) - (footerRect.left + footerRect.width / 2))
   })
   assert(centerDelta <= 1, `${reportName} có phương châm lệch tâm ${centerDelta}px`)
+  await assertReportHeaderLayout(page, reportName)
 }
 
 async function assertReportCommentLayout(page, reportName, expectedComment) {
@@ -306,6 +468,7 @@ if (vehicleOnly) {
 }
 
 try {
+  await verifyStudentFormLayouts(browser)
   const mobile = await browser.newContext({ viewport: { width: 390, height: 844 }, deviceScaleFactor: 1 })
   const page = await mobile.newPage()
   await page.goto(baseUrl)
@@ -396,7 +559,9 @@ try {
   const basicDownloadPath = await basicDownload.path()
   assert(basicDownloadPath, 'Không nhận được tệp PNG tập cơ bản')
   await copyFile(basicDownloadPath, path.join(artifactDir, 'basic-exported-report.png'))
-  await assertExportedLogos(page, await readFile(basicDownloadPath), 'Phiếu tập cơ bản')
+  const basicPng = await readFile(basicDownloadPath)
+  await assertExportedLogos(page, basicPng, 'Phiếu tập cơ bản')
+  await captureExportedHeader(browser, basicPng)
 
   await page.goto(baseUrl)
   await chooseVehicle(page, 'HẠNG XE B SỐ SÀN', 'ĐƯỜNG TRƯỜNG')
@@ -655,7 +820,7 @@ try {
   await androidPage.screenshot({ path: path.join(artifactDir, 'report-android.png'), fullPage: false })
   await android.close()
 
-console.log('E2E_OK: office branding, separate vehicle photos, blue ticks, full long comments and signatures, bounded PNG exports, Android download and iPhone fallback verified')
+console.log('E2E_OK: readable student form at 320/390/1440px, polished report headers, office branding, separate vehicle photos, blue ticks, full long comments and signatures, bounded PNG exports, Android download and iPhone fallback verified')
 } finally {
   await browser.close()
 }

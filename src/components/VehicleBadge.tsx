@@ -1,4 +1,4 @@
-import { CarFront } from 'lucide-react'
+import { CarFront, Truck } from 'lucide-react'
 import type { VehicleCategory } from '../types/evaluation'
 
 interface VehicleBadgeProps {
@@ -11,10 +11,11 @@ export function VehicleBadge({ category, className = '' }: VehicleBadgeProps) {
   const type = category === 'B_AUTOMATIC'
     ? 'SỐ TỰ ĐỘNG'
     : category === 'B_MANUAL' ? 'SỐ SÀN' : category === 'C1' ? 'XE TẢI' : '—'
+  const VehicleIcon = category === 'C1' ? Truck : CarFront
 
   return (
     <div className={`vehicle-category-badge ${className}`}>
-      <div><CarFront size={28} /></div>
+      <div><VehicleIcon size={28} aria-hidden="true" /></div>
       <small>HẠNG XE</small>
       <strong>{main}</strong>
       <span>{type}</span>

@@ -1,4 +1,4 @@
-import { ArrowLeft, ArrowRight, BookOpenText, CalendarDays, CarFront, GraduationCap, Hash, UserRound } from 'lucide-react'
+import { ArrowLeft, ArrowRight, BookOpenText, CalendarDays, CarFront, GraduationCap, Hash, PencilLine, Truck, UserRound } from 'lucide-react'
 import { AppHeader } from '../components/AppHeader'
 import { AppFooter } from '../components/AppFooter'
 import { VEHICLE_LABELS } from '../data/lessonConfigs'
@@ -14,29 +14,40 @@ interface StudentInformationPageProps {
 
 export function StudentInformationPage({ state, onChange, onBack, onContinue }: StudentInformationPageProps) {
   const trainingLabel = state.trainingType === 'BASIC' ? 'TẬP CƠ BẢN' : state.trainingType === 'ROAD' ? 'ĐƯỜNG TRƯỜNG' : 'SA HÌNH'
+  const vehicleCode = state.vehicleCategory === 'B_MANUAL' ? 'BSS' : state.vehicleCategory === 'B_AUTOMATIC' ? 'BTĐ' : 'C1'
+  const VehicleIcon = state.vehicleCategory === 'C1' ? Truck : CarFront
   const submit = (event: React.FormEvent) => {
     event.preventDefault()
     onContinue()
   }
 
   return (
-    <div className="app-shell">
+    <div className="app-shell lx-student-page">
       <AppHeader activeStep={3} />
       <main className="content-page content-page--narrow">
         <div className="page-heading">
           <div className="page-heading__number">03</div>
           <div>
-            <span>THÔNG TIN BUỔI ĐÁNH GIÁ</span>
+            <span>HỒ SƠ BUỔI HỌC</span>
             <h1>Thông tin học viên</h1>
-            <p>Nhập các thông tin cần thiết trước khi bắt đầu chấm bài.</p>
+            <p>Hoàn thiện hồ sơ để phiếu đánh giá được rõ ràng và chính xác.</p>
           </div>
         </div>
 
         <form className="info-card" onSubmit={submit}>
           <div className="vehicle-summary">
-            <div className="vehicle-summary__icon"><CarFront size={25} /></div>
-            <div><small>HẠNG XE • NỘI DUNG TẬP</small><strong>{state.vehicleCategory ? VEHICLE_LABELS[state.vehicleCategory] : '—'} • {trainingLabel}</strong></div>
-            <button type="button" onClick={onBack}>Đổi nội dung</button>
+            <div className="vehicle-summary__icon"><VehicleIcon size={26} aria-hidden="true" /></div>
+            <div className="vehicle-summary__copy">
+              <small>HẠNG XE & NỘI DUNG ĐÃ CHỌN</small>
+              <strong>{state.vehicleCategory ? VEHICLE_LABELS[state.vehicleCategory] : '—'} <span aria-hidden="true">/</span> {trainingLabel}</strong>
+              <span className="student-session-code">{vehicleCode} <i aria-hidden="true" /> PHIẾU ĐÁNH GIÁ THỰC HÀNH</span>
+            </div>
+            <button type="button" onClick={onBack}><PencilLine size={15} aria-hidden="true" /> Đổi nội dung</button>
+          </div>
+
+          <div className="student-form-prelude">
+            <div><span className="student-form-prelude__icon"><UserRound size={19} aria-hidden="true" /></span><h2>Thông tin buổi học</h2></div>
+            <p>Dấu <b>*</b> là thông tin bắt buộc</p>
           </div>
 
           <div className="form-grid">
@@ -76,15 +87,15 @@ export function StudentInformationPage({ state, onChange, onBack, onContinue }: 
               <input type="number" min="1" max="999" inputMode="numeric" value={state.practiceAttempt} onChange={(event) => onChange({ practiceAttempt: event.target.value })} placeholder="Ví dụ: 07" aria-label="Lần tập thứ" />
             </label>
 
-            <label className="field">
+            <label className="field field--wide student-course-field">
               <span><BookOpenText size={17} /> Khóa đào tạo</span>
-              <input value={state.trainingCourse} onChange={(event) => onChange({ trainingCourse: event.target.value })} placeholder="Ví dụ: C1-K24" aria-label="Khóa đào tạo" />
+              <input value={state.trainingCourse} onChange={(event) => onChange({ trainingCourse: event.target.value })} placeholder="Ví dụ: K24-2026" aria-label="Khóa đào tạo" />
             </label>
           </div>
 
           <div className="form-note">
             <ShieldNotice />
-            <p><strong>Thông tin:</strong> Dữ liệu được dùng để lập phiếu đánh giá theo quy trình của văn phòng.</p>
+            <p><strong>Thông tin trên phiếu.</strong> Họ tên, ngày học và giáo viên sẽ được hiển thị đầy đủ trên phiếu đánh giá. Bạn có thể quay lại chỉnh sửa trước khi lưu ảnh.</p>
           </div>
 
           <div className="form-actions">
