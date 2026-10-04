@@ -7,6 +7,7 @@ const chromePath = 'C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe'
 const artifactDir = path.resolve('artifacts')
 const officeTitle = 'Văn Phòng Đào Tạo Lái Xe Linh Xuân'
 const officeBrand = 'VĂN PHÒNG ĐÀO TẠO LÁI XE'
+const vehicleOnly = process.env.E2E_VEHICLE_ONLY === '1'
 const stressComment = Array.from({ length: 8 }, (_, index) =>
   `Đoạn ${index + 1}: Học viên cần giữ sự tập trung khi quan sát gương, phối hợp thao tác và xử lý tình huống. Giáo viên đã hướng dẫn lại các điểm cần luyện tập; buổi tiếp theo sẽ kiểm tra mức độ tiến bộ. ${'TiếpTụcLuyệnTập'.repeat(14)}.`,
 ).join('\n\n')
@@ -51,6 +52,88 @@ async function assertVehicleCardAlignment(page, label, sameRow = false) {
     const values = cards.map((card) => card[key])
     assert(values.every((value) => Number.isFinite(value)) && Math.max(...values) - Math.min(...values) <= 1, `${label} các thẻ xe phải thẳng hàng và cao đều (${key}): ${JSON.stringify(cards)}`)
   }
+}
+
+async function assertVehicleImageFrames(page, label, safeMargin = 8) {
+  const images = await page.locator('.vehicle-card__photos img').evaluateAll(async (elements) => Promise.all(elements.map(async (image) => {
+    await image.decode()
+    const frame = image.closest('.vehicle-card__photos')?.getBoundingClientRect()
+    const imageRect = image.getBoundingClientRect()
+    const style = getComputedStyle(image)
+    const canvas = document.createElement('canvas')
+    canvas.width = image.naturalWidth
+    canvas.height = image.naturalHeight
+    const context = canvas.getContext('2d', { willReadFrequently: true })
+    if (!context || !frame) return null
+    context.drawImage(image, 0, 0)
+    const pixels = context.getImageData(0, 0, canvas.width, canvas.height).data
+    let minX = canvas.width, minY = canvas.height, maxX = -1, maxY = -1
+    for (let index = 3; index < pixels.length; index += 4) {
+      if (pixels[index] <= 64) continue
+      const pixel = (index - 3) / 4
+      const x = pixel % canvas.width
+      const y = Math.floor(pixel / canvas.width)
+      minX = Math.min(minX, x); maxX = Math.max(maxX, x)
+      minY = Math.min(minY, y); maxY = Math.max(maxY, y)
+    }
+    // Fit the painted subject, not the source PNG's transparent side margins.
+    const scale = Math.min(imageRect.width / canvas.width, imageRect.height / canvas.height)
+    const originLeft = imageRect.left + (imageRect.width - canvas.width * scale) / 2
+    const originTop = imageRect.top + (imageRect.height - canvas.height * scale) / 2
+    return {
+      source: image.getAttribute('src'),
+      objectFit: style.objectFit,
+      paintedWidth: (maxX + 1 - minX) * scale,
+      margins: {
+        left: originLeft + minX * scale - frame.left,
+        right: frame.right - (originLeft + (maxX + 1) * scale),
+        top: originTop + minY * scale - frame.top,
+        bottom: frame.bottom - (originTop + (maxY + 1) * scale),
+      },
+    }
+  })))
+  assert(images.length === 3 && images.every(Boolean), `${label} phải nạp đủ ba ảnh xe`)
+  for (const image of images) {
+    assert(image.objectFit === 'contain', `${label}: ${image.source} phải giữ toàn bộ xe bằng object-fit contain`)
+    assert(image.paintedWidth >= 60, `${label}: ảnh xe quá nhỏ: ${JSON.stringify(image)}`)
+    assert(Object.values(image.margins).every((margin) => margin >= safeMargin - 1), `${label}: xe phải nằm trọn khung với khoảng đệm ${safeMargin}px: ${JSON.stringify(image)}`)
+  }
+  return images
+}
+
+async function assertVehicleCardLabels(page, label) {
+  const labels = await page.locator('.vehicle-card__code').allTextContents()
+  assert(JSON.stringify(labels.map((value) => value.trim())) === JSON.stringify(['BSS', 'BTĐ', 'C1']), `${label} phải dùng đúng viết tắt BSS, BTĐ, C1: ${labels.join(', ')}`)
+  assert(await page.locator('.vehicle-card__popular').count() === 0, `${label} phải bỏ huy hiệu Phổ biến`)
+  assert(!(await page.locator('.vehicle-card-grid').innerText()).includes('Phổ biến'), `${label} không được còn chữ Phổ biến`)
+}
+
+async function verifyVehicleFrames(browser) {
+  const context = await browser.newContext({ viewport: { width: 390, height: 844 }, deviceScaleFactor: 1 })
+  const page = await context.newPage()
+  await page.goto(baseUrl)
+  await page.locator('.vehicle-card-grid .vehicle-card').first().waitFor({ state: 'visible' })
+  for (const width of [320, 390, 430, 1280, 1440]) {
+    await page.setViewportSize({ width, height: width >= 1280 ? 1000 : 844 })
+    const label = `Thẻ xe ${width}px`
+    await assertNoHorizontalOverflow(page, label)
+    await assertVehicleCardLabels(page, label)
+    await assertVehicleCardAlignment(page, label, width >= 1280)
+    const images = await assertVehicleImageFrames(page, label)
+    console.log(`VEHICLE_FRAME_OK: ${width}px, painted margins ${JSON.stringify(images.map((image) => image.margins))}`)
+    if (width === 390) {
+      await page.screenshot({ path: path.join(artifactDir, 'home-mobile.png'), fullPage: false })
+      await page.screenshot({ path: path.join(artifactDir, 'home-mobile-full.png'), fullPage: true })
+    }
+    if (width >= 1280) {
+      await page.getByTestId('vehicle-b_automatic').hover()
+      await assertVehicleCardAlignment(page, `${label} khi rê chuột`, true)
+      await assertVehicleImageFrames(page, `${label} khi rê chuột`)
+      await page.mouse.move(0, 0)
+    }
+  }
+  await page.screenshot({ path: path.join(artifactDir, 'home-desktop.png'), fullPage: false })
+  await context.close()
 }
 
 async function assertExportedLogos(page, png, reportName) {
@@ -212,11 +295,23 @@ async function enterStudent(page, name) {
 await mkdir(artifactDir, { recursive: true })
 const browser = await chromium.launch({ executablePath: chromePath, headless: true })
 
+if (vehicleOnly) {
+  try {
+    await verifyVehicleFrames(browser)
+    console.log('E2E_VEHICLE_OK: BSS/BTĐ/C1 labels, no popularity badge, equal card heights and uncropped vehicles at 320/390/430/1280/1440px')
+  } finally {
+    await browser.close()
+  }
+  process.exit(0)
+}
+
 try {
   const mobile = await browser.newContext({ viewport: { width: 390, height: 844 }, deviceScaleFactor: 1 })
   const page = await mobile.newPage()
   await page.goto(baseUrl)
   assert(await page.title() === officeTitle, 'Tiêu đề trình duyệt phải là Văn Phòng Đào Tạo Lái Xe Linh Xuân')
+  await assertVehicleCardLabels(page, 'Thẻ xe điện thoại 390px')
+  await assertVehicleImageFrames(page, 'Thẻ xe điện thoại 390px')
   await page.screenshot({ path: path.join(artifactDir, 'home-mobile.png'), fullPage: false })
   await page.screenshot({ path: path.join(artifactDir, 'home-mobile-full.png'), fullPage: true })
 
@@ -473,6 +568,8 @@ try {
     const cardWidth = await page.getByTestId('vehicle-b_manual').evaluate((element) => element.getBoundingClientRect().width)
     assert(cardWidth <= width - 20, `Thẻ xe ở màn hình ${width}px phải nằm gọn trong khung, thực tế ${cardWidth}px`)
     await assertVehicleCardAlignment(page, `Thẻ xe ở màn hình ${width}px`, width > 1150)
+    await assertVehicleCardLabels(page, `Thẻ xe ở màn hình ${width}px`)
+    if (width <= 430) await assertVehicleImageFrames(page, `Thẻ xe ở màn hình ${width}px`)
   }
   await mobile.close()
 
@@ -482,53 +579,17 @@ try {
   for (const width of [1280, 1440]) {
     await desktopPage.setViewportSize({ width, height: 1000 })
     await assertVehicleCardAlignment(desktopPage, `Thẻ xe máy tính ${width}px`, true)
+    await assertVehicleCardLabels(desktopPage, `Thẻ xe máy tính ${width}px`)
+    await assertVehicleImageFrames(desktopPage, `Thẻ xe máy tính ${width}px`)
     await desktopPage.getByTestId('vehicle-b_automatic').hover()
     await assertVehicleCardAlignment(desktopPage, `Thẻ xe máy tính ${width}px khi rê chuột`, true)
+    await assertVehicleImageFrames(desktopPage, `Thẻ xe máy tính ${width}px khi rê chuột`)
     await desktopPage.mouse.move(0, 0)
   }
   const desktopHeaderBrand = desktopPage.locator('.app-header .training-brand').first()
   assert(await desktopHeaderBrand.locator('small').isVisible(), 'Máy tính phải hiện dòng VĂN PHÒNG ĐÀO TẠO LÁI XE')
   assert(await desktopHeaderBrand.locator('small').innerText() === officeBrand, 'Tên văn phòng trên máy tính phải đầy đủ')
   assert(await desktopHeaderBrand.locator('strong').innerText() === 'LINH XUÂN', 'Máy tính phải hiện đầy đủ LINH XUÂN')
-  const desktopVehicleImages = await desktopPage.locator('.vehicle-card__photos img').evaluateAll(async (images) => Promise.all(images.map(async (image) => {
-    await image.decode()
-    const container = image.closest('.vehicle-card__photos')
-    const imageRect = image.getBoundingClientRect()
-    const containerRect = container?.getBoundingClientRect()
-    const style = getComputedStyle(image)
-    const canvas = document.createElement('canvas')
-    canvas.width = image.naturalWidth
-    canvas.height = image.naturalHeight
-    const context = canvas.getContext('2d', { willReadFrequently: true })
-    if (!context) return { source: image.getAttribute('src'), objectFit: style.objectFit, image: null, container: null }
-    context.drawImage(image, 0, 0)
-    const pixels = context.getImageData(0, 0, canvas.width, canvas.height).data
-    let minX = canvas.width, minY = canvas.height, maxX = 0, maxY = 0
-    for (let index = 3; index < pixels.length; index += 4) {
-      if (pixels[index] <= 64) continue
-      const pixel = (index - 3) / 4
-      const x = pixel % canvas.width
-      const y = Math.floor(pixel / canvas.width)
-      minX = Math.min(minX, x); maxX = Math.max(maxX, x)
-      minY = Math.min(minY, y); maxY = Math.max(maxY, y)
-    }
-    // Transparent PNG margins may extend outside a card; test the painted
-    // vehicle, not its empty element box, under centered object-fit contain.
-    const scale = Math.min(imageRect.width / canvas.width, imageRect.height / canvas.height)
-    const paintedLeft = imageRect.left + (imageRect.width - canvas.width * scale) / 2
-    const paintedTop = imageRect.top + (imageRect.height - canvas.height * scale) / 2
-    return {
-      source: image.getAttribute('src'),
-      objectFit: style.objectFit,
-      image: { top: paintedTop + minY * scale, bottom: paintedTop + (maxY + 1) * scale, left: paintedLeft + minX * scale, right: paintedLeft + (maxX + 1) * scale },
-      container: containerRect && { top: containerRect.top, bottom: containerRect.bottom, left: containerRect.left, right: containerRect.right },
-    }
-  })))
-  assert(desktopVehicleImages.length === 3, 'Máy tính phải có đủ ba ảnh xe riêng')
-  for (const item of desktopVehicleImages) {
-    assert(item.objectFit === 'contain', `Ảnh ${item.source} phải giữ toàn bộ xe bằng object-fit contain`)
-    assert(item.container && item.image && item.image.top >= item.container.top - 1 && item.image.bottom <= item.container.bottom + 1 && item.image.left >= item.container.left - 1 && item.image.right <= item.container.right + 1, `Ảnh xe không được tràn khung và bị cắt mui/bánh: ${JSON.stringify(item)}`)
-  }
   await desktopPage.screenshot({ path: path.join(artifactDir, 'home-desktop.png'), fullPage: false })
 
   await desktopPage.goto(`${baseUrl}/admin/giaovien/A@7979`)

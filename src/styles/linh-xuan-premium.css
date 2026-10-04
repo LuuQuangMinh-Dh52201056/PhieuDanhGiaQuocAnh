@@ -222,18 +222,6 @@
   letter-spacing: .8px;
 }
 
-.lx-premium .vehicle-card__popular {
-  z-index: 7 !important;
-  top: 15px !important;
-  right: 12px !important;
-  left: auto !important;
-  min-height: 27px;
-  padding: 0 9px !important;
-  border-radius: 99px !important;
-  background: #1687ff !important;
-  font-size: 8px !important;
-}
-
 .lx-premium .vehicle-card__photos {
   width: 100%;
   height: 200px !important;
@@ -250,8 +238,10 @@
 
 .lx-premium .vehicle-card__photos > span {
   position: absolute;
-  right: 13px;
-  bottom: 8px;
+  left: 12px;
+  right: 12px;
+  bottom: 12px;
+  text-align: center;
   color: #6c88a9;
   font-size: 7px;
   font-weight: 800;
@@ -272,7 +262,9 @@
   left: 50% !important;
   right: auto !important;
   bottom: 24px !important;
-  width: 140% !important;
+  /* The supplied Vios PNGs include transparent side margins. This scale
+     fills the frame while leaving room around the painted vehicle. */
+  width: 130% !important;
   max-width: none !important;
   height: 130px !important;
   transform: translateX(-50%) !important;
@@ -1094,7 +1086,7 @@
     min-height: 248px !important;
     display: grid !important;
     grid-template-columns: 128px minmax(0,1fr) !important;
-    grid-template-rows: 1fr 53px !important;
+    grid-template-rows: 1fr 55px !important;
     transform: none !important;
   }
 
@@ -1110,28 +1102,30 @@
   }
 
   .lx-premium .vehicle-card__photo--single {
-    width: 154% !important;
+    width: 130% !important;
     height: auto !important;
-    bottom: 45px !important;
+    bottom: 50px !important;
   }
 
   .lx-premium .vehicle-card__photo--truck {
-    width: 96% !important;
+    width: calc(100% - 16px) !important;
     height: 110px !important;
     bottom: 38px !important;
   }
 
   .lx-premium .vehicle-card__photos > span {
     right: 8px;
+    left: 8px;
     bottom: 16px;
-    font-size: 6px;
+    font-size: 6.5px;
+    letter-spacing: .65px;
   }
 
   .lx-premium .vehicle-card__content {
     grid-column: 2;
     grid-row: 1;
     min-width: 0;
-    padding: 48px 13px 12px !important;
+    padding: 32px 15px 16px !important;
   }
 
   .lx-premium .vehicle-card__content h3 {
@@ -1152,9 +1146,6 @@
     top: 13px;
   }
 
-  .lx-premium .vehicle-card__popular {
-    top: 13px !important;
-  }
 }
 
 @media (max-width: 520px) {

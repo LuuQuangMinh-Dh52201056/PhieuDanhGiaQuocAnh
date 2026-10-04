@@ -29,9 +29,9 @@ export function VehicleSelectionPage({ onSelect }: VehicleSelectionPageProps) {
   }
 
   const vehicleCodes: Record<VehicleCategory, string> = {
-    B_MANUAL: 'B · MT',
-    B_AUTOMATIC: 'B · AT',
-    C1: 'C1 · TRUCK',
+    B_MANUAL: 'BSS',
+    B_AUTOMATIC: 'BTĐ',
+    C1: 'C1',
   }
 
   const vehicleKinds: Record<VehicleCategory, string> = {
@@ -69,7 +69,6 @@ export function VehicleSelectionPage({ onSelect }: VehicleSelectionPageProps) {
                 onClick={() => onSelect(category.id)}
               >
                 <span className="vehicle-card__code">{vehicleCodes[category.id]}</span>
-                {category.id === 'B_MANUAL' && <span className="vehicle-card__popular">★ Phổ biến</span>}
                 {vehicleVisual(category.id)}
                 <div className="vehicle-card__content">
                   <small>HẠNG XE</small>
