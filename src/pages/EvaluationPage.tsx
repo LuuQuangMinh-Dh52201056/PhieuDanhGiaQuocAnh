@@ -3,6 +3,7 @@ import { ArrowLeft, ArrowRight, CheckCheck, ClipboardCheck, MessageSquareText, S
 import { AppHeader } from '../components/AppHeader'
 import { AppFooter } from '../components/AppFooter'
 import { LessonEvaluationCard } from '../components/LessonEvaluationCard'
+import { TeacherCommentInput, TEACHER_COMMENT_LIMIT } from '../components/TeacherCommentInput'
 import { VEHICLE_LABELS } from '../data/lessonConfigs'
 import type { EvaluationState, LessonEvaluation } from '../types/evaluation'
 
@@ -47,7 +48,8 @@ export function EvaluationPage({ state, onChange, onBack, onPreview }: Evaluatio
   const addQuickComment = (comment: string) => {
     if (state.teacherComment.includes(comment)) return
     const separator = state.teacherComment.trim() ? ' • ' : ''
-    onChange({ teacherComment: `${state.teacherComment.trim()}${separator}${comment}` })
+    const next = `${state.teacherComment.trim()}${separator}${comment}`
+    if (next.length <= TEACHER_COMMENT_LIMIT) onChange({ teacherComment: next })
   }
 
   const validateAndPreview = () => {
@@ -113,12 +115,10 @@ export function EvaluationPage({ state, onChange, onBack, onPreview }: Evaluatio
             <div className="comment-icon"><MessageSquareText size={25} /></div>
             <div><small>TỔNG KẾT CUỐI BUỔI</small><h2>Nhận xét của giáo viên</h2></div>
           </div>
-          <textarea
+          <TeacherCommentInput
             value={state.teacherComment}
-            onChange={(event) => onChange({ teacherComment: event.target.value })}
+            onChange={(teacherComment) => onChange({ teacherComment })}
             placeholder="Nhập nhận xét tổng quan về kỹ năng, tâm lý và nội dung học viên cần luyện thêm..."
-            maxLength={500}
-            aria-label="Nhận xét của giáo viên"
           />
           <div className="comment-toolbar">
             <div className="quick-comments">
@@ -128,7 +128,7 @@ export function EvaluationPage({ state, onChange, onBack, onPreview }: Evaluatio
                 </button>
               ))}
             </div>
-            <small>{state.teacherComment.length}/500</small>
+            <small>{state.teacherComment.length}/{TEACHER_COMMENT_LIMIT} ký tự</small>
           </div>
         </section>
 

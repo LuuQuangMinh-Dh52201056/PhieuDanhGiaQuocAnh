@@ -1013,7 +1013,7 @@ function AdminBrand() {
         {!imageError ? (
           <img
             src={linhXuanLogo}
-            alt="Logo Trung tâm Đào tạo Lái xe Linh Xuân"
+            alt="Logo Văn Phòng Đào Tạo Lái Xe Linh Xuân"
             onError={() =>
               setImageError(true)
             }
@@ -1025,7 +1025,7 @@ function AdminBrand() {
 
       <div className="admin-pro-brand-copy">
         <small>
-          TRUNG TÂM ĐÀO TẠO
+          VĂN PHÒNG ĐÀO TẠO
           LÁI XE
         </small>
 

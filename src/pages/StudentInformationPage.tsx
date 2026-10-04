@@ -84,7 +84,7 @@ export function StudentInformationPage({ state, onChange, onBack, onContinue }: 
 
           <div className="form-note">
             <ShieldNotice />
-            <p><strong>Thông tin:</strong> Dữ liệu được dùng để lập phiếu đánh giá theo quy trình của trung tâm.</p>
+            <p><strong>Thông tin:</strong> Dữ liệu được dùng để lập phiếu đánh giá theo quy trình của văn phòng.</p>
           </div>
 
           <div className="form-actions">

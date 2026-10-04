@@ -1,10 +1,10 @@
-import { ArrowRight, CheckCircle2, Gauge, Joystick, Truck } from 'lucide-react'
+import { ArrowRight, CheckCircle2 } from 'lucide-react'
 import { AppFooter } from '../components/AppFooter'
 import { AppHeader } from '../components/AppHeader'
 import { VEHICLE_CATEGORIES } from '../data/lessonConfigs'
 import viosWhite from '../hinhanh/vios-white.png'
 import viosBlack from '../hinhanh/vios-black.png'
-import c1TrainingTruck from '../hinhanh/c1-training-truck.png'
+import c1TrainingTruck from '../hinhanh/c1-training-truck-cutout.png'
 import type { VehicleCategory } from '../types/evaluation'
 
 interface VehicleSelectionPageProps {
@@ -12,36 +12,18 @@ interface VehicleSelectionPageProps {
 }
 
 export function VehicleSelectionPage({ onSelect }: VehicleSelectionPageProps) {
-  const vehicleIcons = {
-    B_MANUAL: <Joystick size={43} />,
-    B_AUTOMATIC: <Gauge size={43} />,
-    C1: <Truck size={43} />,
+  const vehicleImages: Record<VehicleCategory, { src: string; label: string }> = {
+    B_MANUAL: { src: viosWhite, label: 'TOYOTA VIOS · SỐ SÀN' },
+    B_AUTOMATIC: { src: viosBlack, label: 'TOYOTA VIOS · TỰ ĐỘNG' },
+    C1: { src: c1TrainingTruck, label: 'KIA FRONTIER · XE TẢI' },
   }
 
   const vehicleVisual = (category: VehicleCategory) => {
-    if (category === 'B_MANUAL') {
-      return (
-        <div className="vehicle-card__photos vehicle-card__photos--manual" aria-hidden="true">
-          <img src={viosBlack} className="vehicle-card__photo vehicle-card__photo--black" alt="" />
-          <img src={viosWhite} className="vehicle-card__photo vehicle-card__photo--white" alt="" />
-          <span>ĐỘI XE VIOS</span>
-        </div>
-      )
-    }
-
-    if (category === 'C1') {
-      return (
-        <div className="vehicle-card__photos vehicle-card__photos--truck" aria-hidden="true">
-          <img src={c1TrainingTruck} className="vehicle-card__photo vehicle-card__photo--truck" alt="" />
-          <span>XE TẢI TẬP LÁI</span>
-        </div>
-      )
-    }
-
+    const vehicle = vehicleImages[category]
     return (
-      <div className="vehicle-card__automatic" aria-hidden="true">
-        <div className="vehicle-card__badge vehicle-card__badge--illustration">{vehicleIcons[category]}</div>
-        <div className="vehicle-card__prnd"><b>P</b><span>R</span><span>N</span><span>D</span></div>
+      <div className={`vehicle-card__photos vehicle-card__photos--single${category === 'C1' ? ' vehicle-card__photos--truck' : ''}`} aria-hidden="true">
+        <img src={vehicle.src} className={`vehicle-card__photo vehicle-card__photo--single${category === 'C1' ? ' vehicle-card__photo--truck' : ''}`} alt="" />
+        <span>{vehicle.label}</span>
       </div>
     )
   }

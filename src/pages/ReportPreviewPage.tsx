@@ -33,11 +33,11 @@ function getUltraSharpPixelRatio(width: number, height: number, compactDevice: b
   const targetScale = compactDevice ? MOBILE_EXPORT_SCALE : DESKTOP_EXPORT_SCALE
   const maxPixels = compactDevice ? MOBILE_MAX_CANVAS_PIXELS : DESKTOP_MAX_CANVAS_PIXELS
   const maxSide = compactDevice ? MOBILE_MAX_CANVAS_SIDE : DESKTOP_MAX_CANVAS_SIDE
-  return Math.max(1, Math.min(
+  return Math.min(
     targetScale,
     maxSide / Math.max(width, height),
     Math.sqrt(maxPixels / (width * height)),
-  ))
+  )
 }
 
 function canvasToPngBlob(canvas: HTMLCanvasElement) {
@@ -51,6 +51,7 @@ export function ReportPreviewPage({ state, onChange, onEdit, onNew }: ReportPrev
   const [message, setMessage] = useState('')
   const [exportFile, setExportFile] = useState<File | null>(null)
   const [isPreparing, setIsPreparing] = useState(true)
+  const [prepareVersion, setPrepareVersion] = useState(0)
   const [fallbackImageUrl, setFallbackImageUrl] = useState('')
   const objectUrlsRef = useRef(new Set<string>())
   const isAppleMobile = /iPad|iPhone|iPod/.test(navigator.userAgent)
@@ -100,42 +101,48 @@ export function ReportPreviewPage({ state, onChange, onEdit, onNew }: ReportPrev
   }, [state])
 
   const prepareNode = useCallback(async () => {
-    const node = reportRef.current
-    if (!node) throw new Error('Không tìm thấy phiếu đánh giá')
+    const source = reportRef.current
+    if (!source) throw new Error('Không tìm thấy phiếu đánh giá')
     await document.fonts.ready
-    const images = Array.from(node.querySelectorAll('img'))
-    await Promise.all(images.map(async (image) => {
-      if (!image.complete) {
-        await new Promise<void>((resolve) => {
-          image.addEventListener('load', () => resolve(), { once: true })
-          image.addEventListener('error', () => resolve(), { once: true })
-        })
-      }
-      try {
-        await image.decode?.()
-      } catch {
-        // Vẫn tiếp tục xuất nếu trình duyệt cũ không hỗ trợ decode().
-      }
-    }))
-    const previousStyle = node.getAttribute('style')
-    const alreadyUsedStableExportColors = node.classList.contains('report-export-flat')
+    // Render a separate, full-size copy. Never resize the visible preview:
+    // changing that live node made mobile browsers jump/scroll during export.
+    const host = document.createElement('div')
+    host.setAttribute('aria-hidden', 'true')
+    Object.assign(host.style, {
+      position: 'fixed', left: '-20000px', top: '0', width: '1080px',
+      pointerEvents: 'none', zIndex: '-1',
+    })
+    const node = source.cloneNode(true) as HTMLDivElement
+    node.removeAttribute('data-testid')
     node.classList.add('report-export-flat')
     Object.assign(node.style, {
-      transform: 'none',
-      position: 'static',
-      left: '0',
-      marginLeft: '0',
+      transform: 'none', position: 'relative', left: '0', top: '0',
+      margin: '0', width: '1080px',
     })
-    // Chờ hai khung hình để WebKit áp dụng trọn bộ màu xuất ổn định trước khi chụp.
-    await new Promise<void>((resolve) => requestAnimationFrame(() => resolve()))
-    await new Promise<void>((resolve) => requestAnimationFrame(() => resolve()))
-    return {
-      node,
-      restore: () => {
-        if (!alreadyUsedStableExportColors) node.classList.remove('report-export-flat')
-        if (previousStyle === null) node.removeAttribute('style')
-        else node.setAttribute('style', previousStyle)
-      },
+    host.appendChild(node)
+    document.body.appendChild(host)
+    try {
+      const images = Array.from(node.querySelectorAll('img'))
+      await Promise.all(images.map(async (image) => {
+        if (!image.complete) {
+          await new Promise<void>((resolve) => {
+            image.addEventListener('load', () => resolve(), { once: true })
+            image.addEventListener('error', () => resolve(), { once: true })
+          })
+        }
+        try {
+          await image.decode?.()
+        } catch {
+          // Vẫn tiếp tục xuất nếu trình duyệt cũ không hỗ trợ decode().
+        }
+      }))
+      // WebKit needs the stable export colors applied before capture.
+      await new Promise<void>((resolve) => requestAnimationFrame(() => resolve()))
+      await new Promise<void>((resolve) => requestAnimationFrame(() => resolve()))
+      return { node, restore: () => host.remove() }
+    } catch (error) {
+      host.remove()
+      throw error
     }
   }, [])
 
@@ -144,9 +151,11 @@ export function ReportPreviewPage({ state, onChange, onEdit, onNew }: ReportPrev
     const { node, restore } = await prepareNode()
     let canvas: HTMLCanvasElement | null = null
     let logoRects: ExportLogoRect[] = []
+    const reportWidth = node.offsetWidth
+    const reportHeight = node.offsetHeight
     try {
       const reportRect = node.getBoundingClientRect()
-      const pixelRatio = getUltraSharpPixelRatio(node.offsetWidth, node.offsetHeight, isCompactDevice)
+      const pixelRatio = getUltraSharpPixelRatio(reportWidth, reportHeight, isCompactDevice)
       logoRects = Array.from(node.querySelectorAll<HTMLElement>('[data-export-logo-slot]')).map((slot) => {
         const rect = slot.getBoundingClientRect()
         return {
@@ -161,6 +170,8 @@ export function ReportPreviewPage({ state, onChange, onEdit, onNew }: ReportPrev
         backgroundColor: '#f8fbff',
         imagePlaceholder: LINH_XUAN_LOGO_DATA_URL,
         skipAutoScale: true,
+        width: reportWidth,
+        height: reportHeight,
       }
       try {
         canvas = await toCanvas(node, { ...renderOptions, pixelRatio })
@@ -186,8 +197,8 @@ export function ReportPreviewPage({ state, onChange, onEdit, onNew }: ReportPrev
     if (!context) throw new Error('Không thể hoàn thiện logo trên ảnh')
     context.imageSmoothingEnabled = true
     context.imageSmoothingQuality = 'high'
-    const scaleX = canvas.width / node.offsetWidth
-    const scaleY = canvas.height / node.offsetHeight
+    const scaleX = canvas.width / reportWidth
+    const scaleY = canvas.height / reportHeight
     logoRects.forEach((rect) => {
       const x = rect.x * scaleX
       const y = rect.y * scaleY
@@ -216,9 +227,9 @@ export function ReportPreviewPage({ state, onChange, onEdit, onNew }: ReportPrev
 
   useEffect(() => {
     let cancelled = false
+    setIsPreparing(true)
+    setExportFile(null)
     const timer = window.setTimeout(() => {
-      setIsPreparing(true)
-      setExportFile(null)
       setMessage('Đang chuẩn bị ảnh PNG sắc nét để lưu trên thiết bị...')
       void createExportFile()
         .then((file) => {
@@ -228,7 +239,7 @@ export function ReportPreviewPage({ state, onChange, onEdit, onNew }: ReportPrev
         })
         .catch(() => {
           if (cancelled) return
-          setMessage('Chưa thể chuẩn bị ảnh. Vui lòng tải lại trang và thử lại.')
+          setMessage('Chưa thể chuẩn bị ảnh. Chọn “Thử tạo ảnh lại”; thông tin và nhận xét của bạn vẫn được giữ nguyên.')
         })
         .finally(() => {
           if (!cancelled) setIsPreparing(false)
@@ -239,7 +250,7 @@ export function ReportPreviewPage({ state, onChange, onEdit, onNew }: ReportPrev
       cancelled = true
       window.clearTimeout(timer)
     }
-  }, [createExportFile])
+  }, [createExportFile, prepareVersion])
 
   useEffect(() => () => {
     objectUrlsRef.current.forEach((url) => URL.revokeObjectURL(url))
@@ -435,6 +446,11 @@ export function ReportPreviewPage({ state, onChange, onEdit, onNew }: ReportPrev
           <button className="button button--danger-ghost" type="button" onClick={onNew}><RefreshCcw size={18} /> Tạo phiếu mới</button>
         </div>
         {message && <div className="export-message" role="status"><CheckCircle2 size={19} /> {message}</div>}
+        {!isPreparing && !exportFile && (
+          <button className="button button--outline" type="button" onClick={() => setPrepareVersion((value) => value + 1)}>
+            <RefreshCcw size={18} /> Thử tạo ảnh lại
+          </button>
+        )}
 
         {fallbackImageUrl && (
           <div className="mobile-save-fallback" role="dialog" aria-modal="true" aria-labelledby="mobile-save-title">

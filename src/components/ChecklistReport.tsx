@@ -26,7 +26,7 @@ export function ChecklistReport({ state, reportRef }: ChecklistReportProps) {
       <header className="checklist-report-header">
         <div className="checklist-report-header__brand"><TrainingCenterBrand /></div>
         <div className="checklist-report-header__title">
-          <small>TRUNG TÂM ĐÀO TẠO LÁI XE LINH XUÂN</small>
+          <small>VĂN PHÒNG ĐÀO TẠO LÁI XE LINH XUÂN</small>
           <h1>{isRoad ? 'PHIẾU ĐÁNH GIÁ ĐÀO TẠO HỌC VIÊN' : 'PHIẾU ĐÁNH GIÁ BUỔI HỌC'}</h1>
           <p>{isRoad ? 'ĐÁNH GIÁ THỰC HÀNH ĐƯỜNG TRƯỜNG' : 'LÀM QUEN XE & SA HÌNH CƠ BẢN'}</p>
         </div>
@@ -77,10 +77,10 @@ export function ChecklistReport({ state, reportRef }: ChecklistReportProps) {
         </section>
 
         <ReportHeading number="III" title="NHẬN XÉT CỦA GIÁO VIÊN" />
-        <section className="checklist-report-comment">
+        <section className="checklist-report-comment lx-report-notes" aria-label="Nhận xét và xác nhận của giáo viên">
           <MessageSquareText size={30} />
           <p>{state.teacherComment || 'Giáo viên chưa ghi nhận xét thêm.'}</p>
-          <div>
+          <div className="lx-report-notes__signature">
             <small>GIÁO VIÊN HƯỚNG DẪN</small>
             <strong>{state.instructorName || 'Ký và ghi rõ họ tên'}</strong>
           </div>

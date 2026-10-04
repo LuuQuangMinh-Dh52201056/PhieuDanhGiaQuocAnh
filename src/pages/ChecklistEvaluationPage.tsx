@@ -2,6 +2,7 @@ import { useMemo, useState } from 'react'
 import { ArrowLeft, ArrowRight, Check, CheckCheck, ClipboardCheck, MessageSquareText } from 'lucide-react'
 import { AppHeader } from '../components/AppHeader'
 import { AppFooter } from '../components/AppFooter'
+import { TeacherCommentInput, TEACHER_COMMENT_LIMIT } from '../components/TeacherCommentInput'
 import { VEHICLE_LABELS } from '../data/lessonConfigs'
 import { getChecklistOverallOptions, getChecklistRatingOptions, getChecklistTone } from '../data/checklistConfigs'
 import type { ChecklistItemEvaluation, ChecklistRating, EvaluationState } from '../types/evaluation'
@@ -55,7 +56,8 @@ export function ChecklistEvaluationPage({ state, onChange, onBack, onPreview }: 
   const addComment = (comment: string) => {
     if (state.teacherComment.includes(comment)) return
     const separator = state.teacherComment.trim() ? ' • ' : ''
-    onChange({ teacherComment: `${state.teacherComment.trim()}${separator}${comment}` })
+    const next = `${state.teacherComment.trim()}${separator}${comment}`
+    if (next.length <= TEACHER_COMMENT_LIMIT) onChange({ teacherComment: next })
   }
 
   const validate = () => {
@@ -152,12 +154,10 @@ export function ChecklistEvaluationPage({ state, onChange, onBack, onPreview }: 
             <div className="comment-icon"><MessageSquareText size={25} /></div>
             <div><small>III. NHẬN XÉT CỦA GIÁO VIÊN</small><h2>Nhận xét cuối buổi học</h2></div>
           </div>
-          <textarea
+          <TeacherCommentInput
             value={state.teacherComment}
-            onChange={(event) => onChange({ teacherComment: event.target.value })}
+            onChange={(teacherComment) => onChange({ teacherComment })}
             placeholder="Nhập nhận xét của giáo viên..."
-            maxLength={500}
-            aria-label="Nhận xét của giáo viên"
           />
           <div className="comment-toolbar">
             <div className="quick-comments">
@@ -167,7 +167,7 @@ export function ChecklistEvaluationPage({ state, onChange, onBack, onPreview }: 
                 </button>
               ))}
             </div>
-            <small>{state.teacherComment.length}/500</small>
+            <small>{state.teacherComment.length}/{TEACHER_COMMENT_LIMIT} ký tự</small>
           </div>
         </section>
 

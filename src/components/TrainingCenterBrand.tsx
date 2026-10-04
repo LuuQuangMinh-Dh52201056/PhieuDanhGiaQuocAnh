@@ -10,7 +10,7 @@ interface TrainingCenterBrandProps {
 
 export function TrainingCenterBrand({ compact = false, light = false }: TrainingCenterBrandProps) {
   return (
-    <div className={`training-brand ${compact ? 'training-brand--compact' : ''} ${light ? 'training-brand--light' : ''}`}>
+    <div className={`training-brand ${compact ? 'training-brand--compact' : ''} ${light ? 'training-brand--light' : ''}`} role="img" aria-label="Văn Phòng Đào Tạo Lái Xe Linh Xuân">
       <div
         className="training-brand__mark"
         aria-hidden="true"
@@ -20,7 +20,7 @@ export function TrainingCenterBrand({ compact = false, light = false }: Training
         <img src={LINH_XUAN_LOGO_DATA_URL} alt="" />
       </div>
       <div className="training-brand__copy">
-        <small>TRUNG TÂM ĐÀO TẠO LÁI XE</small>
+        <small>VĂN PHÒNG ĐÀO TẠO LÁI XE</small>
         <strong>LINH XUÂN</strong>
       </div>
     </div>

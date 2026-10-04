@@ -95,12 +95,12 @@ export function EvaluationReport({ state, reportRef }: EvaluationReportProps) {
           </div>
         </section>
 
-        <section className="report-comment-signature">
-          <div className="report-teacher-comment">
+        <section className="report-comment-signature lx-report-notes" aria-label="Nhận xét và xác nhận của giáo viên">
+          <div className="report-teacher-comment lx-report-notes__content">
             <MessageSquareText size={32} />
             <div><strong>NHẬN XÉT CỦA GIÁO VIÊN</strong><p>{state.teacherComment || 'Học viên cần duy trì sự tập trung, bình tĩnh và thực hiện đúng quy trình.'}</p></div>
           </div>
-          <div className="report-signature">
+          <div className="report-signature lx-report-notes__signature">
             <strong>GIÁO VIÊN HƯỚNG DẪN</strong>
             <div className="signature-line">{state.instructorName || 'Ký và ghi rõ họ tên'}</div>
           </div>
