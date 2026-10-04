@@ -18,7 +18,11 @@ export function ChecklistReport({ state, reportRef }: ChecklistReportProps) {
   const tableStyle = { '--rating-count': ratingOptions.length } as React.CSSProperties
 
   return (
-    <div className="report-page checklist-report" ref={reportRef} data-testid="evaluation-report">
+    <div
+      className={`report-page checklist-report lx-report lx-report--checklist ${state.checklistItems.length >= 13 ? 'lx-report--dense' : ''}`}
+      ref={reportRef}
+      data-testid="evaluation-report"
+    >
       <header className="checklist-report-header">
         <div className="checklist-report-header__brand"><TrainingCenterBrand /></div>
         <div className="checklist-report-header__title">
@@ -97,5 +101,6 @@ function ReportInfo({ label, value, strong = false }: { label: string; value: st
 }
 
 function ReportHeading({ number, title }: { number: string; title: string }) {
-  return <div className="checklist-report-heading"><span>{number}</span><strong>{title}</strong></div>
+  const sectionNumber = number === 'I' ? '01' : number === 'II' ? '02' : '03'
+  return <div className="checklist-report-heading"><span>{sectionNumber}</span><strong>{title}</strong><i /></div>
 }

@@ -1,4 +1,4 @@
-import { useEffect, useLayoutEffect, useRef, useState } from 'react'
+import { useCallback, useEffect, useLayoutEffect, useRef, useState } from 'react'
 import { ArrowLeft, CheckCircle2, Download, FilePenLine, Images, LoaderCircle, RefreshCcw, Share2 } from 'lucide-react'
 import { AppHeader } from '../components/AppHeader'
 import { AppFooter } from '../components/AppFooter'
@@ -49,9 +49,15 @@ export function ReportPreviewPage({ state, onChange, onEdit, onNew }: ReportPrev
   const stageRef = useRef<HTMLDivElement>(null)
   const [busy, setBusy] = useState<'download' | 'share' | 'save' | null>(null)
   const [message, setMessage] = useState('')
+  const [exportFile, setExportFile] = useState<File | null>(null)
+  const [isPreparing, setIsPreparing] = useState(true)
+  const [fallbackImageUrl, setFallbackImageUrl] = useState('')
+  const objectUrlsRef = useRef(new Set<string>())
   const isAppleMobile = /iPad|iPhone|iPod/.test(navigator.userAgent)
     || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1)
-  const isCompactDevice = isAppleMobile || window.matchMedia('(max-width: 768px)').matches
+  const isMobileDevice = /Android|iPhone|iPad|iPod|Mobile/i.test(navigator.userAgent)
+    || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1)
+  const isCompactDevice = isMobileDevice || window.matchMedia('(max-width: 1024px)').matches
   const isChecklist = state.trainingType === 'BASIC' || state.trainingType === 'ROAD'
 
   useLayoutEffect(() => {
@@ -93,7 +99,7 @@ export function ReportPreviewPage({ state, onChange, onEdit, onNew }: ReportPrev
     return () => observer.disconnect()
   }, [state])
 
-  const prepareNode = async () => {
+  const prepareNode = useCallback(async () => {
     const node = reportRef.current
     if (!node) throw new Error('Không tìm thấy phiếu đánh giá')
     await document.fonts.ready
@@ -131,9 +137,9 @@ export function ReportPreviewPage({ state, onChange, onEdit, onNew }: ReportPrev
         else node.setAttribute('style', previousStyle)
       },
     }
-  }
+  }, [])
 
-  const renderReportCanvas = async () => {
+  const renderReportCanvas = useCallback(async () => {
     const { toCanvas } = await import('html-to-image')
     const { node, restore } = await prepareNode()
     let canvas: HTMLCanvasElement | null = null
@@ -193,90 +199,172 @@ export function ReportPreviewPage({ state, onChange, onEdit, onNew }: ReportPrev
       context.drawImage(logo, x + (width - drawWidth) / 2, y + (height - drawHeight) / 2, drawWidth, drawHeight)
     })
     return canvas
+  }, [isCompactDevice, prepareNode])
+
+  const createExportFile = useCallback(async () => {
+    const canvas = await renderReportCanvas()
+    try {
+      const blob = await canvasToPngBlob(canvas)
+      if (!blob) throw new Error('Không thể tạo tệp ảnh')
+      return new File([blob], generateFileName(state), { type: 'image/png' })
+    } finally {
+      // Giải phóng vùng nhớ lớn ngay sau khi đã đóng gói file PNG.
+      canvas.width = 1
+      canvas.height = 1
+    }
+  }, [renderReportCanvas, state])
+
+  useEffect(() => {
+    let cancelled = false
+    const timer = window.setTimeout(() => {
+      setIsPreparing(true)
+      setExportFile(null)
+      setMessage('Đang chuẩn bị ảnh PNG sắc nét để lưu trên thiết bị...')
+      void createExportFile()
+        .then((file) => {
+          if (cancelled) return
+          setExportFile(file)
+          setMessage('Ảnh PNG sắc nét đã sẵn sàng để lưu hoặc chia sẻ.')
+        })
+        .catch(() => {
+          if (cancelled) return
+          setMessage('Chưa thể chuẩn bị ảnh. Vui lòng tải lại trang và thử lại.')
+        })
+        .finally(() => {
+          if (!cancelled) setIsPreparing(false)
+        })
+    }, 180)
+
+    return () => {
+      cancelled = true
+      window.clearTimeout(timer)
+    }
+  }, [createExportFile])
+
+  useEffect(() => () => {
+    objectUrlsRef.current.forEach((url) => URL.revokeObjectURL(url))
+    objectUrlsRef.current.clear()
+  }, [])
+
+  const createTrackedUrl = (file: File, autoRevoke = true) => {
+    const url = URL.createObjectURL(file)
+    objectUrlsRef.current.add(url)
+    if (autoRevoke) {
+      window.setTimeout(() => {
+        URL.revokeObjectURL(url)
+        objectUrlsRef.current.delete(url)
+      }, 60_000)
+    }
+    return url
   }
 
-  const downloadImage = async () => {
-    setBusy('download')
-    setMessage('')
+  const showSaveFallback = (file: File) => {
+    if (fallbackImageUrl) {
+      URL.revokeObjectURL(fallbackImageUrl)
+      objectUrlsRef.current.delete(fallbackImageUrl)
+    }
+    const url = createTrackedUrl(file, false)
+    setFallbackImageUrl(url)
+    setMessage('Ảnh đã mở ở chế độ lưu thủ công. Chạm giữ ảnh để lưu vào thư viện ảnh của điện thoại.')
+  }
+
+  const closeSaveFallback = () => {
+    if (fallbackImageUrl) {
+      URL.revokeObjectURL(fallbackImageUrl)
+      objectUrlsRef.current.delete(fallbackImageUrl)
+    }
+    setFallbackImageUrl('')
+  }
+
+  const safeCanShare = (file: File) => {
     try {
-      const canvas = await renderReportCanvas()
-      const width = canvas.width
-      const height = canvas.height
-      try {
-        const blob = await canvasToPngBlob(canvas)
-        if (!blob) throw new Error('Không thể tạo tệp ảnh')
-        const url = URL.createObjectURL(blob)
-        const link = document.createElement('a')
-        link.download = generateFileName(state)
-        link.href = url
-        document.body.appendChild(link)
-        link.click()
-        link.remove()
-        window.setTimeout(() => URL.revokeObjectURL(url), 1000)
-      } finally {
-        // Giải phóng bộ nhớ canvas lớn ngay sau khi đã tạo xong tệp PNG.
-        canvas.width = 1
-        canvas.height = 1
-      }
-      setMessage(`Đã tạo ảnh PNG siêu nét ${width} × ${height}px và bắt đầu tải xuống.`)
+      return typeof navigator.share === 'function'
+        && typeof navigator.canShare === 'function'
+        && navigator.canShare({ files: [file] })
     } catch {
-      setMessage('Chưa thể tạo ảnh. Vui lòng thử lại sau ít giây.')
-    } finally {
-      setBusy(null)
+      return false
     }
   }
 
-  const shareImage = async (intent: 'share' | 'photos' = 'share') => {
-    setBusy(intent === 'photos' ? 'save' : 'share')
-    setMessage('')
+  const triggerDownload = (file: File) => {
+    const url = createTrackedUrl(file)
+    const link = document.createElement('a')
+    link.download = file.name
+    link.href = url
+    link.rel = 'noopener'
+    link.style.display = 'none'
+    document.body.appendChild(link)
     try {
-      const canvas = await renderReportCanvas()
-      let blob: Blob | null
-      try {
-        blob = await canvasToPngBlob(canvas)
-      } finally {
-        canvas.width = 1
-        canvas.height = 1
-      }
-      if (!blob) throw new Error('Không thể tạo tệp ảnh')
-      const file = new File([blob], generateFileName(state), { type: 'image/png' })
-      if (navigator.share && navigator.canShare?.({ files: [file] })) {
-        if (intent === 'photos') {
-          setMessage('Ảnh siêu nét đã sẵn sàng. Trong bảng chia sẻ iPhone, chạm “Lưu hình ảnh” để đưa ảnh vào ứng dụng Ảnh.')
-          window.setTimeout(() => setBusy(null), 2500)
+      link.click()
+      setMessage(isMobileDevice
+        ? 'Đã gửi ảnh PNG vào mục Tải xuống của điện thoại.'
+        : 'Đã bắt đầu tải ảnh PNG sắc nét về máy.')
+    } catch {
+      showSaveFallback(file)
+    } finally {
+      link.remove()
+    }
+  }
+
+  const downloadImage = () => {
+    if (!exportFile) {
+      setMessage('Ảnh đang được chuẩn bị. Vui lòng chờ thêm ít giây.')
+      return
+    }
+    setBusy('download')
+    triggerDownload(exportFile)
+    window.setTimeout(() => setBusy(null), 350)
+  }
+
+  const shareImage = (intent: 'share' | 'photos' = 'share') => {
+    if (!exportFile) {
+      setMessage('Ảnh đang được chuẩn bị. Vui lòng chờ thêm ít giây.')
+      return
+    }
+
+    if (!safeCanShare(exportFile)) {
+      if (isAppleMobile) showSaveFallback(exportFile)
+      else triggerDownload(exportFile)
+      return
+    }
+
+    setBusy(intent === 'photos' ? 'save' : 'share')
+    setMessage(intent === 'photos'
+      ? 'Trong bảng chia sẻ, chọn “Lưu hình ảnh” để đưa phiếu vào ứng dụng Ảnh.'
+      : 'Đang mở bảng chia sẻ của thiết bị...')
+
+    // File đã được dựng sẵn nên navigator.share() được gọi ngay trong thao tác chạm.
+    // Điều này giữ user-activation trên Safari iOS và các trình duyệt Android.
+    const shareData: ShareData = isAppleMobile
+      ? { files: [exportFile] }
+      : {
+          title: state.trainingType === 'BASIC'
+            ? 'Phiếu đánh giá tập xe cơ bản'
+            : state.trainingType === 'ROAD' ? 'Phiếu đánh giá đường trường' : 'Phiếu đánh giá sa hình',
+          text: `Phiếu đánh giá của ${state.studentName}`,
+          files: [exportFile],
         }
 
-        // Safari iOS xử lý ảnh ổn định nhất khi chỉ chia sẻ tệp, không kèm text.
-        const shareData = isAppleMobile
-          ? { files: [file] }
-          : {
-              title: state.trainingType === 'BASIC'
-                ? 'Phiếu đánh giá tập xe cơ bản'
-                : state.trainingType === 'ROAD' ? 'Phiếu đánh giá đường trường' : 'Phiếu đánh giá sa hình',
-              text: `Phiếu đánh giá của ${state.studentName}`,
-              files: [file],
-            }
-        await navigator.share(shareData)
+    navigator.share(shareData)
+      .then(() => {
         setMessage(intent === 'photos'
-          ? 'Nếu bạn đã chọn “Lưu hình ảnh”, phiếu hiện đã nằm trong ứng dụng Ảnh.'
-          : 'Đã mở bảng chia sẻ. Bạn có thể chọn Zalo hoặc ứng dụng mong muốn.')
-      } else {
-        const url = URL.createObjectURL(file)
-        const link = document.createElement('a')
-        link.href = url
-        link.download = file.name
-        document.body.appendChild(link)
-        link.click()
-        link.remove()
-        window.setTimeout(() => URL.revokeObjectURL(url), 1000)
-        setMessage('Thiết bị chưa hỗ trợ chia sẻ trực tiếp; ảnh đã được tải xuống để bạn gửi qua Zalo.')
-      }
-    } catch (error) {
-      if (error instanceof Error && error.name === 'AbortError') setMessage('Đã đóng bảng chia sẻ.')
-      else setMessage('Chưa thể chia sẻ ảnh trên thiết bị này. Bạn có thể dùng nút Lưu Ảnh.')
-    } finally {
-      setBusy(null)
-    }
+          ? 'Phiếu đã được chuyển tới ứng dụng bạn chọn.'
+          : 'Đã mở bảng chia sẻ thành công.')
+      })
+      .catch((error: unknown) => {
+        if (error instanceof Error && error.name === 'AbortError') {
+          setMessage('Đã đóng bảng chia sẻ.')
+          return
+        }
+        if (isMobileDevice) showSaveFallback(exportFile)
+        else triggerDownload(exportFile)
+      })
+      .finally(() => setBusy(null))
+  }
+
+  const saveImage = () => {
+    if (isAppleMobile) shareImage('photos')
+    else downloadImage()
   }
 
   return (
@@ -316,21 +404,30 @@ export function ReportPreviewPage({ state, onChange, onEdit, onNew }: ReportPrev
           <div className="ios-save-guide">
             <Images size={19} />
             <span><strong>Lưu trên iPhone:</strong> chạm “Lưu Ảnh”, sau đó chọn “Lưu hình ảnh” trong bảng chia sẻ của iOS.</span>
+            <button className="mobile-save-alternative" type="button" disabled={!exportFile} onClick={() => exportFile && showSaveFallback(exportFile)}>Mở ảnh trực tiếp</button>
+          </div>
+        )}
+
+        {isMobileDevice && !isAppleMobile && (
+          <div className="ios-save-guide">
+            <Download size={19} />
+            <span><strong>Lưu trên Android:</strong> chạm “Lưu Ảnh”; tệp PNG sẽ nằm trong thư mục Tải xuống.</span>
+            <button className="mobile-save-alternative" type="button" disabled={!exportFile} onClick={() => exportFile && showSaveFallback(exportFile)}>Mở cách lưu khác</button>
           </div>
         )}
 
         <div className="export-action-bar">
           <button className="button button--ghost" type="button" onClick={onEdit}><ArrowLeft size={18} /> Sửa đánh giá</button>
-          <button className="button button--outline" type="button" onClick={() => shareImage('share')} disabled={busy !== null}>
+          <button className="button button--outline" type="button" onClick={() => shareImage('share')} disabled={busy !== null || isPreparing || !exportFile}>
             {busy === 'share' ? <LoaderCircle className="spin" size={19} /> : <Share2 size={19} />} Chia sẻ
           </button>
           <button
             className="button button--primary button--large"
             type="button"
-            onClick={() => isAppleMobile ? shareImage('photos') : downloadImage()}
-            disabled={busy !== null}
+            onClick={saveImage}
+            disabled={busy !== null || isPreparing || !exportFile}
           >
-            {busy === 'download' || busy === 'save'
+            {busy === 'download' || busy === 'save' || isPreparing
               ? <LoaderCircle className="spin" size={19} />
               : isAppleMobile ? <Images size={19} /> : <Download size={19} />}
             Lưu Ảnh
@@ -338,6 +435,20 @@ export function ReportPreviewPage({ state, onChange, onEdit, onNew }: ReportPrev
           <button className="button button--danger-ghost" type="button" onClick={onNew}><RefreshCcw size={18} /> Tạo phiếu mới</button>
         </div>
         {message && <div className="export-message" role="status"><CheckCircle2 size={19} /> {message}</div>}
+
+        {fallbackImageUrl && (
+          <div className="mobile-save-fallback" role="dialog" aria-modal="true" aria-labelledby="mobile-save-title">
+            <div className="mobile-save-fallback__panel">
+              <h2 id="mobile-save-title">Lưu phiếu vào điện thoại</h2>
+              <p>Chạm giữ ảnh bên dưới rồi chọn “Lưu vào Ảnh” hoặc “Tải hình ảnh xuống”. Bạn cũng có thể mở ảnh toàn màn hình.</p>
+              <img className="mobile-save-fallback__image" src={fallbackImageUrl} alt="Phiếu đánh giá đã hoàn thành" />
+              <div className="mobile-save-fallback__actions">
+                <a href={fallbackImageUrl} target="_blank" rel="noopener noreferrer">Mở ảnh toàn màn hình</a>
+                <button type="button" onClick={closeSaveFallback}>Đóng hướng dẫn</button>
+              </div>
+            </div>
+          </div>
+        )}
       </main>
       <AppFooter />
     </div>

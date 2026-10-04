@@ -165,6 +165,11 @@ try {
   assert(await mobileHeaderBrand.locator('strong').innerText() === 'LINH XUÂN', 'Điện thoại phải hiện đầy đủ LINH XUÂN')
   const logoSource = await page.locator('.training-brand__mark img').first().getAttribute('src')
   assert(logoSource?.startsWith('data:image/png;base64,'), 'Logo Linh Xuân phải là PNG nhúng trực tiếp để không mất khi Safari xuất ảnh')
+  assert(await page.getByTestId('vehicle-b_manual').locator('img[src*="vios-black"]').count() === 1, 'B số sàn phải có ảnh Vios đen')
+  assert(await page.getByTestId('vehicle-b_manual').locator('img[src*="vios-white"]').count() === 1, 'B số sàn phải có ảnh Vios trắng')
+  assert(await page.getByTestId('vehicle-b_automatic').locator('.vehicle-card__prnd').count() === 1, 'B số tự động phải có cụm PRND riêng')
+  assert(await page.getByTestId('vehicle-c1').locator('img[src*="c1-training-truck"]').count() === 1, 'C1 phải dùng đúng ảnh xe tải tập lái')
+  assert(await page.getByText('Chọn hồ sơ này', { exact: true }).count() === 3, 'Mỗi hạng xe phải có nút chọn hồ sơ rõ ràng')
 
   await page.getByRole('button', { name: 'HẠNG XE B SỐ SÀN' }).click()
   await page.screenshot({ path: path.join(artifactDir, 'training-selection-mobile.png'), fullPage: true })
@@ -188,6 +193,8 @@ try {
   assert(await page.getByTestId('check-basic-pedals-UNCLEAR').count() === 1, 'Mỗi nội dung cơ bản phải có ô Chưa rõ')
   await page.getByRole('button', { name: 'Đánh dấu tất cả là Đã hiểu' }).click()
   await page.getByTestId('overall-BASIC_UNDERSTOOD').click()
+  const selectedTickColor = await page.getByTestId('check-basic-pedals-UNDERSTOOD').locator('span').evaluate((element) => getComputedStyle(element).backgroundColor)
+  assert(/rgb\(8, 124, 240\)/.test(selectedTickColor), `Ô tick được chọn phải là xanh dương, thực tế ${selectedTickColor}`)
   await assertNoHorizontalOverflow(page, 'Phiếu tập cơ bản trên điện thoại')
   await page.screenshot({ path: path.join(artifactDir, 'basic-checklist-mobile.png'), fullPage: false })
   await page.getByRole('button', { name: 'Xem phiếu đánh giá' }).click()
@@ -338,6 +345,13 @@ try {
   await enterStudent(page, 'Kiểm thử giao diện 973px')
   await assertNoHorizontalOverflow(page, 'Phiếu tập cơ bản ở màn hình 973px')
   await page.screenshot({ path: path.join(artifactDir, 'basic-checklist-973.png'), fullPage: false })
+  for (const width of [320, 360, 430]) {
+    await page.setViewportSize({ width, height: 820 })
+    await page.goto(baseUrl)
+    await assertNoHorizontalOverflow(page, `Trang chọn hạng ở màn hình ${width}px`)
+    const cardWidth = await page.getByTestId('vehicle-b_manual').evaluate((element) => element.getBoundingClientRect().width)
+    assert(cardWidth <= width - 20, `Thẻ xe ở màn hình ${width}px phải nằm gọn trong khung, thực tế ${cardWidth}px`)
+  }
   await mobile.close()
 
   const desktop = await browser.newContext({ viewport: { width: 1440, height: 1000 }, deviceScaleFactor: 1 })
@@ -361,6 +375,10 @@ try {
     deviceScaleFactor: 1,
     userAgent: 'Mozilla/5.0 (iPhone; CPU iPhone OS 18_0 like Mac OS X) AppleWebKit/605.1.15 Version/18.0 Mobile/15E148 Safari/604.1',
   })
+  await iphone.addInitScript(() => {
+    Object.defineProperty(navigator, 'share', { configurable: true, value: undefined })
+    Object.defineProperty(navigator, 'canShare', { configurable: true, value: undefined })
+  })
   const iphonePage = await iphone.newPage()
   await iphonePage.goto(baseUrl)
   await chooseVehicle(iphonePage, 'HẠNG XE B SỐ SÀN')
@@ -371,6 +389,9 @@ try {
   await iphonePage.getByTestId('evaluation-report').waitFor({ state: 'visible' })
   assert(await iphonePage.getByRole('button', { name: 'Lưu Ảnh' }).count() === 1, 'Safari iPhone phải hiển thị nút Lưu Ảnh')
   assert(await iphonePage.getByText('Lưu trên iPhone:', { exact: true }).count() === 1, 'Safari iPhone phải hiển thị hướng dẫn lưu hình ảnh')
+  await iphonePage.getByRole('button', { name: 'Lưu Ảnh' }).click()
+  assert(await iphonePage.getByRole('dialog', { name: 'Lưu phiếu vào điện thoại' }).count() === 1, 'iPhone không có Web Share phải mở phương án chạm giữ ảnh')
+  await iphonePage.getByRole('button', { name: 'Đóng hướng dẫn' }).click()
 
   await iphonePage.goto(`${baseUrl}/admin/giaovien/A@7979`)
   await iphonePage.locator('.admin-pro-page').waitFor({ state: 'visible' })
@@ -378,7 +399,34 @@ try {
   await iphonePage.screenshot({ path: path.join(artifactDir, 'admin-mobile.png'), fullPage: false })
   await iphone.close()
 
-console.log('E2E_OK: Linh Xuan branding, tick forms, vehicle variants, PNG export and iPhone Photos flow verified')
+  const android = await browser.newContext({
+    viewport: { width: 412, height: 915 },
+    deviceScaleFactor: 1,
+    userAgent: 'Mozilla/5.0 (Linux; Android 15; SM-S928B) AppleWebKit/537.36 Chrome/141.0 Mobile Safari/537.36',
+  })
+  const androidPage = await android.newPage()
+  await androidPage.goto(baseUrl)
+  await chooseVehicle(androidPage, 'HẠNG XE B SỐ SÀN')
+  await enterStudent(androidPage, 'Học viên Android')
+  await androidPage.getByRole('button', { name: 'Đánh dấu bài còn lại là Tốt' }).click()
+  await androidPage.getByTestId('status-emergency-GOOD').click()
+  await androidPage.getByRole('button', { name: 'Xem phiếu đánh giá' }).click()
+  await androidPage.getByTestId('evaluation-report').waitFor({ state: 'visible' })
+  assert(await androidPage.getByText('Lưu trên Android:', { exact: true }).count() === 1, 'Android phải hiển thị hướng dẫn thư mục Tải xuống')
+  const androidDownloadPromise = androidPage.waitForEvent('download')
+  await androidPage.getByRole('button', { name: 'Lưu Ảnh' }).click()
+  const androidDownload = await androidDownloadPromise
+  assert(androidDownload.suggestedFilename().endsWith('.png'), 'Android phải tải tệp PNG')
+  const androidDownloadPath = await androidDownload.path()
+  assert(androidDownloadPath, 'Android phải nhận được tệp ảnh đã tải')
+  const androidPng = await readFile(androidDownloadPath)
+  assert(androidPng.readUInt32BE(16) >= 2160, 'Ảnh tải trên Android phải đủ độ nét 2160px')
+  assert(androidPng.readUInt32BE(16) * androidPng.readUInt32BE(20) <= 10_000_000, 'Ảnh Android phải nằm trong giới hạn bộ nhớ an toàn')
+  await assertNoHorizontalOverflow(androidPage, 'Trang xem phiếu trên Android')
+  await androidPage.screenshot({ path: path.join(artifactDir, 'report-android.png'), fullPage: false })
+  await android.close()
+
+console.log('E2E_OK: premium vehicle visuals, blue ticks, distinctive reports, Android download and iPhone fallback verified')
 } finally {
   await browser.close()
 }

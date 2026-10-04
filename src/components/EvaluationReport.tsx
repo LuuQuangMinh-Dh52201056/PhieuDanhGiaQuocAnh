@@ -19,7 +19,7 @@ export function EvaluationReport({ state, reportRef }: EvaluationReportProps) {
   const emergency = state.emergencyEvaluation
 
   return (
-    <div className="report-page" ref={reportRef} data-testid="evaluation-report">
+    <div className="report-page lx-report lx-report--course" ref={reportRef} data-testid="evaluation-report">
       <header className="report-header">
         <div className="report-header__flare report-header__flare--one" />
         <div className="report-header__flare report-header__flare--two" />
@@ -117,7 +117,7 @@ export function EvaluationReport({ state, reportRef }: EvaluationReportProps) {
 }
 
 function ReportSectionTitle({ number, title }: { number: string; title: string }) {
-  return <div className="report-section-title"><span>{number}</span><strong>{title}</strong></div>
+  return <div className="report-section-title"><span>{number.padStart(2, '0')}</span><strong>{title}</strong><i /></div>
 }
 
 function InfoItem({ label, value, strong = false }: { label: string; value: string; strong?: boolean }) {

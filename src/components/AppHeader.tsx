@@ -21,7 +21,7 @@ export function AppHeader({ activeStep }: AppHeaderProps) {
             const done = number < activeStep
             const active = number === activeStep
             return (
-              <div className={`stepper__item ${done ? 'is-done' : ''} ${active ? 'is-active' : ''}`} key={step}>
+              <div className={`stepper__item ${done ? 'is-done' : ''} ${active ? 'is-active' : ''}`} key={step} aria-current={active ? 'step' : undefined}>
                 <span className="stepper__number">{done ? <Check size={14} strokeWidth={3} /> : number}</span>
                 <span className="stepper__label">{step}</span>
               </div>
